@@ -233,7 +233,7 @@ export default function FloorPlanEditor({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-2 right-12 z-50 text-muted-foreground"
+          className="absolute top-2 right-12 z-50 text-foreground"
           onClick={() => setIsFullScreen(!isFullScreen)}
         >
           {isFullScreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
