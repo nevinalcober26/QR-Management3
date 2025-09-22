@@ -26,6 +26,7 @@ import { Building, Crown, Home, Sun, Maximize, Minimize } from "lucide-react";
 import Header from "./header";
 import AddRoomDialog from "./add-room-dialog";
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 interface FloorPlanEditorProps {
   open: boolean;
@@ -275,16 +276,12 @@ export default function FloorPlanEditor({
               <AlertDialogTitle>Duplicate Table Names</AlertDialogTitle>
               <AlertDialogDescription>
                 There are multiple tables with the same name: {duplicateTableNames.join(", ")}.
-                This might cause issues. Do you want to save anyway?
+                Please change the name of the duplicate tables before saving.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => {
-                performSave();
-                setIsDuplicateNameWarningOpen(false);
-              }}>
-                Save Anyway
+              <AlertDialogAction onClick={() => setIsDuplicateNameWarningOpen(false)}>
+                OK
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
