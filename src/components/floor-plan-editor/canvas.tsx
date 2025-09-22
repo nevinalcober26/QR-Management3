@@ -309,12 +309,7 @@ export default function Canvas({
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    const zoomFactor = 0.1;
-    if (e.deltaY < 0) {
-      setZoom(z => Math.min(2, z + zoomFactor));
-    } else {
-      setZoom(z => Math.max(0.2, z - zoomFactor));
-    }
+    // Zoom disabled per user request
   };
   
   const handleResetZoom = () => {
