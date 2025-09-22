@@ -149,6 +149,7 @@ export default function Canvas({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const gridSnap = 20;
+    const snapThreshold = 15;
 
     if (isPanning.current) {
         const dx = e.clientX - panStart.current.x;
@@ -165,6 +166,41 @@ export default function Canvas({
         let newX = dragInfo.current.elementStartX + dx;
         let newY = dragInfo.current.elementStartY + dy;
 
+        const draggedElement = elements.find(el => el.id === dragInfo.current.elementId);
+        
+        if (draggedElement?.type === 'wall' && draggedElement.rotation === 0) {
+            let snapped = false;
+            for (const otherElement of elements) {
+                if (otherElement.id === draggedElement.id || otherElement.type !== 'wall' || otherElement.rotation !== 0) continue;
+
+                const draggedPoints = [
+                    { x: newX, y: newY },
+                    { x: newX + draggedElement.width, y: newY },
+                    { x: newX, y: newY + draggedElement.height },
+                    { x: newX + draggedElement.width, y: newY + draggedElement.height },
+                ];
+                const otherPoints = [
+                    { x: otherElement.x, y: otherElement.y },
+                    { x: otherElement.x + otherElement.width, y: otherElement.y },
+                    { x: otherElement.x, y: otherElement.y + otherElement.height },
+                    { x: otherElement.x + otherElement.width, y: otherElement.y + otherElement.height },
+                ];
+
+                for (const dp of draggedPoints) {
+                    for (const op of otherPoints) {
+                        if (Math.abs(dp.x - op.x) < snapThreshold && Math.abs(dp.y - op.y) < snapThreshold) {
+                            newX -= (dp.x - op.x);
+                            newY -= (dp.y - op.y);
+                            snapped = true;
+                            break;
+                        }
+                    }
+                    if (snapped) break;
+                }
+                if (snapped) break;
+            }
+        }
+        
         newX = Math.round(newX / gridSnap) * gridSnap;
         newY = Math.round(newY / gridSnap) * gridSnap;
         
