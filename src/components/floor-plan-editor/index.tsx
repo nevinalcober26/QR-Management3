@@ -72,6 +72,33 @@ export default function FloorPlanEditor({
     setIsAddRoomDialogOpen(false);
   };
 
+  const handleDeleteRoom = (roomId: string) => {
+    if (rooms.length <= 1) {
+      toast({
+        variant: "destructive",
+        title: "Cannot delete room",
+        description: "You must have at least one room.",
+      });
+      return;
+    }
+    const roomToDelete = rooms.find(r => r.id === roomId);
+    setRooms(prev => prev.filter(room => room.id !== roomId));
+    setElements(prev => {
+        const newElements = {...prev};
+        delete newElements[roomId];
+        return newElements;
+    });
+
+    if (activeRoomId === roomId) {
+        setActiveRoomId(rooms.find(r => r.id !== roomId)!.id);
+    }
+    
+    toast({
+        title: "Room Deleted",
+        description: `Room "${roomToDelete?.label}" has been deleted.`,
+    });
+  };
+
   const handleAddElement = (type: ElementType, x = 150, y = 150) => {
     const gridSnap = 20;
     const snappedX = Math.round(x / gridSnap) * gridSnap;
@@ -185,6 +212,7 @@ export default function FloorPlanEditor({
             onActiveRoomChange={setActiveRoomId}
             onAddRoom={() => setIsAddRoomDialogOpen(true)}
             onSave={handleSave}
+            onDeleteRoom={handleDeleteRoom}
         />
         <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full overflow-hidden shadow-2xl flex-grow">
           <Sidebar
