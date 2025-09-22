@@ -151,6 +151,15 @@ export default function FloorPlanEditor({
     });
   };
 
+  const handleSave = () => {
+    // In a real app, you'd send this data to a backend.
+    console.log("Saving data...", { rooms, elements });
+    toast({
+      title: "Floor Plan Saved",
+      description: "Your changes have been successfully saved.",
+    });
+  };
+
   const activeElements = elements[activeRoomId] || [];
   const selectedElement =
     activeElements.find((el) => el.id === selectedElementId) ?? null;
@@ -171,6 +180,7 @@ export default function FloorPlanEditor({
             activeRoomId={activeRoomId}
             onActiveRoomChange={setActiveRoomId}
             onAddRoom={() => setIsAddRoomDialogOpen(true)}
+            onSave={handleSave}
         />
         <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full overflow-hidden shadow-2xl flex-grow">
           <Sidebar

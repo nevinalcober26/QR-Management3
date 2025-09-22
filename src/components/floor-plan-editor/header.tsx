@@ -1,16 +1,17 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Room } from "./index";
 import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Save } from "lucide-react";
 
 interface HeaderProps {
     rooms: Room[];
     activeRoomId: string;
     onActiveRoomChange: (id: string) => void;
     onAddRoom: () => void;
+    onSave: () => void;
 }
 
-export default function Header({ rooms, activeRoomId, onActiveRoomChange, onAddRoom }: HeaderProps) {
+export default function Header({ rooms, activeRoomId, onActiveRoomChange, onAddRoom, onSave }: HeaderProps) {
     return (
         <div className="p-4 border-b flex items-center justify-between bg-card">
             <h2 className="text-xl font-semibold tracking-tight">Floor Plan</h2>
@@ -27,13 +28,19 @@ export default function Header({ rooms, activeRoomId, onActiveRoomChange, onAddR
                     ))}
                 </TabsList>
             </Tabs>
-            <Button
-                variant="outline"
-                onClick={onAddRoom}
-            >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Room
-            </Button>
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="outline"
+                    onClick={onAddRoom}
+                >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Room
+                </Button>
+                <Button onClick={onSave}>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save
+                </Button>
+            </div>
       </div>
     );
 }
