@@ -79,7 +79,7 @@ export default function FloorPlanEditor({
       return { ...prev, [activeRoomId]: newRoomHistory };
     });
 
-    setHistoryIndex(prev => ({ ...prev, [activeRoomId]: (prev[activeRoomId] ?? -1) + 1 }));
+    setHistoryIndex(prev => ({ ...prev, [activeRoomId]: (prev[activeRoomId]?.slice(0, prev[activeRoomId]?.length).length || 1) -1 }));
   };
 
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
