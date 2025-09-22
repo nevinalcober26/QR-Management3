@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -19,7 +20,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Sidebar from "./sidebar";
 import Canvas from "./canvas";
 import Inspector from "./inspector";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { ElementType, FloorElement, TableElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Building, Crown, Home, Sun, Maximize, Minimize } from "lucide-react";
@@ -46,18 +47,41 @@ const initialRooms: Room[] = [
   { id: "vip", label: "VIP Lounge", icon: Crown },
 ];
 
+const initialHistory = initialRooms.reduce((acc, room) => ({
+  ...acc,
+  [room.id]: [[]]
+}), {} as Record<string, FloorElement[][]>);
+
+const initialHistoryIndex = initialRooms.reduce((acc, room) => ({
+  ...acc,
+  [room.id]: 0
+}), {} as Record<string, number>);
+
 export default function FloorPlanEditor({
   open,
   onOpenChange,
 }: FloorPlanEditorProps) {
   const [rooms, setRooms] = useState<Room[]>(initialRooms);
   const [activeRoomId, setActiveRoomId] = useState<string>(initialRooms[0].id);
-  const [elements, setElements] = useState<Record<string, FloorElement[]>>({
-    "main-dining": [],
-    "private-1": [],
-    "patio": [],
-    "vip": [],
-  });
+
+  const [history, setHistory] = useState<Record<string, FloorElement[][]>>(initialHistory);
+  const [historyIndex, setHistoryIndex] = useState<Record<string, number>>(initialHistoryIndex);
+
+  const elements = history[activeRoomId]?.[historyIndex[activeRoomId]] || [];
+
+  const setElements = (updater: (prevElements: FloorElement[]) => FloorElement[]) => {
+    const currentElements = history[activeRoomId][historyIndex[activeRoomId]];
+    const newElements = updater(currentElements);
+    
+    setHistory(prev => {
+      const newRoomHistory = (prev[activeRoomId] || []).slice(0, historyIndex[activeRoomId] + 1);
+      newRoomHistory.push(newElements);
+      return { ...prev, [activeRoomId]: newRoomHistory };
+    });
+
+    setHistoryIndex(prev => ({ ...prev, [activeRoomId]: prev[activeRoomId] + 1 }));
+  };
+
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null
   );
@@ -66,6 +90,41 @@ export default function FloorPlanEditor({
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isDuplicateNameWarningOpen, setIsDuplicateNameWarningOpen] = useState(false);
   const [duplicateTableNames, setDuplicateTableNames] = useState<string[]>([]);
+  
+  const handleUndo = useCallback(() => {
+    setHistoryIndex(prev => ({
+      ...prev,
+      [activeRoomId]: Math.max(0, prev[activeRoomId] - 1)
+    }));
+  }, [activeRoomId]);
+
+  const handleRedo = useCallback(() => {
+    setHistoryIndex(prev => ({
+      ...prev,
+      [activeRoomId]: Math.min((history[activeRoomId]?.length || 1) - 1, prev[activeRoomId] + 1)
+    }));
+  }, [activeRoomId, history]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const undo = (isMac ? event.metaKey : event.ctrlKey) && event.key === 'z' && !event.shiftKey;
+      const redo = (isMac ? event.metaKey && event.shiftKey : event.ctrlKey) && (event.key === 'z' || event.key === 'y');
+
+      if (undo) {
+        event.preventDefault();
+        handleUndo();
+      } else if (redo) {
+        event.preventDefault();
+        handleRedo();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleUndo, handleRedo]);
 
 
   const handleAddRoom = (roomName: string) => {
@@ -75,7 +134,8 @@ export default function FloorPlanEditor({
       icon: Building, // Default icon for new rooms
     };
     setRooms((prev) => [...prev, newRoom]);
-    setElements((prev) => ({ ...prev, [newRoom.id]: [] }));
+    setHistory(prev => ({ ...prev, [newRoom.id]: [[]] }));
+    setHistoryIndex(prev => ({ ...prev, [newRoom.id]: 0 }));
     setActiveRoomId(newRoom.id);
     toast({
       title: "Room Added",
@@ -95,11 +155,17 @@ export default function FloorPlanEditor({
     }
     const roomToDelete = rooms.find(r => r.id === roomId);
     setRooms(prev => prev.filter(room => room.id !== roomId));
-    setElements(prev => {
-        const newElements = {...prev};
-        delete newElements[roomId];
-        return newElements;
+    setHistory(prev => {
+        const newHistory = {...prev};
+        delete newHistory[roomId];
+        return newHistory;
     });
+    setHistoryIndex(prev => {
+        const newHistoryIndex = {...prev};
+        delete newHistoryIndex[roomId];
+        return newHistoryIndex;
+    });
+
 
     if (activeRoomId === roomId) {
         setActiveRoomId(rooms.find(r => r.id !== roomId)!.id);
@@ -130,10 +196,7 @@ export default function FloorPlanEditor({
       ...(type === "curved-l-shape" && { width: 120, height: 120, borderRadius: 60 }),
     } as FloorElement;
 
-    setElements((prev) => ({
-      ...prev,
-      [activeRoomId]: [...(prev[activeRoomId] || []), newElement],
-    }));
+    setElements(prev => ([...prev, newElement]));
     setSelectedElementId(newElement.id);
     toast({
       title: `Added ${type.replace("-", " ")}`,
@@ -142,36 +205,30 @@ export default function FloorPlanEditor({
   };
 
   const handleUpdateElement = (id: string, updates: Partial<FloorElement>) => {
-    setElements((prev) => ({
-      ...prev,
-      [activeRoomId]: (prev[activeRoomId] || []).map((el) => {
-        if (el.id === id) {
-          const newEl = { ...el, ...updates };
-          if (newEl.type === 'round-table' || newEl.type === 'plant') {
-            if (updates.radius) {
-                newEl.width = updates.radius * 2;
-                newEl.height = updates.radius * 2;
-            }
+    setElements(prev => prev.map((el) => {
+      if (el.id === id) {
+        const newEl = { ...el, ...updates };
+        if (newEl.type === 'round-table' || newEl.type === 'plant') {
+          if (updates.radius) {
+              newEl.width = updates.radius * 2;
+              newEl.height = updates.radius * 2;
           }
-          return newEl;
         }
-        return el;
-      }),
+        return newEl;
+      }
+      return el;
     }));
   };
 
   const handleDeleteElement = (id: string) => {
-    setElements((prev) => ({
-      ...prev,
-      [activeRoomId]: (prev[activeRoomId] || []).filter((el) => el.id !== id),
-    }));
+    setElements(prev => prev.filter((el) => el.id !== id));
     if (selectedElementId === id) {
       setSelectedElementId(null);
     }
   };
 
   const handleDuplicateElement = (id: string) => {
-    const originalElement = (elements[activeRoomId] || []).find((el) => el.id === id);
+    const originalElement = (elements || []).find((el) => el.id === id);
     if (!originalElement) return;
 
     const newElement: FloorElement = {
@@ -181,10 +238,7 @@ export default function FloorPlanEditor({
       y: originalElement.y + 20,
     };
 
-    setElements((prev) => ({
-      ...prev,
-      [activeRoomId]: [...(prev[activeRoomId] || []), newElement],
-    }));
+    setElements(prev => ([...prev, newElement]));
     setSelectedElementId(newElement.id);
     toast({
       title: "Element Duplicated",
@@ -193,7 +247,7 @@ export default function FloorPlanEditor({
   };
 
   const performSave = () => {
-    console.log("Saving data...", { rooms, elements });
+    console.log("Saving data...", { rooms, elements: history });
     toast({
       title: "Floor Plan Saved",
       description: "Your changes have been successfully saved.",
@@ -202,7 +256,7 @@ export default function FloorPlanEditor({
 
   const handleSave = () => {
     const tableNames = new Map<string, number>();
-    Object.values(elements).flat().forEach(element => {
+    Object.values(history).flat().flat().forEach(element => {
       if (element.type.includes('table')) {
         const table = element as TableElement;
         if (table.tableName) {
@@ -224,7 +278,7 @@ export default function FloorPlanEditor({
   };
 
 
-  const activeElements = elements[activeRoomId] || [];
+  const activeElements = elements;
   const selectedElement =
     activeElements.find((el) => el.id === selectedElementId) ?? null;
 
@@ -290,3 +344,5 @@ export default function FloorPlanEditor({
     </Dialog>
   );
 }
+
+    
