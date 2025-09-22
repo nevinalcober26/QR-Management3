@@ -13,6 +13,7 @@ export interface BaseElement {
 export interface TableElement extends BaseElement {
   type: 'round-table' | 'square-table' | 'rectangle-table';
   seats: number;
+  tableName?: string;
   radius?: number;
 }
 

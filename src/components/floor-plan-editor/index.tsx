@@ -10,7 +10,7 @@ import Sidebar from "./sidebar";
 import Canvas from "./canvas";
 import Inspector from "./inspector";
 import { useState } from "react";
-import type { ElementType, FloorElement } from "@/lib/types";
+import type { ElementType, FloorElement, TableElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Building, Crown, Home, Sun, Maximize, Minimize } from "lucide-react";
 import Header from "./header";
@@ -80,9 +80,9 @@ export default function FloorPlanEditor({
       y: 150,
       rotation: 0,
       // Default properties
-      ...(type === "round-table" && { seats: 4, radius: 24, width: 48, height: 48 }),
-      ...(type === "square-table" && { seats: 4, width: 48, height: 48 }),
-      ...(type === "rectangle-table" && { seats: 6, width: 72, height: 36 }),
+      ...(type === "round-table" && { seats: 4, radius: 24, width: 48, height: 48, tableName: 'T1' }),
+      ...(type === "square-table" && { seats: 4, width: 48, height: 48, tableName: 'T2' }),
+      ...(type === "rectangle-table" && { seats: 6, width: 72, height: 36, tableName: 'T3' }),
       ...(type === "wall" && { width: 120, height: 8 }),
       ...(type === "door" && { width: 36, height: 8 }),
       ...(type === "plant" && { radius: 12, width: 24, height: 24 }),

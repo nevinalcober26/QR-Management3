@@ -92,15 +92,26 @@ export default function Inspector({
             </h3>
             <div className="grid gap-4">
               {isTable && tableElement && (
-                <div className="grid gap-2">
-                  <Label htmlFor="seats">Seats</Label>
-                  <Input
-                    id="seats"
-                    type="number"
-                    value={tableElement.seats || 0}
-                    onChange={(e) => onUpdateElement(selectedElement.id, { seats: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
+                <>
+                  <div className="grid gap-2">
+                    <Label htmlFor="table-name">Table Name/Number</Label>
+                    <Input
+                      id="table-name"
+                      type="text"
+                      value={tableElement.tableName || ''}
+                      onChange={(e) => onUpdateElement(selectedElement.id, { tableName: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="seats">Capacity</Label>
+                    <Input
+                      id="seats"
+                      type="number"
+                      value={tableElement.seats || 0}
+                      onChange={(e) => onUpdateElement(selectedElement.id, { seats: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                </>
               )}
 
               {selectedElement.type === 'round-table' && tableElement?.radius !== undefined && (

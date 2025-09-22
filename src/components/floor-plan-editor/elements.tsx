@@ -1,7 +1,7 @@
 import type { TableElement, FloorElement, PlantElement } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Sprout, Expand } from "lucide-react";
+import { Sprout, Expand, RotateCw } from "lucide-react";
 
 interface ElementProps {
   element: FloorElement;
@@ -14,8 +14,9 @@ const elementBaseClasses = "absolute transition-all duration-75 cursor-grab acti
 const selectedClasses = "outline outline-2 outline-offset-2 outline-accent";
 
 const TableContent = ({ element }: { element: TableElement }) => (
-  <div className="w-full h-full flex items-center justify-center text-sm font-medium text-primary-foreground select-none">
-    {element.seats}
+  <div className="w-full h-full flex flex-col items-center justify-center text-xs font-medium text-primary-foreground select-none p-1">
+    <div className="font-bold text-sm">{element.tableName}</div>
+    <div>({element.seats} seats)</div>
   </div>
 );
 
@@ -26,6 +27,15 @@ const ResizeHandle = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent<HTMLD
     >
       <Expand className="w-3 h-3 text-accent-foreground" />
     </div>
+);
+
+const RotateHandle = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void }) => (
+  <div
+    onMouseDown={onMouseDown}
+    className="absolute -top-2 -right-2 w-5 h-5 bg-accent rounded-full flex items-center justify-center cursor-alias z-10 shadow"
+  >
+    <RotateCw className="w-3 h-3 text-accent-foreground" />
+  </div>
 );
 
 
@@ -53,6 +63,7 @@ export const ElementRenderer: React.FC<ElementProps> = ({
     <div {...commonProps}>
       {children}
       {isSelected && <ResizeHandle onMouseDown={onResizeMouseDown} />}
+      {isSelected && <RotateHandle onMouseDown={onRotateMouseDown} />}
     </div>
   );
 
