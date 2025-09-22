@@ -128,6 +128,28 @@ export default function FloorPlanEditor({
     }
   };
 
+  const handleDuplicateElement = (id: string) => {
+    const originalElement = (elements[activeRoomId] || []).find((el) => el.id === id);
+    if (!originalElement) return;
+
+    const newElement: FloorElement = {
+      ...originalElement,
+      id: crypto.randomUUID(),
+      x: originalElement.x + 20,
+      y: originalElement.y + 20,
+    };
+
+    setElements((prev) => ({
+      ...prev,
+      [activeRoomId]: [...(prev[activeRoomId] || []), newElement],
+    }));
+    setSelectedElementId(newElement.id);
+    toast({
+      title: "Element Duplicated",
+      description: "The selected element has been duplicated.",
+    });
+  };
+
   const activeElements = elements[activeRoomId] || [];
   const selectedElement =
     activeElements.find((el) => el.id === selectedElementId) ?? null;
@@ -164,6 +186,7 @@ export default function FloorPlanEditor({
               selectedElement={selectedElement}
               onUpdateElement={handleUpdateElement}
               onDeleteElement={handleDeleteElement}
+              onDuplicateElement={handleDuplicateElement}
             />
           </div>
         </div>

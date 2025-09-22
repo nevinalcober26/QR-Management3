@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { FloorElement, TableElement, DoorElement } from "@/lib/types";
-import { Sparkles, Trash2 } from "lucide-react";
+import { Copy, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { suggestTableConfiguration } from "@/ai/flows/suggest-table-configuration";
 import { useToast } from "@/hooks/use-toast";
@@ -16,12 +16,14 @@ interface InspectorProps {
   selectedElement: FloorElement | null;
   onUpdateElement: (id: string, updates: Partial<FloorElement>) => void;
   onDeleteElement: (id: string) => void;
+  onDuplicateElement: (id: string) => void;
 }
 
 export default function Inspector({
   selectedElement,
   onUpdateElement,
   onDeleteElement,
+  onDuplicateElement,
 }: InspectorProps) {
   const [surroundingLayout, setSurroundingLayout] = useState("");
   const [isSuggesting, setIsSuggesting] = useState(false);
@@ -182,7 +184,11 @@ export default function Inspector({
           )}
         </div>
       </ScrollArea>
-      <div className="mt-6 pt-6 border-t">
+      <div className="mt-6 pt-6 border-t space-y-2">
+        <Button variant="outline" className="w-full" onClick={() => onDuplicateElement(selectedElement.id)}>
+          <Copy className="mr-2 h-4 w-4" />
+          Duplicate Element
+        </Button>
         <Button variant="destructive" className="w-full" onClick={() => onDeleteElement(selectedElement.id)}>
           <Trash2 className="mr-2 h-4 w-4" />
           Delete Element
