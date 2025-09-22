@@ -119,17 +119,24 @@ export const ElementRenderer: React.FC<ElementProps> = ({
       );
     case "door": {
         const doorEl = element as DoorElement;
+        const iconHeight = 24;
+        const labelHeight = element.height - iconHeight;
+
         return renderElement(
-          <div className="w-full h-full flex flex-col items-center justify-center">
-            <div
-              style={{ transformOrigin: 'left center' }}
-              className={cn("border-2 border-accent/50 p-0.5 w-full h-full relative")}
-            >
-              <div className="w-full h-full bg-accent/20" />
-            </div>
+          <div className="w-full h-full flex flex-col items-center justify-start">
              {doorEl.label && (
-              <div className="text-xs text-foreground select-none mt-1 whitespace-nowrap">{doorEl.label}</div>
+                <div 
+                  className="text-lg text-foreground select-none whitespace-nowrap font-semibold"
+                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', height: `${labelHeight}px`, lineHeight: 1 }}
+                >
+                  {doorEl.label}
+                </div>
             )}
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-500" style={{ height: `${iconHeight}px`}}>
+              <path d="M4 21.4375V2.5625C4 2.25201 4.25201 2 4.5625 2H19.4375C19.748 2 20 2.25201 20 2.5625V10.3125H18.125V3.875H5.875V21.4375H18.125V13.0625H20V21.4375C20 21.748 19.748 22 19.4375 22H4.5625C4.25201 22 4 21.748 4 21.4375Z" fill="currentColor"/>
+              <path d="M14.625 11.125C14.2443 11.125 13.9375 11.4318 13.9375 11.8125C13.9375 12.1932 14.2443 12.5 14.625 12.5C15.0057 12.5 15.3125 12.1932 15.3125 11.8125C15.3125 11.4318 15.0057 11.125 14.625 11.125Z" fill="currentColor"/>
+              <path d="M20 10.3125V13.0625H22.75V10.3125H20Z" fill="currentColor"/>
+            </svg>
           </div>
         );
       }

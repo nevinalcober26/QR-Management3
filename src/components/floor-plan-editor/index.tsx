@@ -88,7 +88,7 @@ export default function FloorPlanEditor({
       ...(type === "square-table" && { seats: 4, width: 48, height: 48, tableName: 'T2', borderRadius: 4 }),
       ...(type === "rectangle-table" && { seats: 6, width: 72, height: 36, tableName: 'T3', borderRadius: 4 }),
       ...(type === "wall" && { width: 120, height: 8, borderRadius: 2 }),
-      ...(type === "door" && { width: 36, height: 8, label: 'Door' }),
+      ...(type === "door" && { width: 36, height: 48, label: 'Entrance' }),
       ...(type === "window" && { width: 60, height: 8 }),
       ...(type === "plant" && { radius: 12, width: 24, height: 24 }),
     } as FloorElement;
