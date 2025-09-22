@@ -19,7 +19,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", "Inter", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
         body: ["Inter", "sans-serif"],
         headline: ["Inter", "sans-serif"],
       },
