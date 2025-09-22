@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import Sidebar from "./sidebar";
@@ -84,9 +85,11 @@ export default function FloorPlanEditor({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-screen-2xl w-[95%] h-[90vh] p-0 gap-0 border-0">
-        <DialogTitle asChild>
-          <VisuallyHidden>Floor Plan Editor</VisuallyHidden>
-        </DialogTitle>
+        <DialogHeader>
+          <DialogTitle>
+            <VisuallyHidden>Floor Plan Editor</VisuallyHidden>
+          </DialogTitle>
+        </DialogHeader>
         <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full rounded-lg overflow-hidden shadow-2xl">
           <Sidebar onElementAdd={handleAddElement} />
           <Canvas
