@@ -75,6 +75,7 @@ export default function FloorPlanEditor({
     
     setHistory(prev => {
       const currentRoomHistory = prev[activeRoomId] || [];
+      // Slice history to current index to discard redo states
       const newRoomHistory = currentRoomHistory.slice(0, historyIndex[activeRoomId] + 1);
       newRoomHistory.push(newElements);
       
@@ -207,7 +208,7 @@ export default function FloorPlanEditor({
   };
 
   const handleUpdateElement = (id: string, updates: Partial<FloorElement>) => {
-    setElements(prev => prev.map((el) => {
+    setElements(prev => (prev || []).map((el) => {
       if (el.id === id) {
         const newEl = { ...el, ...updates };
         if (newEl.type === 'round-table' || newEl.type === 'plant') {
@@ -223,7 +224,7 @@ export default function FloorPlanEditor({
   };
 
   const handleDeleteElement = (id: string) => {
-    setElements(prev => prev.filter((el) => el.id !== id));
+    setElements(prev => (prev || []).filter((el) => el.id !== id));
     if (selectedElementId === id) {
       setSelectedElementId(null);
     }
@@ -258,13 +259,18 @@ export default function FloorPlanEditor({
 
   const handleSave = () => {
     const tableNames = new Map<string, number>();
-    Object.values(history).flat().flat().forEach(element => {
-      if (element.type.includes('table')) {
-        const table = element as TableElement;
-        if (table.tableName) {
-          tableNames.set(table.tableName, (tableNames.get(table.tableName) || 0) + 1);
+    Object.values(history).forEach(roomHistory => {
+        const currentElements = roomHistory[roomHistory.length - 1];
+        if (currentElements) {
+            currentElements.forEach(element => {
+                if (element.type.includes('table')) {
+                    const table = element as TableElement;
+                    if (table.tableName) {
+                        tableNames.set(table.tableName, (tableNames.get(table.tableName) || 0) + 1);
+                    }
+                }
+            });
         }
-      }
     });
 
     const duplicates = Array.from(tableNames.entries())
@@ -350,4 +356,5 @@ export default function FloorPlanEditor({
     
 
     
+
 
