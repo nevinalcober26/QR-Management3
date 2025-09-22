@@ -24,8 +24,10 @@ export default function Header({ rooms, activeRoomId, onActiveRoomChange, onAddR
             >
                 <TabsList>
                     {rooms.map((room) => (
-                        <TabsTrigger key={room.id} value={room.id} className="relative group pr-8">
-                            {room.label.split(" ")[0]}
+                        <div key={room.id} className="relative group flex items-center">
+                            <TabsTrigger value={room.id} className="pr-7">
+                                {room.label.split(" ")[0]}
+                            </TabsTrigger>
                              <button
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -33,14 +35,15 @@ export default function Header({ rooms, activeRoomId, onActiveRoomChange, onAddR
                                 }}
                                 className={cn(
                                     "absolute right-1 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground/50 opacity-0 group-hover:opacity-100 hover:text-foreground hover:bg-muted disabled:pointer-events-none",
-                                    rooms.length <= 1 && "hidden"
+                                    rooms.length <= 1 && "hidden",
+                                    activeRoomId === room.id ? "opacity-100" : "opacity-0"
                                 )}
                                 disabled={rooms.length <= 1}
                                 aria-label={`Delete ${room.label}`}
                             >
                                 <X className="h-3.5 w-3.5" />
                             </button>
-                        </TabsTrigger>
+                        </div>
                     ))}
                 </TabsList>
             </Tabs>
