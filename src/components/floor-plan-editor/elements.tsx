@@ -7,6 +7,7 @@ interface ElementProps {
   element: FloorElement;
   isSelected: boolean;
   onResizeMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onRotateMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const elementBaseClasses = "absolute transition-all duration-75 cursor-grab active:cursor-grabbing";
@@ -32,6 +33,7 @@ export const ElementRenderer: React.FC<ElementProps> = ({
   element,
   isSelected,
   onResizeMouseDown,
+  onRotateMouseDown,
 }) => {
   const style: React.CSSProperties = {
     left: `${element.x}px`,

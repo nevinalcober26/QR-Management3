@@ -51,6 +51,18 @@ export default function Canvas({
     elementStartHeight: 0,
   });
 
+   const rotateInfo = useRef<{
+    isRotating: boolean;
+    elementId: string | null;
+    startAngle: number;
+    elementStartRotation: number;
+  }>({
+    isRotating: false,
+    elementId: null,
+    startAngle: 0,
+    elementStartRotation: 0,
+  });
+
   const handleElementMouseDown = (
     e: React.MouseEvent<HTMLDivElement>,
     element: FloorElement
@@ -70,6 +82,7 @@ export default function Canvas({
         elementStartY: element.y,
       };
       resizeInfo.current.isResizing = false;
+      rotateInfo.current.isRotating = false;
     }
   };
 
@@ -92,6 +105,36 @@ export default function Canvas({
             elementStartHeight: element.height,
         };
         dragInfo.current.isDragging = false;
+        rotateInfo.current.isRotating = false;
+    }
+  };
+
+  const handleRotateMouseDown = (
+    e: React.MouseEvent<HTMLDivElement>,
+    element: FloorElement
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelectElement(element.id);
+
+    if (canvasRef.current) {
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      const elementCenterX = element.x + element.width / 2 + canvasRect.left;
+      const elementCenterY = element.y + element.height / 2 + canvasRect.top;
+      
+      const startAngle = Math.atan2(
+        e.clientY - elementCenterY,
+        e.clientX - elementCenterX
+      ) * (180 / Math.PI);
+
+      rotateInfo.current = {
+        isRotating: true,
+        elementId: element.id,
+        startAngle: startAngle,
+        elementStartRotation: element.rotation,
+      };
+      dragInfo.current.isDragging = false;
+      resizeInfo.current.isResizing = false;
     }
   };
 
@@ -132,6 +175,26 @@ export default function Canvas({
         }
 
         onUpdateElement(resizeInfo.current.elementId, updates);
+    } else if (rotateInfo.current.isRotating && rotateInfo.current.elementId && canvasRef.current) {
+        const element = elements.find(el => el.id === rotateInfo.current.elementId);
+        if (!element) return;
+
+        const canvasRect = canvasRef.current.getBoundingClientRect();
+        const elementCenterX = element.x + element.width / 2 + canvasRect.left;
+        const elementCenterY = element.y + element.height / 2 + canvasRect.top;
+
+        const currentAngle = Math.atan2(
+            e.clientY - elementCenterY,
+            e.clientX - elementCenterX
+        ) * (180 / Math.PI);
+
+        const angleDifference = currentAngle - rotateInfo.current.startAngle;
+        let newRotation = rotateInfo.current.elementStartRotation + angleDifference;
+
+        newRotation = Math.round(newRotation / 15) * 15;
+        newRotation = (newRotation % 360 + 360) % 360;
+
+        onUpdateElement(rotateInfo.current.elementId, { rotation: newRotation });
     }
   };
 
@@ -140,6 +203,8 @@ export default function Canvas({
     dragInfo.current.elementId = null;
     resizeInfo.current.isResizing = false;
     resizeInfo.current.elementId = null;
+    rotateInfo.current.isRotating = false;
+    rotateInfo.current.elementId = null;
   };
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -168,6 +233,7 @@ export default function Canvas({
             element={element}
             isSelected={element.id === selectedElementId}
             onResizeMouseDown={(e) => handleResizeMouseDown(e, element)}
+            onRotateMouseDown={(e) => handleRotateMouseDown(e, element)}
           />
         </div>
       ))}
