@@ -13,21 +13,57 @@ import { useState } from "react";
 import type { ElementType, FloorElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Building, Crown, Home, Sun } from "lucide-react";
 
 interface FloorPlanEditorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+export type Room = {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+const initialRooms: Room[] = [
+  { id: "main-dining", label: "Main Dining Room", icon: Home },
+  { id: "private-1", label: "Private Room 1", icon: Building },
+  { id: "patio", label: "Outdoor Patio", icon: Sun },
+  { id: "vip", label: "VIP Lounge", icon: Crown },
+];
+
 export default function FloorPlanEditor({
   open,
   onOpenChange,
 }: FloorPlanEditorProps) {
-  const [elements, setElements] = useState<FloorElement[]>([]);
+  const [rooms, setRooms] = useState<Room[]>(initialRooms);
+  const [activeRoomId, setActiveRoomId] = useState<string>(initialRooms[0].id);
+  const [elements, setElements] = useState<Record<string, FloorElement[]>>({
+    "main-dining": [],
+    "private-1": [],
+    "patio": [],
+    "vip": [],
+  });
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null
   );
   const { toast } = useToast();
+
+  const handleAddRoom = (roomName: string) => {
+    const newRoom: Room = {
+      id: roomName.toLowerCase().replace(/\s/g, "-"),
+      label: roomName,
+      icon: Building, // Default icon for new rooms
+    };
+    setRooms((prev) => [...prev, newRoom]);
+    setElements((prev) => ({ ...prev, [newRoom.id]: [] }));
+    setActiveRoomId(newRoom.id);
+    toast({
+      title: "Room Added",
+      description: `New room "${roomName}" has been created.`,
+    });
+  };
 
   const handleAddElement = (type: ElementType) => {
     const newElement: FloorElement = {
@@ -45,7 +81,10 @@ export default function FloorPlanEditor({
       ...(type === "plant" && { radius: 12, width: 24, height: 24 }),
     } as FloorElement;
 
-    setElements((prev) => [...prev, newElement]);
+    setElements((prev) => ({
+      ...prev,
+      [activeRoomId]: [...(prev[activeRoomId] || []), newElement],
+    }));
     setSelectedElementId(newElement.id);
     toast({
       title: `Added ${type.replace("-", " ")}`,
@@ -54,11 +93,11 @@ export default function FloorPlanEditor({
   };
 
   const handleUpdateElement = (id: string, updates: Partial<FloorElement>) => {
-    setElements((prev) =>
-      prev.map((el) => {
+    setElements((prev) => ({
+      ...prev,
+      [activeRoomId]: (prev[activeRoomId] || []).map((el) => {
         if (el.id === id) {
           const newEl = { ...el, ...updates };
-          // Sync radius with width/height for round elements
           if (newEl.type === 'round-table' || newEl.type === 'plant') {
             if (updates.radius) {
                 newEl.width = updates.radius * 2;
@@ -68,19 +107,23 @@ export default function FloorPlanEditor({
           return newEl;
         }
         return el;
-      })
-    );
+      }),
+    }));
   };
 
   const handleDeleteElement = (id: string) => {
-    setElements((prev) => prev.filter((el) => el.id !== id));
+    setElements((prev) => ({
+      ...prev,
+      [activeRoomId]: (prev[activeRoomId] || []).filter((el) => el.id !== id),
+    }));
     if (selectedElementId === id) {
       setSelectedElementId(null);
     }
   };
 
+  const activeElements = elements[activeRoomId] || [];
   const selectedElement =
-    elements.find((el) => el.id === selectedElementId) ?? null;
+    activeElements.find((el) => el.id === selectedElementId) ?? null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,9 +134,15 @@ export default function FloorPlanEditor({
           </DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full rounded-lg overflow-hidden shadow-2xl">
-          <Sidebar onElementAdd={handleAddElement} />
+          <Sidebar
+            rooms={rooms}
+            activeRoomId={activeRoomId}
+            onActiveRoomChange={setActiveRoomId}
+            onElementAdd={handleAddElement}
+            onRoomAdd={handleAddRoom}
+          />
           <Canvas
-            elements={elements}
+            elements={activeElements}
             selectedElementId={selectedElementId}
             onSelectElement={setSelectedElementId}
             onUpdateElement={handleUpdateElement}
