@@ -35,6 +35,11 @@ export default function Inspector({
   const tableElement = isTable ? (selectedElement as TableElement) : null;
   const isDoor = selectedElement.type === "door";
   const doorElement = isDoor ? (selectedElement as DoorElement) : null;
+  const isCornerRadiusApplicable =
+    selectedElement.type === "square-table" ||
+    selectedElement.type === "rectangle-table" ||
+    selectedElement.type === "wall";
+
 
   const handleRotationChange = (value: number) => {
     let newRotation = value;
@@ -103,6 +108,18 @@ export default function Inspector({
                     <Label htmlFor="height">Height (in)</Label>
                     <Input id="height" type="number" value={selectedElement.height} onChange={(e) => onUpdateElement(selectedElement.id, { height: parseInt(e.target.value) || 0 })} />
                   </div>
+                </div>
+              )}
+
+              {isCornerRadiusApplicable && (
+                <div className="grid gap-2">
+                  <Label htmlFor="border-radius">Corner Radius (px)</Label>
+                  <Input
+                    id="border-radius"
+                    type="number"
+                    value={selectedElement.borderRadius ?? 0}
+                    onChange={(e) => onUpdateElement(selectedElement.id, { borderRadius: parseInt(e.target.value) || 0 })}
+                  />
                 </div>
               )}
 

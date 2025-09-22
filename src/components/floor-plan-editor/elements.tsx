@@ -67,12 +67,26 @@ export const ElementRenderer: React.FC<ElementProps> = ({
     </div>
   );
 
+  const getElementStyleWithBorderRadius = (
+    el: FloorElement,
+    extraStyles: React.CSSProperties = {}
+  ): React.CSSProperties => {
+    const elStyle = { ...extraStyles };
+    if (el.borderRadius !== undefined) {
+      elStyle.borderRadius = `${el.borderRadius}px`;
+    }
+    return elStyle;
+  };
+
   switch (element.type) {
     case "square-table":
     case "rectangle-table": {
       const tableEl = element as TableElement;
       return renderElement(
-        <div className="w-full h-full bg-primary border border-primary-foreground/20 rounded-sm shadow-md">
+        <div
+          className="w-full h-full bg-primary border border-primary-foreground/20 shadow-md"
+          style={getElementStyleWithBorderRadius(element)}
+        >
           <TableContent element={tableEl} />
         </div>
       );
@@ -88,7 +102,8 @@ export const ElementRenderer: React.FC<ElementProps> = ({
     case "wall":
       return renderElement(
         <div
-          className={cn("w-full h-full bg-muted-foreground/60 rounded-sm shadow-sm")}
+          className="w-full h-full bg-muted-foreground/60 shadow-sm"
+          style={getElementStyleWithBorderRadius(element)}
         />
       );
     case "door": {

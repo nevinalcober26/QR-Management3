@@ -8,6 +8,7 @@ export interface BaseElement {
   rotation: number;
   width: number;
   height: number;
+  borderRadius?: number;
 }
 
 export interface TableElement extends BaseElement {
