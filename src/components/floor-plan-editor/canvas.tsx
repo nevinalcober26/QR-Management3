@@ -1,6 +1,6 @@
 "use client";
 
-import type { FloorElement } from "@/lib/types";
+import type { FloorElement, ElementType } from "@/lib/types";
 import { ElementRenderer } from "./elements";
 import React, { useRef, useState } from "react";
 import { Button } from "../ui/button";
@@ -12,6 +12,7 @@ interface CanvasProps {
   selectedElementId: string | null;
   onSelectElement: (id: string | null) => void;
   onUpdateElement: (id: string, updates: Partial<FloorElement>) => void;
+  onAddElement: (type: ElementType, x: number, y: number) => void;
 }
 
 export default function Canvas({
@@ -19,6 +20,7 @@ export default function Canvas({
   selectedElementId,
   onSelectElement,
   onUpdateElement,
+  onAddElement,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
@@ -247,6 +249,22 @@ export default function Canvas({
     setPan({ x: 0, y: 0 });
   };
 
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const type = e.dataTransfer.getData("application/element-type") as ElementType;
+
+    if (type && canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - pan.x) / zoom;
+      const y = (e.clientY - rect.top - pan.y) / zoom;
+      onAddElement(type, x, y);
+    }
+  };
 
   return (
     <div
@@ -263,6 +281,8 @@ export default function Canvas({
       onMouseLeave={handleMouseUp}
       onMouseDown={handleCanvasMouseDown}
       onWheel={handleWheel}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
     >
       <div
         className="absolute top-0 left-0"

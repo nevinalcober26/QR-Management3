@@ -16,6 +16,7 @@ import {
   Sprout,
   Square,
 } from "lucide-react";
+import React from "react";
 
 interface SidebarProps {
   onElementAdd: (type: ElementType) => void;
@@ -41,6 +42,11 @@ export default function Sidebar({
     { type: "plant", icon: Sprout, label: "Plant" },
   ] as const;
 
+  const handleDragStart = (e: React.DragEvent, type: ElementType) => {
+    e.dataTransfer.setData("application/element-type", type);
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
   const renderElementButtons = (
     elements: typeof tableElements | typeof otherElements
   ) => (
@@ -49,8 +55,10 @@ export default function Sidebar({
         <Button
           key={type}
           variant="outline"
-          className="flex flex-col h-24 items-center justify-center gap-2 p-2 text-center"
+          className="flex flex-col h-24 items-center justify-center gap-2 p-2 text-center cursor-grab"
           onClick={() => onElementAdd(type)}
+          draggable
+          onDragStart={(e) => handleDragStart(e, type)}
         >
           <Icon className="w-8 h-8 text-accent" />
           <span className="text-xs text-muted-foreground">{label}</span>

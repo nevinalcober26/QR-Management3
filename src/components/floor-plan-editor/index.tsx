@@ -72,12 +72,16 @@ export default function FloorPlanEditor({
     setIsAddRoomDialogOpen(false);
   };
 
-  const handleAddElement = (type: ElementType) => {
+  const handleAddElement = (type: ElementType, x = 150, y = 150) => {
+    const gridSnap = 20;
+    const snappedX = Math.round(x / gridSnap) * gridSnap;
+    const snappedY = Math.round(y / gridSnap) * gridSnap;
+
     const newElement: FloorElement = {
       id: crypto.randomUUID(),
       type,
-      x: 150,
-      y: 150,
+      x: snappedX,
+      y: snappedY,
       rotation: 0,
       // Default properties
       ...(type === "round-table" && { seats: 4, radius: 24, width: 48, height: 48, tableName: 'T1' }),
@@ -184,13 +188,14 @@ export default function FloorPlanEditor({
         />
         <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full overflow-hidden shadow-2xl flex-grow">
           <Sidebar
-            onElementAdd={handleAddElement}
+            onElementAdd={(type) => handleAddElement(type)}
           />
           <Canvas
             elements={activeElements}
             selectedElementId={selectedElementId}
             onSelectElement={setSelectedElementId}
             onUpdateElement={handleUpdateElement}
+            onAddElement={handleAddElement}
           />
           <div className="hidden lg:block bg-card">
             <Inspector
