@@ -4,7 +4,7 @@ import type { FloorElement } from "@/lib/types";
 import { ElementRenderer } from "./elements";
 import React, { useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { ZoomIn, ZoomOut } from "lucide-react";
+import { ZoomIn, ZoomOut, RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CanvasProps {
@@ -241,6 +241,12 @@ export default function Canvas({
       setZoom(z => Math.max(0.2, z - zoomFactor));
     }
   };
+  
+  const handleResetZoom = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
 
   return (
     <div
@@ -281,6 +287,10 @@ export default function Canvas({
             <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.min(2, z + 0.1))}>
                 <ZoomIn className="w-5 h-5" />
                 <span className="sr-only">Zoom In</span>
+            </Button>
+            <Button variant="outline" size="icon" onClick={handleResetZoom}>
+                <RefreshCcw className="w-5 h-5" />
+                <span className="sr-only">Reset Zoom</span>
             </Button>
         </div>
     </div>
