@@ -16,7 +16,7 @@ const selectedClasses = "outline outline-2 outline-offset-2 outline-accent";
 const TableContent = ({ element, isSelected }: { element: TableElement, isSelected: boolean }) => (
   <div className={cn(
     "w-full h-full flex flex-col items-center justify-center text-xs font-medium select-none p-1",
-    isSelected ? 'text-primary-foreground' : 'text-chart-2'
+    isSelected ? 'text-primary' : 'text-chart-2'
     )}>
     <div className="font-bold text-sm">{element.tableName}</div>
     <div>({element.seats} seats)</div>
@@ -89,7 +89,7 @@ export const ElementRenderer: React.FC<ElementProps> = ({
         <div
           className={cn(
             "w-full h-full shadow-md",
-            isSelected ? "bg-primary border-primary-foreground/20" : "bg-green-100 border-green-600",
+            isSelected ? "bg-primary/20 border-primary" : "bg-green-100 border-green-600",
             "border"
           )}
           style={getElementStyleWithBorderRadius(element)}
@@ -103,7 +103,7 @@ export const ElementRenderer: React.FC<ElementProps> = ({
       return renderElement(
         <div className={cn(
             "w-full h-full rounded-full shadow-md",
-            isSelected ? "bg-primary border-primary-foreground/20" : "bg-green-100 border-green-600",
+            isSelected ? "bg-primary/20 border-primary" : "bg-green-100 border-green-600",
             "border"
           )}>
           <TableContent element={tableEl} isSelected={isSelected} />
