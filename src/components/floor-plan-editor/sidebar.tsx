@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ElementType } from "@/lib/types";
 import {
   Circle,
@@ -20,14 +21,12 @@ import {
   Sun,
   Crown
 } from "lucide-react";
-import { useState } from "react";
 
 interface SidebarProps {
   onElementAdd: (type: ElementType) => void;
 }
 
 export default function Sidebar({ onElementAdd }: SidebarProps) {
-  const [activeRoom, setActiveRoom] = useState("main-dining");
   const tableElements = [
     { type: "round-table", icon: Circle, label: "Round Table" },
     { type: "square-table", icon: Square, label: "Square Table" },
@@ -69,33 +68,34 @@ export default function Sidebar({ onElementAdd }: SidebarProps) {
         <h2 className="text-xl font-semibold tracking-tight">Floor Plan</h2>
       </div>
 
-      <div className="flex-grow flex">
-        <div className="w-20 border-r flex flex-col items-center py-4 gap-2 bg-muted/40">
-            {rooms.map(room => (
-                 <Button key={room.id} variant={activeRoom === room.id ? "secondary" : "ghost"} size="icon" className="h-14 w-14 flex flex-col gap-1" onClick={() => setActiveRoom(room.id)}>
-                    <room.icon className="w-6 h-6" />
-                    <span className="text-xs font-medium">{room.label.split(' ')[0]}</span>
-                 </Button>
-            ))}
-        </div>
-        <div className="flex-grow overflow-auto p-2">
-          <h3 className="font-semibold text-lg p-2">{rooms.find(r => r.id === activeRoom)?.label}</h3>
-          <Accordion type="multiple" defaultValue={["tables", "other"]} className="w-full">
-            <AccordionItem value="tables">
-              <AccordionTrigger className="px-2 text-base font-medium hover:no-underline">Tables</AccordionTrigger>
-              <AccordionContent className="p-2">
-                {renderElementButtons(tableElements)}
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="other">
-              <AccordionTrigger className="px-2 text-base font-medium hover:no-underline">Other Elements</AccordionTrigger>
-              <AccordionContent className="p-2">
-                {renderElementButtons(otherElements)}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </div>
+      <Tabs defaultValue="main-dining" className="flex-grow flex flex-col">
+        <TabsList className="m-2">
+          {rooms.map(room => (
+            <TabsTrigger key={room.id} value={room.id} className="flex-1">
+              {room.label.split(' ')[0]}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {rooms.map(room => (
+          <TabsContent key={room.id} value={room.id} className="flex-grow overflow-auto p-2 mt-0">
+            <h3 className="font-semibold text-lg p-2">{room.label}</h3>
+            <Accordion type="multiple" defaultValue={["tables", "other"]} className="w-full">
+              <AccordionItem value="tables">
+                <AccordionTrigger className="px-2 text-base font-medium hover:no-underline">Tables</AccordionTrigger>
+                <AccordionContent className="p-2">
+                  {renderElementButtons(tableElements)}
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="other">
+                <AccordionTrigger className="px-2 text-base font-medium hover:no-underline">Other Elements</AccordionTrigger>
+                <AccordionContent className="p-2">
+                  {renderElementButtons(otherElements)}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 }
