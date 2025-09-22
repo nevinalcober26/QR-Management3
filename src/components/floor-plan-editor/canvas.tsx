@@ -169,22 +169,52 @@ export default function Canvas({
         const draggedElement = elements.find(el => el.id === dragInfo.current.elementId);
         let snappedToWall = false;
 
-        if (draggedElement?.type === 'wall' && draggedElement.rotation === 0) {
+        if (draggedElement?.type === 'wall' && draggedElement.rotation % 90 === 0) {
             for (const otherElement of elements) {
-                if (otherElement.id === draggedElement.id || otherElement.type !== 'wall' || otherElement.rotation !== 0) continue;
+                if (otherElement.id === draggedElement.id || otherElement.type !== 'wall' || otherElement.rotation % 90 !== 0) continue;
 
+                const draggedIsHorizontal = draggedElement.rotation === 0 || draggedElement.rotation === 180;
+                const otherIsHorizontal = otherElement.rotation === 0 || otherElement.rotation === 180;
+
+                const draggedRect = {
+                    x: newX,
+                    y: newY,
+                    width: draggedIsHorizontal ? draggedElement.width : draggedElement.height,
+                    height: draggedIsHorizontal ? draggedElement.height : draggedElement.width,
+                    rotation: draggedElement.rotation,
+                };
+
+                const otherRect = {
+                    x: otherElement.x,
+                    y: otherElement.y,
+                    width: otherIsHorizontal ? otherElement.width : otherElement.height,
+                    height: otherIsHorizontal ? otherElement.height : otherElement.width,
+                    rotation: otherElement.rotation,
+                };
+                
                 const draggedPoints = [
-                    { x: newX, y: newY },
-                    { x: newX + draggedElement.width, y: newY },
-                    { x: newX, y: newY + draggedElement.height },
-                    { x: newX + draggedElement.width, y: newY + draggedElement.height },
+                    { x: draggedRect.x, y: draggedRect.y },
+                    { x: draggedRect.x + (draggedIsHorizontal ? draggedRect.width : 0), y: draggedRect.y + (draggedIsHorizontal ? 0 : draggedRect.width) },
                 ];
+                 if (draggedElement.rotation === 90) {
+                    draggedPoints[0] = { x: newX + draggedElement.width/2 - draggedElement.height/2, y: newY - draggedElement.width/2 + draggedElement.height/2};
+                    draggedPoints[1] = { x: newX + draggedElement.width/2 - draggedElement.height/2, y: newY + draggedElement.width/2 + draggedElement.height/2};
+                } else if (draggedElement.rotation === 270) {
+                     draggedPoints[0] = { x: newX + draggedElement.width/2 + draggedElement.height/2, y: newY - draggedElement.width/2 - draggedElement.height/2};
+                     draggedPoints[1] = { x: newX + draggedElement.width/2 + draggedElement.height/2, y: newY + draggedElement.width/2 - draggedElement.height/2};
+                } else { // 0 or 180
+                     draggedPoints[0] = { x: newX, y: newY};
+                     draggedPoints[1] = { x: newX + draggedElement.width, y: newY};
+                }
+
+
                 const otherPoints = [
                     { x: otherElement.x, y: otherElement.y },
                     { x: otherElement.x + otherElement.width, y: otherElement.y },
                     { x: otherElement.x, y: otherElement.y + otherElement.height },
                     { x: otherElement.x + otherElement.width, y: otherElement.y + otherElement.height },
                 ];
+
 
                 for (const dp of draggedPoints) {
                     for (const op of otherPoints) {
@@ -202,8 +232,13 @@ export default function Canvas({
         }
         
         if (!snappedToWall) {
-          newX = Math.round(newX / gridSnap) * gridSnap;
-          newY = Math.round(newY / gridSnap) * gridSnap;
+          if (draggedElement && (draggedElement.rotation === 90 || draggedElement.rotation === 270)) {
+            newX = Math.round((newX + draggedElement.width/2) / gridSnap) * gridSnap - draggedElement.width/2;
+            newY = Math.round(newY / gridSnap) * gridSnap;
+          } else {
+            newX = Math.round(newX / gridSnap) * gridSnap;
+            newY = Math.round(newY / gridSnap) * gridSnap;
+          }
         }
         
         onUpdateElement(dragInfo.current.elementId, { x: newX, y: newY });
@@ -359,5 +394,3 @@ export default function Canvas({
     </div>
   );
 }
-
-    
