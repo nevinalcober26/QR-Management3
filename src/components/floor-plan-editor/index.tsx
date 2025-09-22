@@ -12,9 +12,11 @@ import Inspector from "./inspector";
 import { useState } from "react";
 import type { ElementType, FloorElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { Building, Crown, Home, Sun } from "lucide-react";
+import { Building, Crown, Home, Sun, Maximize, Minimize } from "lucide-react";
 import Header from "./header";
 import AddRoomDialog from "./add-room-dialog";
+import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 
 interface FloorPlanEditorProps {
   open: boolean;
@@ -51,6 +53,7 @@ export default function FloorPlanEditor({
   );
   const { toast } = useToast();
   const [isAddRoomDialogOpen, setIsAddRoomDialogOpen] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
 
   const handleAddRoom = (roomName: string) => {
@@ -131,7 +134,12 @@ export default function FloorPlanEditor({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-screen-2xl w-[95%] h-[90vh] p-0 gap-0 border-0 flex flex-col">
+      <DialogContent className={cn(
+          "p-0 gap-0 border-0 flex flex-col transition-all duration-300",
+          isFullScreen
+            ? "w-screen h-screen max-w-full max-h-full rounded-none"
+            : "max-w-screen-2xl w-[95%] h-[90vh]"
+        )}>
         <DialogTitle>
           <VisuallyHidden>Floor Plan Editor</VisuallyHidden>
         </DialogTitle>
@@ -159,6 +167,15 @@ export default function FloorPlanEditor({
             />
           </div>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 right-12 z-50 text-muted-foreground"
+          onClick={() => setIsFullScreen(!isFullScreen)}
+        >
+          {isFullScreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+          <span className="sr-only">{isFullScreen ? "Exit Fullscreen" : "Enter Fullscreen"}</span>
+        </Button>
         <AddRoomDialog open={isAddRoomDialogOpen} onOpenChange={setIsAddRoomDialogOpen} onRoomAdd={handleAddRoom} />
       </DialogContent>
     </Dialog>
