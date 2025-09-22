@@ -233,7 +233,7 @@ export default function Canvas({
         
         if (!snappedToWall) {
           if (draggedElement && (draggedElement.rotation === 90 || draggedElement.rotation === 270)) {
-            newX = Math.round((newX + draggedElement.width/2) / gridSnap) * gridSnap - draggedElement.width/2;
+            newX = Math.round(newX / gridSnap) * gridSnap;
             newY = Math.round(newY / gridSnap) * gridSnap;
           } else {
             newX = Math.round(newX / gridSnap) * gridSnap;
