@@ -3,14 +3,16 @@
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Sidebar from "./sidebar";
 import Canvas from "./canvas";
 import Inspector from "./inspector";
 import { useState } from "react";
 import type { ElementType, FloorElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { Building, Crown, Home, Sun, Plus } from "lucide-react";
+import { Building, Crown, Home, Sun } from "lucide-react";
 import Header from "./header";
 import AddRoomDialog from "./add-room-dialog";
 
@@ -130,6 +132,9 @@ export default function FloorPlanEditor({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-screen-2xl w-[95%] h-[90vh] p-0 gap-0 border-0 flex flex-col">
+        <DialogTitle>
+          <VisuallyHidden>Floor Plan Editor</VisuallyHidden>
+        </DialogTitle>
         <Header 
             rooms={rooms}
             activeRoomId={activeRoomId}
