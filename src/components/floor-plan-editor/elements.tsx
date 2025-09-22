@@ -13,8 +13,11 @@ interface ElementProps {
 const elementBaseClasses = "absolute transition-all duration-75 cursor-grab active:cursor-grabbing";
 const selectedClasses = "outline outline-2 outline-offset-2 outline-accent";
 
-const TableContent = ({ element }: { element: TableElement }) => (
-  <div className="w-full h-full flex flex-col items-center justify-center text-xs font-medium text-primary-foreground select-none p-1">
+const TableContent = ({ element, isSelected }: { element: TableElement, isSelected: boolean }) => (
+  <div className={cn(
+    "w-full h-full flex flex-col items-center justify-center text-xs font-medium select-none p-1",
+    isSelected ? 'text-primary-foreground' : 'text-chart-2'
+    )}>
     <div className="font-bold text-sm">{element.tableName}</div>
     <div>({element.seats} seats)</div>
   </div>
@@ -84,18 +87,26 @@ export const ElementRenderer: React.FC<ElementProps> = ({
       const tableEl = element as TableElement;
       return renderElement(
         <div
-          className="w-full h-full bg-primary border border-primary-foreground/20 shadow-md"
+          className={cn(
+            "w-full h-full shadow-md",
+            isSelected ? "bg-primary border-primary-foreground/20" : "bg-green-100 border-green-600",
+            "border"
+          )}
           style={getElementStyleWithBorderRadius(element)}
         >
-          <TableContent element={tableEl} />
+          <TableContent element={tableEl} isSelected={isSelected} />
         </div>
       );
     }
     case "round-table": {
       const tableEl = element as TableElement;
       return renderElement(
-        <div className="w-full h-full bg-primary border border-primary-foreground/20 rounded-full shadow-md">
-          <TableContent element={tableEl} />
+        <div className={cn(
+            "w-full h-full rounded-full shadow-md",
+            isSelected ? "bg-primary border-primary-foreground/20" : "bg-green-100 border-green-600",
+            "border"
+          )}>
+          <TableContent element={tableEl} isSelected={isSelected} />
         </div>
       );
     }
