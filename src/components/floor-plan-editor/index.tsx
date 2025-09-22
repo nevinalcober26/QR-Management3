@@ -3,8 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import Sidebar from "./sidebar";
 import Canvas from "./canvas";
@@ -12,8 +10,9 @@ import Inspector from "./inspector";
 import { useState } from "react";
 import type { ElementType, FloorElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { Building, Crown, Home, Sun } from "lucide-react";
+import { Building, Crown, Home, Sun, Plus } from "lucide-react";
+import Header from "./header";
+import AddRoomDialog from "./add-room-dialog";
 
 interface FloorPlanEditorProps {
   open: boolean;
@@ -49,6 +48,8 @@ export default function FloorPlanEditor({
     null
   );
   const { toast } = useToast();
+  const [isAddRoomDialogOpen, setIsAddRoomDialogOpen] = useState(false);
+
 
   const handleAddRoom = (roomName: string) => {
     const newRoom: Room = {
@@ -63,6 +64,7 @@ export default function FloorPlanEditor({
       title: "Room Added",
       description: `New room "${roomName}" has been created.`,
     });
+    setIsAddRoomDialogOpen(false);
   };
 
   const handleAddElement = (type: ElementType) => {
@@ -127,19 +129,16 @@ export default function FloorPlanEditor({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-screen-2xl w-[95%] h-[90vh] p-0 gap-0 border-0">
-        <DialogHeader>
-          <DialogTitle>
-            <VisuallyHidden>Floor Plan Editor</VisuallyHidden>
-          </DialogTitle>
-        </DialogHeader>
-        <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full rounded-lg overflow-hidden shadow-2xl">
-          <Sidebar
+      <DialogContent className="max-w-screen-2xl w-[95%] h-[90vh] p-0 gap-0 border-0 flex flex-col">
+        <Header 
             rooms={rooms}
             activeRoomId={activeRoomId}
             onActiveRoomChange={setActiveRoomId}
+            onAddRoom={() => setIsAddRoomDialogOpen(true)}
+        />
+        <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full overflow-hidden shadow-2xl flex-grow">
+          <Sidebar
             onElementAdd={handleAddElement}
-            onRoomAdd={handleAddRoom}
           />
           <Canvas
             elements={activeElements}
@@ -155,6 +154,7 @@ export default function FloorPlanEditor({
             />
           </div>
         </div>
+        <AddRoomDialog open={isAddRoomDialogOpen} onOpenChange={setIsAddRoomDialogOpen} onRoomAdd={handleAddRoom} />
       </DialogContent>
     </Dialog>
   );
