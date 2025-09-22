@@ -124,8 +124,9 @@ export const ElementRenderer: React.FC<ElementProps> = ({
       }
     case "window":
         return renderElement(
-            <div className="w-full h-full bg-background border-2 border-accent/80 flex items-center justify-center p-0.5">
-                <div className="w-full h-full bg-accent/30" />
+            <div className="w-full h-full bg-background border-2 border-accent flex items-center justify-center p-0.5">
+                <div className="w-full h-full bg-accent/20" />
+                <div className="absolute w-[calc(100%-4px)] h-0.5 bg-accent" />
             </div>
         );
     case "plant":
