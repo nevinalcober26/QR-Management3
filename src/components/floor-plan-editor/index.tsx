@@ -5,12 +5,22 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Sidebar from "./sidebar";
 import Canvas from "./canvas";
 import Inspector from "./inspector";
 import { useState } from "react";
-import type { ElementType, FloorElement, DoorElement } from "@/lib/types";
+import type { ElementType, FloorElement, TableElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Building, Crown, Home, Sun, Maximize, Minimize } from "lucide-react";
 import Header from "./header";
@@ -53,6 +63,8 @@ export default function FloorPlanEditor({
   const { toast } = useToast();
   const [isAddRoomDialogOpen, setIsAddRoomDialogOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isDuplicateNameWarningOpen, setIsDuplicateNameWarningOpen] = useState(false);
+  const [duplicateTableNames, setDuplicateTableNames] = useState<string[]>([]);
 
 
   const handleAddRoom = (roomName: string) => {
@@ -179,14 +191,37 @@ export default function FloorPlanEditor({
     });
   };
 
-  const handleSave = () => {
-    // In a real app, you'd send this data to a backend.
+  const performSave = () => {
     console.log("Saving data...", { rooms, elements });
     toast({
       title: "Floor Plan Saved",
       description: "Your changes have been successfully saved.",
     });
   };
+
+  const handleSave = () => {
+    const tableNames = new Map<string, number>();
+    Object.values(elements).flat().forEach(element => {
+      if (element.type.includes('table')) {
+        const table = element as TableElement;
+        if (table.tableName) {
+          tableNames.set(table.tableName, (tableNames.get(table.tableName) || 0) + 1);
+        }
+      }
+    });
+
+    const duplicates = Array.from(tableNames.entries())
+      .filter(([, count]) => count > 1)
+      .map(([name]) => name);
+
+    if (duplicates.length > 0) {
+      setDuplicateTableNames(duplicates);
+      setIsDuplicateNameWarningOpen(true);
+    } else {
+      performSave();
+    }
+  };
+
 
   const activeElements = elements[activeRoomId] || [];
   const selectedElement =
@@ -234,6 +269,26 @@ export default function FloorPlanEditor({
           </div>
         </div>
         <AddRoomDialog open={isAddRoomDialogOpen} onOpenChange={setIsAddRoomDialogOpen} onRoomAdd={handleAddRoom} />
+        <AlertDialog open={isDuplicateNameWarningOpen} onOpenChange={setIsDuplicateNameWarningOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Duplicate Table Names</AlertDialogTitle>
+              <AlertDialogDescription>
+                There are multiple tables with the same name: {duplicateTableNames.join(", ")}.
+                This might cause issues. Do you want to save anyway?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => {
+                performSave();
+                setIsDuplicateNameWarningOpen(false);
+              }}>
+                Save Anyway
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </DialogContent>
     </Dialog>
   );
