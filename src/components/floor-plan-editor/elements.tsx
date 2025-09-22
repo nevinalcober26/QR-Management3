@@ -57,9 +57,11 @@ export const ElementRenderer: React.FC<ElementProps> = ({
     transformOrigin: "center center",
   };
 
+  const isTable = element.type.includes("table");
+
   const commonProps = {
     style,
-    className: cn(elementBaseClasses, isSelected && selectedClasses),
+    className: cn(elementBaseClasses, isSelected && selectedClasses, isTable && "z-10"),
   };
 
   const renderElement = (children: React.ReactNode) => (
