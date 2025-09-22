@@ -167,9 +167,9 @@ export default function Canvas({
         let newY = dragInfo.current.elementStartY + dy;
 
         const draggedElement = elements.find(el => el.id === dragInfo.current.elementId);
-        
+        let snappedToWall = false;
+
         if (draggedElement?.type === 'wall' && draggedElement.rotation === 0) {
-            let snapped = false;
             for (const otherElement of elements) {
                 if (otherElement.id === draggedElement.id || otherElement.type !== 'wall' || otherElement.rotation !== 0) continue;
 
@@ -191,18 +191,20 @@ export default function Canvas({
                         if (Math.abs(dp.x - op.x) < snapThreshold && Math.abs(dp.y - op.y) < snapThreshold) {
                             newX -= (dp.x - op.x);
                             newY -= (dp.y - op.y);
-                            snapped = true;
+                            snappedToWall = true;
                             break;
                         }
                     }
-                    if (snapped) break;
+                    if (snappedToWall) break;
                 }
-                if (snapped) break;
+                if (snappedToWall) break;
             }
         }
         
-        newX = Math.round(newX / gridSnap) * gridSnap;
-        newY = Math.round(newY / gridSnap) * gridSnap;
+        if (!snappedToWall) {
+          newX = Math.round(newX / gridSnap) * gridSnap;
+          newY = Math.round(newY / gridSnap) * gridSnap;
+        }
         
         onUpdateElement(dragInfo.current.elementId, { x: newX, y: newY });
     } else if (resizeInfo.current.isResizing && resizeInfo.current.elementId) {
@@ -357,3 +359,5 @@ export default function Canvas({
     </div>
   );
 }
+
+    
