@@ -70,7 +70,7 @@ export default function FloorPlanEditor({
   const elements = history[activeRoomId]?.[historyIndex[activeRoomId]] || [];
 
   const setElements = (updater: (prevElements: FloorElement[]) => FloorElement[]) => {
-    const currentElements = history[activeRoomId][historyIndex[activeRoomId]];
+    const currentElements = history[activeRoomId]?.[historyIndex[activeRoomId]] || [];
     const newElements = updater(currentElements);
     
     setHistory(prev => {
@@ -79,7 +79,7 @@ export default function FloorPlanEditor({
       return { ...prev, [activeRoomId]: newRoomHistory };
     });
 
-    setHistoryIndex(prev => ({ ...prev, [activeRoomId]: prev[activeRoomId] + 1 }));
+    setHistoryIndex(prev => ({ ...prev, [activeRoomId]: (prev[activeRoomId] ?? -1) + 1 }));
   };
 
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
@@ -196,7 +196,7 @@ export default function FloorPlanEditor({
       ...(type === "curved-l-shape" && { width: 120, height: 120, borderRadius: 60 }),
     } as FloorElement;
 
-    setElements(prev => ([...prev, newElement]));
+    setElements(prev => ([...(prev || []), newElement]));
     setSelectedElementId(newElement.id);
     toast({
       title: `Added ${type.replace("-", " ")}`,
@@ -238,7 +238,7 @@ export default function FloorPlanEditor({
       y: originalElement.y + 20,
     };
 
-    setElements(prev => ([...prev, newElement]));
+    setElements(prev => ([...(prev || []), newElement]));
     setSelectedElementId(newElement.id);
     toast({
       title: "Element Duplicated",
@@ -344,5 +344,7 @@ export default function FloorPlanEditor({
     </Dialog>
   );
 }
+
+    
 
     
