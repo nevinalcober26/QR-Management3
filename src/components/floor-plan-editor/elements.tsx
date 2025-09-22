@@ -1,4 +1,4 @@
-import type { TableElement, FloorElement, PlantElement } from "@/lib/types";
+import type { TableElement, FloorElement, PlantElement, DoorElement } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Sprout, Expand, RotateCw } from "lucide-react";
@@ -91,15 +91,22 @@ export const ElementRenderer: React.FC<ElementProps> = ({
           className={cn("w-full h-full bg-muted-foreground/60 rounded-sm shadow-sm")}
         />
       );
-    case "door":
-      return renderElement(
-        <div
-          style={{ transformOrigin: 'left center' }}
-          className={cn("border-2 border-accent/50 p-0.5 w-full h-full")}
-        >
-          <div className="w-full h-full bg-accent/20" />
-        </div>
-      );
+    case "door": {
+        const doorEl = element as DoorElement;
+        return renderElement(
+          <div className="w-full h-full flex flex-col items-center justify-center">
+            <div
+              style={{ transformOrigin: 'left center' }}
+              className={cn("border-2 border-accent/50 p-0.5 w-full h-full relative")}
+            >
+              <div className="w-full h-full bg-accent/20" />
+            </div>
+             {doorEl.label && (
+              <div className="text-xs text-foreground select-none mt-1 whitespace-nowrap">{doorEl.label}</div>
+            )}
+          </div>
+        );
+      }
     case "plant":
       return renderElement(
         <div

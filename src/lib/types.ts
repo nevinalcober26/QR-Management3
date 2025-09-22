@@ -22,4 +22,9 @@ export interface PlantElement extends BaseElement {
   radius: number;
 }
 
-export type FloorElement = TableElement | PlantElement | BaseElement;
+export interface DoorElement extends BaseElement {
+  type: 'door';
+  label?: string;
+}
+
+export type FloorElement = TableElement | PlantElement | DoorElement | BaseElement;

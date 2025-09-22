@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import { FloorElement, TableElement } from "@/lib/types";
+import { FloorElement, TableElement, DoorElement } from "@/lib/types";
 import { Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { suggestTableConfiguration } from "@/ai/flows/suggest-table-configuration";
@@ -74,6 +74,8 @@ export default function Inspector({
 
   const isTable = selectedElement.type.includes("table");
   const tableElement = isTable ? (selectedElement as TableElement) : null;
+  const isDoor = selectedElement.type === "door";
+  const doorElement = isDoor ? (selectedElement as DoorElement) : null;
 
   const handleRotationChange = (value: number) => {
     let newRotation = value;
@@ -112,6 +114,18 @@ export default function Inspector({
                     />
                   </div>
                 </>
+              )}
+
+              {isDoor && doorElement && (
+                 <div className="grid gap-2">
+                    <Label htmlFor="door-label">Label</Label>
+                    <Input
+                      id="door-label"
+                      type="text"
+                      value={doorElement.label || ''}
+                      onChange={(e) => onUpdateElement(selectedElement.id, { label: e.target.value })}
+                    />
+                  </div>
               )}
 
               {selectedElement.type === 'round-table' && tableElement?.radius !== undefined && (
