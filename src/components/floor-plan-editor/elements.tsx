@@ -16,7 +16,7 @@ const selectedClasses = "outline outline-2 outline-offset-2 outline-accent";
 const TableContent = ({ element, isSelected }: { element: TableElement, isSelected: boolean }) => (
   <div className={cn(
     "w-full h-full flex flex-col items-center justify-center text-xs font-medium select-none p-1",
-    isSelected ? 'text-primary' : 'text-chart-2'
+    isSelected ? 'text-primary' : 'text-green-800'
     )}>
     <div className="font-bold text-sm">{element.tableName}</div>
     <div>({element.seats} seats)</div>
@@ -26,7 +26,7 @@ const TableContent = ({ element, isSelected }: { element: TableElement, isSelect
 const ResizeHandle = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void }) => (
     <div
       onMouseDown={onMouseDown}
-      className="absolute -bottom-2 -right-2 w-5 h-5 bg-accent rounded-full flex items-center justify-center cursor-nwse-resize z-10 shadow"
+      className="absolute -bottom-2 -right-2 w-5 h-5 bg-accent rounded-full flex items-center justify-center cursor-nwse-resize z-20 shadow"
     >
       <Expand className="w-3 h-3 text-accent-foreground" />
     </div>
@@ -35,7 +35,7 @@ const ResizeHandle = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent<HTMLD
 const RotateHandle = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void }) => (
   <div
     onMouseDown={onMouseDown}
-    className="absolute -top-2 -right-2 w-5 h-5 bg-accent rounded-full flex items-center justify-center cursor-alias z-10 shadow"
+    className="absolute -top-2 -right-2 w-5 h-5 bg-accent rounded-full flex items-center justify-center cursor-alias z-20 shadow"
   >
     <RotateCw className="w-3 h-3 text-accent-foreground" />
   </div>
