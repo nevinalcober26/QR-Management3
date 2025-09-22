@@ -118,7 +118,9 @@ export const ElementRenderer: React.FC<ElementProps> = ({
         />
       );
     case "l-shape":
+    case "curved-l-shape": {
         const wallThickness = 8;
+        const radius = element.borderRadius || 0;
         return renderElement(
           <div className="w-full h-full relative">
             <div
@@ -128,7 +130,7 @@ export const ElementRenderer: React.FC<ElementProps> = ({
                 left: 0,
                 width: `${element.width}px`,
                 height: `${wallThickness}px`,
-                borderRadius: `${element.borderRadius || 0}px`,
+                borderTopLeftRadius: `${radius}px`,
               }}
             />
             <div
@@ -138,11 +140,12 @@ export const ElementRenderer: React.FC<ElementProps> = ({
                 left: 0,
                 width: `${wallThickness}px`,
                 height: `${element.height}px`,
-                borderRadius: `${element.borderRadius || 0}px`,
+                borderTopLeftRadius: `${radius}px`,
               }}
             />
           </div>
         );
+      }
     case "door": {
         const doorEl = element as DoorElement;
         const iconHeight = 24;

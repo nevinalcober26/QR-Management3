@@ -38,7 +38,9 @@ export default function Inspector({
   const isCornerRadiusApplicable =
     selectedElement.type === "square-table" ||
     selectedElement.type === "rectangle-table" ||
-    selectedElement.type === "wall";
+    selectedElement.type === "wall" ||
+    selectedElement.type === "l-shape" ||
+    selectedElement.type === "curved-l-shape";
 
 
   const handleRotationChange = (value: number) => {
