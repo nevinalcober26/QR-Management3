@@ -74,12 +74,14 @@ export default function FloorPlanEditor({
     const newElements = updater(currentElements);
     
     setHistory(prev => {
-      const newRoomHistory = (prev[activeRoomId] || []).slice(0, historyIndex[activeRoomId] + 1);
+      const currentRoomHistory = prev[activeRoomId] || [];
+      const newRoomHistory = currentRoomHistory.slice(0, historyIndex[activeRoomId] + 1);
       newRoomHistory.push(newElements);
+      
+      setHistoryIndex(prevIndex => ({ ...prevIndex, [activeRoomId]: newRoomHistory.length - 1 }));
+
       return { ...prev, [activeRoomId]: newRoomHistory };
     });
-
-    setHistoryIndex(prev => ({ ...prev, [activeRoomId]: (prev[activeRoomId]?.slice(0, prev[activeRoomId]?.length).length || 1) -1 }));
   };
 
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
@@ -348,3 +350,4 @@ export default function FloorPlanEditor({
     
 
     
+
