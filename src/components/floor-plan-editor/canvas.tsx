@@ -2,7 +2,10 @@
 
 import type { FloorElement } from "@/lib/types";
 import { ElementRenderer } from "./elements";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import { Button } from "../ui/button";
+import { ZoomIn, ZoomOut } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CanvasProps {
   elements: FloorElement[];
@@ -18,7 +21,11 @@ export default function Canvas({
   onUpdateElement,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
-  
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const isPanning = useRef(false);
+  const panStart = useRef({ x: 0, y: 0 });
+
   const dragInfo = useRef<{
     isDragging: boolean;
     elementId: string | null;
@@ -119,8 +126,8 @@ export default function Canvas({
 
     if (canvasRef.current) {
       const canvasRect = canvasRef.current.getBoundingClientRect();
-      const elementCenterX = element.x + element.width / 2 + canvasRect.left;
-      const elementCenterY = element.y + element.height / 2 + canvasRect.top;
+      const elementCenterX = (element.x + element.width / 2) * zoom + pan.x + canvasRect.left;
+      const elementCenterY = (element.y + element.height / 2) * zoom + pan.y + canvasRect.top;
       
       const startAngle = Math.atan2(
         e.clientY - elementCenterY,
@@ -141,9 +148,17 @@ export default function Canvas({
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const gridSnap = 20;
 
-    if (dragInfo.current.isDragging && dragInfo.current.elementId) {
-        const dx = e.clientX - dragInfo.current.startX;
-        const dy = e.clientY - dragInfo.current.startY;
+    if (isPanning.current) {
+        const dx = e.clientX - panStart.current.x;
+        const dy = e.clientY - panStart.current.y;
+        setPan({
+            x: pan.x + dx,
+            y: pan.y + dy,
+        });
+        panStart.current = { x: e.clientX, y: e.clientY };
+    } else if (dragInfo.current.isDragging && dragInfo.current.elementId) {
+        const dx = (e.clientX - dragInfo.current.startX) / zoom;
+        const dy = (e.clientY - dragInfo.current.startY) / zoom;
 
         let newX = dragInfo.current.elementStartX + dx;
         let newY = dragInfo.current.elementStartY + dy;
@@ -153,8 +168,8 @@ export default function Canvas({
         
         onUpdateElement(dragInfo.current.elementId, { x: newX, y: newY });
     } else if (resizeInfo.current.isResizing && resizeInfo.current.elementId) {
-        const dx = e.clientX - resizeInfo.current.startX;
-        const dy = e.clientY - resizeInfo.current.startY;
+        const dx = (e.clientX - resizeInfo.current.startX) / zoom;
+        const dy = (e.clientY - resizeInfo.current.startY) / zoom;
 
         const originalElement = elements.find(el => el.id === resizeInfo.current.elementId);
         if (!originalElement) return;
@@ -180,8 +195,8 @@ export default function Canvas({
         if (!element) return;
 
         const canvasRect = canvasRef.current.getBoundingClientRect();
-        const elementCenterX = element.x + element.width / 2 + canvasRect.left;
-        const elementCenterY = element.y + element.height / 2 + canvasRect.top;
+        const elementCenterX = (element.x + element.width / 2) * zoom + pan.x + canvasRect.left;
+        const elementCenterY = (element.y + element.height / 2) * zoom + pan.y + canvasRect.top;
 
         const currentAngle = Math.atan2(
             e.clientY - elementCenterY,
@@ -205,38 +220,69 @@ export default function Canvas({
     resizeInfo.current.elementId = null;
     rotateInfo.current.isRotating = false;
     rotateInfo.current.elementId = null;
+    isPanning.current = false;
   };
 
-  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === canvasRef.current) {
-      onSelectElement(null);
+  const handleCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+        onSelectElement(null);
+        if (e.button === 0) { // Left mouse button
+            isPanning.current = true;
+            panStart.current = { x: e.clientX, y: e.clientY };
+        }
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    const zoomFactor = 0.1;
+    if (e.deltaY < 0) {
+      setZoom(z => Math.min(2, z + zoomFactor));
+    } else {
+      setZoom(z => Math.max(0.2, z - zoomFactor));
     }
   };
 
   return (
     <div
       ref={canvasRef}
-      className="relative w-full h-full bg-background overflow-hidden"
+      className={cn("relative w-full h-full bg-background overflow-hidden", isPanning.current && "cursor-grabbing")}
       style={{
         backgroundImage:
           "linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)",
-        backgroundSize: "20px 20px",
+        backgroundSize: `${20 * zoom}px ${20 * zoom}px`,
+        backgroundPosition: `${pan.x}px ${pan.y}px`,
       }}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onClick={handleCanvasClick}
+      onMouseDown={handleCanvasMouseDown}
+      onWheel={handleWheel}
     >
-      {elements.map((element) => (
-        <div key={element.id} onMouseDown={(e) => handleElementMouseDown(e, element)}>
-          <ElementRenderer
-            element={element}
-            isSelected={element.id === selectedElementId}
-            onResizeMouseDown={(e) => handleResizeMouseDown(e, element)}
-            onRotateMouseDown={(e) => handleRotateMouseDown(e, element)}
-          />
+      <div
+        className="absolute top-0 left-0"
+        style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: 'top left' }}
+      >
+        {elements.map((element) => (
+          <div key={element.id} onMouseDown={(e) => handleElementMouseDown(e, element)}>
+            <ElementRenderer
+              element={element}
+              isSelected={element.id === selectedElementId}
+              onResizeMouseDown={(e) => handleResizeMouseDown(e, element)}
+              onRotateMouseDown={(e) => handleRotateMouseDown(e, element)}
+            />
+          </div>
+        ))}
+      </div>
+       <div className="absolute bottom-4 right-4 flex items-center gap-2">
+            <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.max(0.2, z - 0.1))}>
+                <ZoomOut className="w-5 h-5" />
+                <span className="sr-only">Zoom Out</span>
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.min(2, z + 0.1))}>
+                <ZoomIn className="w-5 h-5" />
+                <span className="sr-only">Zoom In</span>
+            </Button>
         </div>
-      ))}
     </div>
   );
 }
