@@ -1,7 +1,7 @@
 import type { TableElement, FloorElement, PlantElement, DoorElement, WindowElement } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Sprout, Expand, RotateCw } from "lucide-react";
+import { Sprout, Expand, RotateCw, CornerUpLeft } from "lucide-react";
 
 interface ElementProps {
   element: FloorElement;
@@ -117,6 +117,32 @@ export const ElementRenderer: React.FC<ElementProps> = ({
           style={getElementStyleWithBorderRadius(element)}
         />
       );
+    case "l-shape":
+        const wallThickness = 8;
+        return renderElement(
+          <div className="w-full h-full relative">
+            <div
+              className="bg-muted-foreground/60 shadow-sm absolute"
+              style={{
+                top: 0,
+                left: 0,
+                width: `${element.width}px`,
+                height: `${wallThickness}px`,
+                borderRadius: `${element.borderRadius || 0}px`,
+              }}
+            />
+            <div
+              className="bg-muted-foreground/60 shadow-sm absolute"
+              style={{
+                top: 0,
+                left: 0,
+                width: `${wallThickness}px`,
+                height: `${element.height}px`,
+                borderRadius: `${element.borderRadius || 0}px`,
+              }}
+            />
+          </div>
+        );
     case "door": {
         const doorEl = element as DoorElement;
         const iconHeight = 24;

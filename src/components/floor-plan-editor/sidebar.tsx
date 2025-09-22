@@ -15,6 +15,7 @@ import {
   RectangleHorizontal,
   Sprout,
   Square,
+  CornerUpLeft,
 } from "lucide-react";
 import React from "react";
 
@@ -40,6 +41,7 @@ export default function Sidebar({
     { type: "door", icon: DoorOpen, label: "Door" },
     { type: "window", icon: RectangleHorizontal, label: "Window" },
     { type: "plant", icon: Sprout, label: "Plant" },
+    { type: "l-shape", icon: CornerUpLeft, label: "L-Shape" },
   ] as const;
 
   const handleDragStart = (e: React.DragEvent, type: ElementType) => {
@@ -48,7 +50,7 @@ export default function Sidebar({
   };
 
   const renderElementButtons = (
-    elements: typeof tableElements | typeof otherElements
+    elements: Readonly<(typeof tableElements | typeof otherElements)[number]>[]
   ) => (
     <div className="grid grid-cols-2 gap-2">
       {elements.map(({ type, icon: Icon, label }) => (

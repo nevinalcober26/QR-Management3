@@ -113,6 +113,7 @@ export default function FloorPlanEditor({
       ...(type === "door" && { width: 36, height: 48, label: 'Entrance' }),
       ...(type === "window" && { width: 60, height: 8 }),
       ...(type === "plant" && { radius: 12, width: 24, height: 24 }),
+      ...(type === "l-shape" && { width: 120, height: 120, borderRadius: 2 }),
     } as FloorElement;
 
     setElements((prev) => ({
