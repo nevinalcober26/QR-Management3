@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import Sidebar from "./sidebar";
 import Canvas from "./canvas";
@@ -10,6 +11,7 @@ import Inspector from "./inspector";
 import { useState } from "react";
 import type { ElementType, FloorElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface FloorPlanEditorProps {
   open: boolean;
@@ -82,6 +84,9 @@ export default function FloorPlanEditor({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-screen-2xl w-[95%] h-[90vh] p-0 gap-0 border-0">
+        <DialogTitle asChild>
+          <VisuallyHidden>Floor Plan Editor</VisuallyHidden>
+        </DialogTitle>
         <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full rounded-lg overflow-hidden shadow-2xl">
           <Sidebar onElementAdd={handleAddElement} />
           <Canvas
