@@ -100,15 +100,11 @@ export default function FloorPlanEditor({
   };
 
   const handleAddElement = (type: ElementType, x = 150, y = 150) => {
-    const gridSnap = 20;
-    const snappedX = Math.round(x / gridSnap) * gridSnap;
-    const snappedY = Math.round(y / gridSnap) * gridSnap;
-
     const newElement: FloorElement = {
       id: crypto.randomUUID(),
       type,
-      x: snappedX,
-      y: snappedY,
+      x: x,
+      y: y,
       rotation: 0,
       // Default properties
       ...(type === "round-table" && { seats: 4, radius: 24, width: 48, height: 48, tableName: 'T1' }),

@@ -257,11 +257,16 @@ export default function Canvas({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const type = e.dataTransfer.getData("application/element-type") as ElementType;
+    const gridSnap = 20;
 
     if (type && canvasRef.current) {
       const rect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left - pan.x) / zoom;
-      const y = (e.clientY - rect.top - pan.y) / zoom;
+      let x = (e.clientX - rect.left - pan.x) / zoom;
+      let y = (e.clientY - rect.top - pan.y) / zoom;
+      
+      x = Math.round(x / gridSnap) * gridSnap;
+      y = Math.round(y / gridSnap) * gridSnap;
+
       onAddElement(type, x, y);
     }
   };
