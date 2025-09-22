@@ -4,12 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
 import { FloorElement, TableElement, DoorElement } from "@/lib/types";
-import { Copy, Sparkles, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { suggestTableConfiguration } from "@/ai/flows/suggest-table-configuration";
-import { useToast } from "@/hooks/use-toast";
+import { Copy, Trash2 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 
 interface InspectorProps {
@@ -25,45 +21,6 @@ export default function Inspector({
   onDeleteElement,
   onDuplicateElement,
 }: InspectorProps) {
-  const [surroundingLayout, setSurroundingLayout] = useState("");
-  const [isSuggesting, setIsSuggesting] = useState(false);
-  const { toast } = useToast();
-
-  const handleSmartSuggest = async () => {
-    if (!selectedElement || !selectedElement.type.includes("table")) return;
-
-    setIsSuggesting(true);
-    try {
-      const result = await suggestTableConfiguration({
-        tableType: (selectedElement as TableElement).type,
-        surroundingLayout,
-      });
-
-      const updates: Partial<TableElement> = { seats: result.suggestedSeats };
-      if (result.suggestedWidth) updates.width = result.suggestedWidth;
-      if (result.suggestedHeight) updates.height = result.suggestedHeight;
-      if (result.suggestedRadius) {
-        updates.radius = result.suggestedRadius;
-        updates.width = result.suggestedRadius * 2;
-        updates.height = result.suggestedRadius * 2;
-      }
-      onUpdateElement(selectedElement.id, updates);
-      toast({
-        title: "✨ Smart Suggestion Applied",
-        description: `Suggested ${result.suggestedSeats} seats and new dimensions.`,
-      });
-    } catch (error) {
-      console.error("Smart suggestion failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Suggestion Failed",
-        description: "Could not get AI suggestion. Please try again.",
-      });
-    } finally {
-      setIsSuggesting(false);
-    }
-  };
-
   if (!selectedElement) {
     return (
       <div className="p-4 border-l h-full flex items-center justify-center text-center">
@@ -168,20 +125,6 @@ export default function Inspector({
               </div>
             </div>
           </div>
-
-          {isTable && (
-            <div className="grid gap-4 pt-4 border-t">
-              <h4 className="font-medium">Smart Suggestion</h4>
-              <div className="grid gap-2">
-                <Label htmlFor="layout-description">Describe surrounding layout</Label>
-                <Textarea id="layout-description" placeholder="e.g., 'In a corner, near a window, 5 feet from the nearest table...'" value={surroundingLayout} onChange={(e) => setSurroundingLayout(e.target.value)} />
-              </div>
-              <Button onClick={handleSmartSuggest} disabled={isSuggesting}>
-                <Sparkles className="mr-2 h-4 w-4" />
-                {isSuggesting ? "Thinking..." : "Suggest Configuration"}
-              </Button>
-            </div>
-          )}
         </div>
       </ScrollArea>
       <div className="mt-6 pt-6 border-t space-y-2">
