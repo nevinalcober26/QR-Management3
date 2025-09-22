@@ -15,7 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Building, Crown, Home, Sun, Maximize, Minimize } from "lucide-react";
 import Header from "./header";
 import AddRoomDialog from "./add-room-dialog";
-import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 
 interface FloorPlanEditorProps {
@@ -209,6 +208,8 @@ export default function FloorPlanEditor({
             onAddRoom={() => setIsAddRoomDialogOpen(true)}
             onSave={handleSave}
             onDeleteRoom={handleDeleteRoom}
+            isFullScreen={isFullScreen}
+            onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
         />
         <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full overflow-hidden shadow-2xl flex-grow">
           <Sidebar
@@ -230,15 +231,6 @@ export default function FloorPlanEditor({
             />
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-2 right-12 z-50 text-foreground"
-          onClick={() => setIsFullScreen(!isFullScreen)}
-        >
-          {isFullScreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-          <span className="sr-only">{isFullScreen ? "Exit Fullscreen" : "Enter Fullscreen"}</span>
-        </Button>
         <AddRoomDialog open={isAddRoomDialogOpen} onOpenChange={setIsAddRoomDialogOpen} onRoomAdd={handleAddRoom} />
       </DialogContent>
     </Dialog>

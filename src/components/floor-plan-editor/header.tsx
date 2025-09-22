@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Room } from "./index";
 import { Button } from "../ui/button";
-import { Plus, Save, X } from "lucide-react";
+import { Plus, Save, X, Maximize, Minimize } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -11,9 +11,11 @@ interface HeaderProps {
     onAddRoom: () => void;
     onSave: () => void;
     onDeleteRoom: (id: string) => void;
+    isFullScreen: boolean;
+    onToggleFullScreen: () => void;
 }
 
-export default function Header({ rooms, activeRoomId, onActiveRoomChange, onAddRoom, onSave, onDeleteRoom }: HeaderProps) {
+export default function Header({ rooms, activeRoomId, onActiveRoomChange, onAddRoom, onSave, onDeleteRoom, isFullScreen, onToggleFullScreen }: HeaderProps) {
     return (
         <div className="p-4 border-b flex items-center justify-between bg-card">
             <h2 className="text-xl font-semibold tracking-tight">Floor Plan</h2>
@@ -58,6 +60,14 @@ export default function Header({ rooms, activeRoomId, onActiveRoomChange, onAddR
                 <Button onClick={onSave}>
                     <Save className="h-4 w-4 mr-2" />
                     Save
+                </Button>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={onToggleFullScreen}
+                    >
+                    {isFullScreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+                    <span className="sr-only">{isFullScreen ? "Exit Fullscreen" : "Enter Fullscreen"}</span>
                 </Button>
             </div>
       </div>
