@@ -1,4 +1,4 @@
-import type { TableElement, FloorElement, PlantElement, DoorElement } from "@/lib/types";
+import type { TableElement, FloorElement, PlantElement, DoorElement, WindowElement } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Sprout, Expand, RotateCw } from "lucide-react";
@@ -122,6 +122,12 @@ export const ElementRenderer: React.FC<ElementProps> = ({
           </div>
         );
       }
+    case "window":
+        return renderElement(
+            <div className="w-full h-full bg-background border-2 border-accent/80 flex items-center justify-center p-0.5">
+                <div className="w-full h-full bg-accent/30" />
+            </div>
+        );
     case "plant":
       return renderElement(
         <div

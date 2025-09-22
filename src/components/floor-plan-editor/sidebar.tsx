@@ -37,6 +37,7 @@ export default function Sidebar({
   const otherElements = [
     { type: "wall", icon: Minus, label: "Wall" },
     { type: "door", icon: DoorOpen, label: "Door" },
+    { type: "window", icon: RectangleHorizontal, label: "Window" },
     { type: "plant", icon: Sprout, label: "Plant" },
   ] as const;
 

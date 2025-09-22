@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { FloorElement, TableElement, DoorElement } from "@/lib/types";
+import { FloorElement, TableElement, DoorElement, WindowElement } from "@/lib/types";
 import { Copy, Trash2 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 
