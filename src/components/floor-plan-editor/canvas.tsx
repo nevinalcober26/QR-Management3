@@ -18,6 +18,7 @@ export default function Canvas({
   onUpdateElement,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
+  
   const dragInfo = useRef<{
     isDragging: boolean;
     elementId: string | null;
@@ -34,7 +35,23 @@ export default function Canvas({
     elementStartY: 0,
   });
 
-  const handleMouseDown = (
+  const resizeInfo = useRef<{
+    isResizing: boolean;
+    elementId: string | null;
+    startX: number;
+    startY: number;
+    elementStartWidth: number;
+    elementStartHeight: number;
+  }>({
+    isResizing: false,
+    elementId: null,
+    startX: 0,
+    startY: 0,
+    elementStartWidth: 0,
+    elementStartHeight: 0,
+  });
+
+  const handleElementMouseDown = (
     e: React.MouseEvent<HTMLDivElement>,
     element: FloorElement
   ) => {
@@ -52,28 +69,77 @@ export default function Canvas({
         elementStartX: element.x,
         elementStartY: element.y,
       };
+      resizeInfo.current.isResizing = false;
+    }
+  };
+
+  const handleResizeMouseDown = (
+    e: React.MouseEvent<HTMLDivElement>,
+    element: FloorElement
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    onSelectElement(element.id);
+
+    if (canvasRef.current) {
+        resizeInfo.current = {
+            isResizing: true,
+            elementId: element.id,
+            startX: e.clientX,
+            startY: e.clientY,
+            elementStartWidth: element.width,
+            elementStartHeight: element.height,
+        };
+        dragInfo.current.isDragging = false;
     }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!dragInfo.current.isDragging || !dragInfo.current.elementId) return;
-
-    const dx = e.clientX - dragInfo.current.startX;
-    const dy = e.clientY - dragInfo.current.startY;
-
     const gridSnap = 20;
-    let newX = dragInfo.current.elementStartX + dx;
-    let newY = dragInfo.current.elementStartY + dy;
 
-    newX = Math.round(newX / gridSnap) * gridSnap;
-    newY = Math.round(newY / gridSnap) * gridSnap;
-    
-    onUpdateElement(dragInfo.current.elementId, { x: newX, y: newY });
+    if (dragInfo.current.isDragging && dragInfo.current.elementId) {
+        const dx = e.clientX - dragInfo.current.startX;
+        const dy = e.clientY - dragInfo.current.startY;
+
+        let newX = dragInfo.current.elementStartX + dx;
+        let newY = dragInfo.current.elementStartY + dy;
+
+        newX = Math.round(newX / gridSnap) * gridSnap;
+        newY = Math.round(newY / gridSnap) * gridSnap;
+        
+        onUpdateElement(dragInfo.current.elementId, { x: newX, y: newY });
+    } else if (resizeInfo.current.isResizing && resizeInfo.current.elementId) {
+        const dx = e.clientX - resizeInfo.current.startX;
+        const dy = e.clientY - resizeInfo.current.startY;
+
+        const originalElement = elements.find(el => el.id === resizeInfo.current.elementId);
+        if (!originalElement) return;
+
+        let newWidth = resizeInfo.current.elementStartWidth + dx;
+        let newHeight = resizeInfo.current.elementStartHeight + dy;
+
+        newWidth = Math.max(gridSnap, Math.round(newWidth / gridSnap) * gridSnap);
+        newHeight = Math.max(gridSnap, Math.round(newHeight / gridSnap) * gridSnap);
+
+        const updates: Partial<FloorElement> = { width: newWidth, height: newHeight };
+
+        if (originalElement.type === 'round-table' || originalElement.type === 'plant') {
+            const newRadius = Math.max(newWidth, newHeight) / 2;
+            updates.radius = Math.round(newRadius / (gridSnap/2)) * (gridSnap/2);
+            updates.width = updates.radius * 2;
+            updates.height = updates.radius * 2;
+        }
+
+        onUpdateElement(resizeInfo.current.elementId, updates);
+    }
   };
 
   const handleMouseUp = () => {
     dragInfo.current.isDragging = false;
     dragInfo.current.elementId = null;
+    resizeInfo.current.isResizing = false;
+    resizeInfo.current.elementId = null;
   };
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -97,10 +163,11 @@ export default function Canvas({
       onClick={handleCanvasClick}
     >
       {elements.map((element) => (
-        <div key={element.id} onMouseDown={(e) => handleMouseDown(e, element)}>
+        <div key={element.id} onMouseDown={(e) => handleElementMouseDown(e, element)}>
           <ElementRenderer
             element={element}
             isSelected={element.id === selectedElementId}
+            onResizeMouseDown={(e) => handleResizeMouseDown(e, element)}
           />
         </div>
       ))}

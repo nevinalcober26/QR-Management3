@@ -1,11 +1,12 @@
 import type { TableElement, FloorElement, PlantElement } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Sprout } from "lucide-react";
+import { Sprout, Expand } from "lucide-react";
 
 interface ElementProps {
   element: FloorElement;
   isSelected: boolean;
+  onResizeMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const elementBaseClasses = "absolute transition-all duration-75 cursor-grab active:cursor-grabbing";
@@ -17,9 +18,20 @@ const TableContent = ({ element }: { element: TableElement }) => (
   </div>
 );
 
+const ResizeHandle = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void }) => (
+    <div
+      onMouseDown={onMouseDown}
+      className="absolute -bottom-2 -right-2 w-5 h-5 bg-accent rounded-full flex items-center justify-center cursor-nwse-resize z-10 shadow"
+    >
+      <Expand className="w-3 h-3 text-accent-foreground" />
+    </div>
+);
+
+
 export const ElementRenderer: React.FC<ElementProps> = ({
   element,
   isSelected,
+  onResizeMouseDown,
 }) => {
   const style: React.CSSProperties = {
     left: `${element.x}px`,
@@ -35,52 +47,51 @@ export const ElementRenderer: React.FC<ElementProps> = ({
     className: cn(elementBaseClasses, isSelected && selectedClasses),
   };
 
+  const renderElement = (children: React.ReactNode) => (
+    <div {...commonProps}>
+      {children}
+      {isSelected && <ResizeHandle onMouseDown={onResizeMouseDown} />}
+    </div>
+  );
+
   switch (element.type) {
     case "square-table":
     case "rectangle-table": {
       const tableEl = element as TableElement;
-      return (
-        <div {...commonProps}>
-          <div className="w-full h-full bg-primary border border-primary-foreground/20 rounded-sm shadow-md">
-            <TableContent element={tableEl} />
-          </div>
+      return renderElement(
+        <div className="w-full h-full bg-primary border border-primary-foreground/20 rounded-sm shadow-md">
+          <TableContent element={tableEl} />
         </div>
       );
     }
     case "round-table": {
       const tableEl = element as TableElement;
-      return (
-        <div {...commonProps}>
-          <div className="w-full h-full bg-primary border border-primary-foreground/20 rounded-full shadow-md">
-            <TableContent element={tableEl} />
-          </div>
+      return renderElement(
+        <div className="w-full h-full bg-primary border border-primary-foreground/20 rounded-full shadow-md">
+          <TableContent element={tableEl} />
         </div>
       );
     }
     case "wall":
-      return (
+      return renderElement(
         <div
-          {...commonProps}
-          className={cn(commonProps.className, "bg-muted-foreground/60 rounded-sm shadow-sm")}
+          className={cn("w-full h-full bg-muted-foreground/60 rounded-sm shadow-sm")}
         />
       );
     case "door":
-      return (
+      return renderElement(
         <div
-          {...commonProps}
-          style={{ ...style, transformOrigin: 'left center' }}
-          className={cn(commonProps.className, "border-2 border-accent/50 p-0.5")}
+          style={{ transformOrigin: 'left center' }}
+          className={cn("border-2 border-accent/50 p-0.5 w-full h-full")}
         >
           <div className="w-full h-full bg-accent/20" />
         </div>
       );
     case "plant":
-      return (
+      return renderElement(
         <div
-          {...commonProps}
           className={cn(
-            commonProps.className,
-            "bg-secondary rounded-full flex items-center justify-center shadow-md"
+            "w-full h-full bg-secondary rounded-full flex items-center justify-center shadow-md"
           )}
         >
           <Sprout className="w-3/4 h-3/4 text-chart-2" />
