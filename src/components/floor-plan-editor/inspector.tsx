@@ -75,6 +75,13 @@ export default function Inspector({
   const isTable = selectedElement.type.includes("table");
   const tableElement = isTable ? (selectedElement as TableElement) : null;
 
+  const handleRotationChange = (value: number) => {
+    let newRotation = value;
+    if (newRotation < 0) newRotation = 0;
+    if (newRotation > 360) newRotation = 360;
+    onUpdateElement(selectedElement.id, { rotation: newRotation });
+  }
+
   return (
     <div className="p-4 border-l h-full flex flex-col">
       <ScrollArea className="flex-grow pr-2">
@@ -118,8 +125,18 @@ export default function Inspector({
               <div className="grid gap-2">
                 <Label htmlFor="rotation">Rotation</Label>
                 <div className="flex items-center gap-2">
-                  <Slider id="rotation" min={0} max={360} step={1} value={[selectedElement.rotation]} onValueChange={([val]) => onUpdateElement(selectedElement.id, { rotation: val })} />
-                  <span className="text-sm text-muted-foreground w-12 text-right">{selectedElement.rotation}°</span>
+                  <Slider id="rotation" min={0} max={360} step={1} value={[selectedElement.rotation]} onValueChange={([val]) => handleRotationChange(val)} />
+                  <div className="relative">
+                    <Input 
+                      type="number" 
+                      className="w-20 text-right pr-6" 
+                      value={selectedElement.rotation} 
+                      onChange={(e) => handleRotationChange(parseInt(e.target.value, 10) || 0)}
+                      min={0}
+                      max={360}
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">°</span>
+                  </div>
                 </div>
               </div>
             </div>
