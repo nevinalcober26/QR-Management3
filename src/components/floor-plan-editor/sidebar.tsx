@@ -16,6 +16,7 @@ import {
   Sprout,
   Square,
   CornerUpLeft,
+  Type,
 } from "lucide-react";
 import React from "react";
 
@@ -43,6 +44,7 @@ export default function Sidebar({
     { type: "plant", icon: Sprout, label: "Plant" },
     { type: "l-shape", icon: CornerUpLeft, label: "L-Shape" },
     { type: "curved-l-shape", icon: CornerUpLeft, label: "Curved L-Shape" },
+    { type: "text", icon: Type, label: "Text" },
   ] as const;
 
   const handleDragStart = (e: React.DragEvent, type: ElementType) => {

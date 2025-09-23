@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { FloorElement, TableElement, DoorElement, WindowElement } from "@/lib/types";
+import { FloorElement, TableElement, DoorElement, TextElement } from "@/lib/types";
 import { Copy, Trash2 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -35,6 +35,9 @@ export default function Inspector({
   const tableElement = isTable ? (selectedElement as TableElement) : null;
   const isDoor = selectedElement.type === "door";
   const doorElement = isDoor ? (selectedElement as DoorElement) : null;
+  const isText = selectedElement.type === "text";
+  const textElement = isText ? (selectedElement as TextElement) : null;
+
   const isCornerRadiusApplicable =
     selectedElement.type === "square-table" ||
     selectedElement.type === "rectangle-table" ||
@@ -80,6 +83,18 @@ export default function Inspector({
                     />
                   </div>
                 </>
+              )}
+              
+              {isText && textElement && (
+                <div className="grid gap-2">
+                  <Label htmlFor="text-content">Text</Label>
+                  <Input
+                    id="text-content"
+                    type="text"
+                    value={textElement.text || ''}
+                    onChange={(e) => onUpdateElement(selectedElement.id, { text: e.target.value })}
+                  />
+                </div>
               )}
 
               {isDoor && doorElement && (

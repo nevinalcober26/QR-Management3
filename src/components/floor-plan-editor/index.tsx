@@ -197,6 +197,7 @@ export default function FloorPlanEditor({
       ...(type === "plant" && { radius: 12, width: 24, height: 24 }),
       ...(type === "l-shape" && { width: 120, height: 120, borderRadius: 0 }),
       ...(type === "curved-l-shape" && { width: 120, height: 120, borderRadius: 60 }),
+      ...(type === "text" && { text: "Label", width: 100, height: 20 }),
     } as FloorElement;
 
     setElements(prev => ([...(prev || []), newElement]));
@@ -357,12 +358,3 @@ export default function FloorPlanEditor({
     </Dialog>
   );
 }
-
-    
-
-    
-
-
-
-
-    

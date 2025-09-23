@@ -1,4 +1,4 @@
-import type { TableElement, FloorElement, PlantElement, DoorElement, WindowElement } from "@/lib/types";
+import type { TableElement, FloorElement, PlantElement, DoorElement, WindowElement, TextElement } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Sprout, Expand, RotateCw, CornerUpLeft } from "lucide-react";
@@ -14,14 +14,20 @@ const elementBaseClasses = "absolute transition-all duration-75 cursor-grab acti
 const selectedClasses = "outline outline-2 outline-offset-2 outline-accent";
 
 const TableContent = ({ element, isSelected }: { element: TableElement, isSelected: boolean }) => (
-  <div className={cn(
-    "w-full h-full flex flex-col items-center justify-center text-xs font-medium select-none p-1",
-    isSelected ? 'text-primary' : 'text-green-800'
-    )}>
-    <div className="font-bold text-sm">{element.tableName}</div>
-    <div>({element.seats} seats)</div>
+  <div 
+    className={cn(
+        "absolute inset-0 flex flex-col items-center justify-center text-xs font-medium select-none p-1"
+    )}
+    style={{ transform: `rotate(-${element.rotation}deg)` }}
+  >
+    <div className={cn(
+      "font-bold text-sm",
+      isSelected ? 'text-primary' : 'text-green-800'
+    )}>{element.tableName}</div>
+    <div className={cn(isSelected ? 'text-primary' : 'text-green-800')}>({element.seats} seats)</div>
   </div>
 );
+
 
 const ResizeHandle = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void }) => (
     <div
@@ -88,28 +94,30 @@ export const ElementRenderer: React.FC<ElementProps> = ({
     case "rectangle-table": {
       const tableEl = element as TableElement;
       return renderElement(
-        <div
-          className={cn(
-            "w-full h-full shadow-md",
-            isSelected ? "bg-primary/20 border-primary" : "bg-green-100 border-green-600",
-            "border"
-          )}
-          style={getElementStyleWithBorderRadius(element)}
-        >
+        <>
+          <div
+            className={cn(
+              "w-full h-full shadow-md",
+              isSelected ? "bg-primary/20 border-primary" : "bg-green-100 border-green-600",
+              "border"
+            )}
+            style={getElementStyleWithBorderRadius(element)}
+          />
           <TableContent element={tableEl} isSelected={isSelected} />
-        </div>
+        </>
       );
     }
     case "round-table": {
       const tableEl = element as TableElement;
       return renderElement(
-        <div className={cn(
-            "w-full h-full rounded-full shadow-md",
-            isSelected ? "bg-primary/20 border-primary" : "bg-green-100 border-green-600",
-            "border"
-          )}>
+        <>
+          <div className={cn(
+              "w-full h-full rounded-full shadow-md",
+              isSelected ? "bg-primary/20 border-primary" : "bg-green-100 border-green-600",
+              "border"
+            )} />
           <TableContent element={tableEl} isSelected={isSelected} />
-        </div>
+        </>
       );
     }
     case "wall":
@@ -119,6 +127,14 @@ export const ElementRenderer: React.FC<ElementProps> = ({
           style={getElementStyleWithBorderRadius(element)}
         />
       );
+    case "text": {
+        const textEl = element as TextElement;
+        return renderElement(
+            <div className="w-full h-full flex items-center justify-center text-foreground font-semibold text-lg p-1 select-none">
+              {textEl.text}
+            </div>
+        );
+      }
     case "l-shape":
     case "curved-l-shape": {
         const wallThickness = 8;

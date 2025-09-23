@@ -1,4 +1,4 @@
-export type ElementType = 'round-table' | 'square-table' | 'rectangle-table' | 'wall' | 'door' | 'plant' | 'window' | 'l-shape' | 'curved-l-shape';
+export type ElementType = 'round-table' | 'square-table' | 'rectangle-table' | 'wall' | 'door' | 'plant' | 'window' | 'l-shape' | 'curved-l-shape' | 'text';
 
 export interface BaseElement {
   id: string;
@@ -32,4 +32,9 @@ export interface WindowElement extends BaseElement {
     type: 'window';
 }
 
-export type FloorElement = TableElement | PlantElement | DoorElement | WindowElement | BaseElement;
+export interface TextElement extends BaseElement {
+  type: 'text';
+  text: string;
+}
+
+export type FloorElement = TableElement | PlantElement | DoorElement | WindowElement | TextElement | BaseElement;
