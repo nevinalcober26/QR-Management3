@@ -4,29 +4,38 @@ import type { FloorElement, ElementType, TextElement } from "@/lib/types";
 import { ElementRenderer } from "./elements";
 import React, { useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { ZoomIn, ZoomOut, RefreshCcw } from "lucide-react";
+import { ZoomIn, ZoomOut, RefreshCcw, Undo, Redo, Rows3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CanvasProps {
   elements: FloorElement[];
-  selectedElementId: string | null;
-  onSelectElement: (id: string | null) => void;
+  selectedElementIds: string[];
+  onSelectElement: (id: string | null, multiSelect?: boolean) => void;
   onUpdateElement: (id: string, updates: Partial<FloorElement>) => void;
   onAddElement: (type: ElementType, x: number, y: number) => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 export default function Canvas({
   elements,
-  selectedElementId,
+  selectedElementIds,
   onSelectElement,
   onUpdateElement,
   onAddElement,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
+  const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
 
   const dragInfo = useRef<{
     isDragging: boolean;
@@ -79,7 +88,7 @@ export default function Canvas({
     e.preventDefault();
     e.stopPropagation();
 
-    onSelectElement(element.id);
+    onSelectElement(element.id, isMultiSelectMode || e.shiftKey);
 
     if (canvasRef.current) {
       dragInfo.current = {
@@ -371,12 +380,30 @@ export default function Canvas({
           <div key={element.id} onMouseDown={(e) => handleElementMouseDown(e, element)}>
             <ElementRenderer
               element={element}
-              isSelected={element.id === selectedElementId}
+              isSelected={selectedElementIds.includes(element.id)}
               onResizeMouseDown={(e) => handleResizeMouseDown(e, element)}
               onRotateMouseDown={(e) => handleRotateMouseDown(e, element)}
             />
           </div>
         ))}
+      </div>
+      <div className="absolute bottom-4 left-4 flex items-center gap-2">
+            <Button variant="outline" size="icon" onClick={onUndo} disabled={!canUndo}>
+                <Undo className="w-5 h-5" />
+                <span className="sr-only">Undo</span>
+            </Button>
+            <Button variant="outline" size="icon" onClick={onRedo} disabled={!canRedo}>
+                <Redo className="w-5 h-5" />
+                <span className="sr-only">Redo</span>
+            </Button>
+            <Button 
+              variant={isMultiSelectMode ? "secondary" : "outline"} 
+              size="icon" 
+              onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
+            >
+                <Rows3 className="w-5 h-5" />
+                <span className="sr-only">Multi Select</span>
+            </Button>
       </div>
        <div className="absolute bottom-4 right-4 flex items-center gap-2">
             <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.max(0.2, z - 0.1))}>

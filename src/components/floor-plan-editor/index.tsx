@@ -68,8 +68,11 @@ export default function FloorPlanEditor({
   const [historyIndex, setHistoryIndex] = useState<Record<string, number>>(initialHistoryIndex);
 
   const elements = history[activeRoomId]?.[historyIndex[activeRoomId]] || [];
+  const canUndo = historyIndex[activeRoomId] > 0;
+  const canRedo = historyIndex[activeRoomId] < (history[activeRoomId]?.length || 0) - 1;
 
-  const setElements = (updater: (prevElements: FloorElement[]) => FloorElement[]) => {
+
+  const setElements = (updater: (prevElements: FloorElement[]) => FloorElement[], merge = false) => {
     const currentElements = history[activeRoomId]?.[historyIndex[activeRoomId]] || [];
     const newElements = updater(currentElements);
     
@@ -85,9 +88,7 @@ export default function FloorPlanEditor({
     });
   };
 
-  const [selectedElementId, setSelectedElementId] = useState<string | null>(
-    null
-  );
+  const [selectedElementIds, setSelectedElementIds] = useState<string[]>([]);
   const { toast } = useToast();
   const [isAddRoomDialogOpen, setIsAddRoomDialogOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -95,21 +96,30 @@ export default function FloorPlanEditor({
   const [duplicateTableNames, setDuplicateTableNames] = useState<string[]>([]);
   
   const handleUndo = useCallback(() => {
-    setHistoryIndex(prev => ({
-      ...prev,
-      [activeRoomId]: Math.max(0, prev[activeRoomId] - 1)
-    }));
-  }, [activeRoomId]);
+    if (canUndo) {
+      setHistoryIndex(prev => ({
+        ...prev,
+        [activeRoomId]: prev[activeRoomId] - 1
+      }));
+    }
+  }, [activeRoomId, canUndo]);
 
   const handleRedo = useCallback(() => {
-    setHistoryIndex(prev => ({
-      ...prev,
-      [activeRoomId]: Math.min((history[activeRoomId]?.length || 1) - 1, prev[activeRoomId] + 1)
-    }));
-  }, [activeRoomId, history]);
+    if (canRedo) {
+      setHistoryIndex(prev => ({
+        ...prev,
+        [activeRoomId]: prev[activeRoomId] + 1
+      }));
+    }
+  }, [activeRoomId, canRedo]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a') {
+        event.preventDefault();
+        setSelectedElementIds(elements.map(el => el.id));
+        return;
+      }
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const undo = (isMac ? event.metaKey : event.ctrlKey) && event.key === 'z' && !event.shiftKey;
       const redo = (isMac ? event.metaKey && event.shiftKey : event.ctrlKey) && (event.key === 'z' || event.key === 'y');
@@ -127,7 +137,7 @@ export default function FloorPlanEditor({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleUndo, handleRedo]);
+  }, [handleUndo, handleRedo, elements]);
 
 
   const handleAddRoom = (roomName: string) => {
@@ -203,7 +213,7 @@ export default function FloorPlanEditor({
     } as FloorElement;
 
     setElements(prev => ([...(prev || []), newElement]));
-    setSelectedElementId(newElement.id);
+    setSelectedElementIds([newElement.id]);
     toast({
       title: `Added ${type.replace("-", " ")}`,
       description: "You can drag it on the canvas or edit its properties.",
@@ -228,9 +238,7 @@ export default function FloorPlanEditor({
 
   const handleDeleteElement = (id: string) => {
     setElements(prev => (prev || []).filter((el) => el.id !== id));
-    if (selectedElementId === id) {
-      setSelectedElementId(null);
-    }
+    setSelectedElementIds(prev => prev.filter(p => p !== id));
   };
 
   const handleDuplicateElement = (id: string) => {
@@ -250,7 +258,7 @@ export default function FloorPlanEditor({
     }
 
     setElements(prev => ([...(prev || []), newElement]));
-    setSelectedElementId(newElement.id);
+    setSelectedElementIds([newElement.id]);
     toast({
       title: "Element Duplicated",
       description: "The selected element has been duplicated.",
@@ -293,10 +301,28 @@ export default function FloorPlanEditor({
     }
   };
 
+  const handleSelectElement = (id: string | null, multiSelect = false) => {
+    if (id === null) {
+      setSelectedElementIds([]);
+      return;
+    }
+
+    if (multiSelect) {
+      setSelectedElementIds(prev => {
+        if (prev.includes(id)) {
+          return prev.filter(i => i !== id);
+        } else {
+          return [...prev, id];
+        }
+      });
+    } else {
+      setSelectedElementIds([id]);
+    }
+  };
 
   const activeElements = elements;
-  const selectedElement =
-    activeElements.find((el) => el.id === selectedElementId) ?? null;
+  const selectedElements = activeElements.filter((el) => selectedElementIds.includes(el.id)) ?? [];
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -325,14 +351,18 @@ export default function FloorPlanEditor({
           />
           <Canvas
             elements={activeElements}
-            selectedElementId={selectedElementId}
-            onSelectElement={setSelectedElementId}
+            selectedElementIds={selectedElementIds}
+            onSelectElement={handleSelectElement}
             onUpdateElement={handleUpdateElement}
             onAddElement={handleAddElement}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            canUndo={canUndo}
+            canRedo={canRedo}
           />
           <div className="hidden lg:block bg-card">
             <Inspector
-              selectedElement={selectedElement}
+              selectedElement={selectedElements.length === 1 ? selectedElements[0] : null}
               onUpdateElement={handleUpdateElement}
               onDeleteElement={handleDeleteElement}
               onDuplicateElement={handleDuplicateElement}

@@ -1,7 +1,7 @@
 import type { TableElement, FloorElement, PlantElement, DoorElement, WindowElement, TextElement } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Sprout, Expand, RotateCw, CornerUpLeft } from "lucide-react";
+import { Sprout, Expand, RotateCw } from "lucide-react";
 
 interface ElementProps {
   element: FloorElement;
