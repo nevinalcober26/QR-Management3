@@ -1,4 +1,4 @@
-export type ElementType = 'round-table' | 'square-table' | 'rectangle-table' | 'wall' | 'door' | 'plant' | 'window' | 'l-shape' | 'curved-l-shape' | 'text';
+export type ElementType = 'round-table' | 'square-table' | 'rectangle-table' | 'wall' | 'door' | 'plant' | 'window' | 'l-shape' | 'curved-l-shape' | 'text' | 'rectangle' | 'circle';
 
 export interface BaseElement {
   id: string;

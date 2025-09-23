@@ -127,6 +127,19 @@ export const ElementRenderer: React.FC<ElementProps> = ({
           style={getElementStyleWithBorderRadius(element)}
         />
       );
+    case "rectangle":
+        return renderElement(
+            <div
+            className="w-full h-full bg-muted-foreground/60 shadow-sm"
+            style={getElementStyleWithBorderRadius(element)}
+            />
+        );
+    case "circle":
+        return renderElement(
+            <div
+            className="w-full h-full bg-muted-foreground/60 shadow-sm rounded-full"
+            />
+        );
     case "text": {
         const textEl = element as TextElement;
         const textStyle: React.CSSProperties = {

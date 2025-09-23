@@ -46,6 +46,8 @@ export default function Sidebar({
     { type: "l-shape", icon: CornerUpLeft, label: "L-Shape" },
     { type: "curved-l-shape", icon: CornerUpLeft, label: "Curved L-Shape" },
     { type: "text", icon: Type, label: "Text" },
+    { type: "rectangle", icon: RectangleHorizontal, label: "Rectangle" },
+    { type: "circle", icon: Circle, label: "Circle" },
   ] as const;
 
   const handleDragStart = (e: React.DragEvent, type: ElementType) => {

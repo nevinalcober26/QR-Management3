@@ -198,6 +198,8 @@ export default function FloorPlanEditor({
       ...(type === "l-shape" && { width: 120, height: 120, borderRadius: 0 }),
       ...(type === "curved-l-shape" && { width: 120, height: 120, borderRadius: 60 }),
       ...(type === "text" && { text: "Label", width: 100, height: 20, fontSize: 16 }),
+      ...(type === "rectangle" && { width: 100, height: 60, borderRadius: 0 }),
+      ...(type === "circle" && { radius: 30, width: 60, height: 60, borderRadius: 30 }),
     } as FloorElement;
 
     setElements(prev => ([...(prev || []), newElement]));
