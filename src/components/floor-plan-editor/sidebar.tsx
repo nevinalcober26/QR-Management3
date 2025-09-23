@@ -19,6 +19,7 @@ import {
   Type,
 } from "lucide-react";
 import React from "react";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface SidebarProps {
   onElementAdd: (type: ElementType) => void;
@@ -73,29 +74,31 @@ export default function Sidebar({
   );
 
   return (
-    <div className="flex flex-col h-full bg-card border-r p-2">
-        <Accordion
-            type="multiple"
-            defaultValue={["tables", "other"]}
-            className="w-full"
-        >
-            <AccordionItem value="tables">
-            <AccordionTrigger className="px-2 text-base font-medium hover:no-underline">
-                Tables
-            </AccordionTrigger>
-            <AccordionContent className="p-2">
-                {renderElementButtons(tableElements)}
-            </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="other">
-            <AccordionTrigger className="px-2 text-base font-medium hover:no-underline">
-                Other Elements
-            </AccordionTrigger>
-            <AccordionContent className="p-2">
-                {renderElementButtons(otherElements)}
-            </AccordionContent>
-            </AccordionItem>
-        </Accordion>
+    <div className="flex flex-col h-full bg-card border-r">
+        <ScrollArea className="flex-grow p-2">
+            <Accordion
+                type="multiple"
+                defaultValue={["tables", "other"]}
+                className="w-full"
+            >
+                <AccordionItem value="tables">
+                <AccordionTrigger className="px-2 text-base font-medium hover:no-underline">
+                    Tables
+                </AccordionTrigger>
+                <AccordionContent className="p-2">
+                    {renderElementButtons(tableElements)}
+                </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="other">
+                <AccordionTrigger className="px-2 text-base font-medium hover:no-underline">
+                    Other Elements
+                </AccordionTrigger>
+                <AccordionContent className="p-2">
+                    {renderElementButtons(otherElements)}
+                </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </ScrollArea>
     </div>
   );
 }
