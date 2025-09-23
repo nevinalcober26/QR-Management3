@@ -254,28 +254,33 @@ export default function FloorPlanEditor({
   
     if (newElement.type.includes("table")) {
       const tableEl = newElement as TableElement;
-      const baseName = (tableEl.tableName || "Table").replace(/ \(\d+\)$/, "");
-      let newNumber = 1;
-      let newName: string;
-      
       const allTableNames = Object.values(history)
-        .flatMap(roomHistory => roomHistory[roomHistory.length - 1] || [])
+        .flatMap(roomHistory => roomHistory.flat())
         .filter(el => el.type.includes('table'))
         .map(el => (el as TableElement).tableName);
 
-      do {
-        newName = `${baseName} (${newNumber})`;
-        newNumber++;
-      } while (allTableNames.includes(newName));
-  
-      tableEl.tableName = newName;
+      const nameMatch = (tableEl.tableName || 'Table').match(/^([^\d]*)(\d*)$/);
+      const baseName = nameMatch ? nameMatch[1] : (tableEl.tableName || 'Table');
+      
+      let maxNum = 0;
+      allTableNames.forEach(name => {
+        if (name.startsWith(baseName)) {
+          const numPart = name.substring(baseName.length);
+          const num = parseInt(numPart, 10);
+          if (!isNaN(num) && num > maxNum) {
+            maxNum = num;
+          }
+        }
+      });
+
+      tableEl.tableName = `${baseName}${maxNum + 1}`;
     }
   
     setElements((prev) => [...(prev || []), newElement]);
     setSelectedElementIds([newElement.id]);
     toast({
       title: "Element Duplicated",
-      description: "The selected element has been duplicated.",
+      description: `New element created with name "${(newElement as TableElement).tableName || ''}".`,
     });
   };
 
@@ -371,7 +376,7 @@ export default function FloorPlanEditor({
               onUpdateElement={handleUpdateElement}
               onAddElement={handleAddElement}
             />
-            <div className="absolute bottom-4 left-4 flex items-center gap-2 z-20">
+             <div className="absolute bottom-4 left-4 flex items-center gap-2">
                 <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
                     <Undo className="w-5 h-5" />
                     <span className="sr-only">Undo</span>
@@ -389,7 +394,7 @@ export default function FloorPlanEditor({
                     <span className="sr-only">Multi Select</span>
                 </Button>
             </div>
-            <div className="absolute bottom-4 right-4 flex items-center gap-2 z-20">
+            <div className="absolute bottom-4 right-4 flex items-center gap-2">
                 <Button variant="outline" size="icon" onClick={() => {}}>
                     <ZoomOut className="w-5 h-5" />
                     <span className="sr-only">Zoom Out</span>
