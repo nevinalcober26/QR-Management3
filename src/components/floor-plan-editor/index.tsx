@@ -74,7 +74,7 @@ export default function FloorPlanEditor({
     const newElements = updater(currentElements);
     
     setHistory(prev => {
-      const currentRoomHistory = prev[activeRoomId] || [];
+      const currentRoomHistory = prev[activeRoomId] || [[]];
       // Slice history to current index to discard redo states
       const newRoomHistory = currentRoomHistory.slice(0, historyIndex[activeRoomId] + 1);
       newRoomHistory.push(newElements);
@@ -240,6 +240,11 @@ export default function FloorPlanEditor({
       x: originalElement.x + 20,
       y: originalElement.y + 20,
     };
+    
+    if (newElement.type.includes("table")) {
+      const tableEl = newElement as TableElement;
+      tableEl.tableName = `${tableEl.tableName} (copy)`;
+    }
 
     setElements(prev => ([...(prev || []), newElement]));
     setSelectedElementId(newElement.id);
@@ -358,3 +363,6 @@ export default function FloorPlanEditor({
     
 
 
+
+
+    
