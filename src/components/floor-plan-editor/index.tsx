@@ -349,16 +349,14 @@ export default function FloorPlanEditor({
           <Sidebar
             onElementAdd={(type) => handleAddElement(type)}
           />
-          <div className="relative flex flex-col h-full w-full">
-            <div className="relative flex-grow h-0">
-              <Canvas
-                elements={activeElements}
-                selectedElementIds={selectedElementIds}
-                onSelectElement={handleSelectElement}
-                onUpdateElement={handleUpdateElement}
-                onAddElement={handleAddElement}
-              />
-            </div>
+          <div className="relative h-full w-full">
+            <Canvas
+              elements={activeElements}
+              selectedElementIds={selectedElementIds}
+              onSelectElement={handleSelectElement}
+              onUpdateElement={handleUpdateElement}
+              onAddElement={handleAddElement}
+            />
             <div className="absolute bottom-4 left-4 flex items-center gap-2 z-10">
                 <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
                     <Undo className="w-5 h-5" />
@@ -422,5 +420,7 @@ export default function FloorPlanEditor({
     </Dialog>
   );
 }
+
+    
 
     
