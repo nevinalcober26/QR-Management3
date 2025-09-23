@@ -86,15 +86,26 @@ export default function Inspector({
               )}
               
               {isText && textElement && (
-                <div className="grid gap-2">
-                  <Label htmlFor="text-content">Text</Label>
-                  <Input
-                    id="text-content"
-                    type="text"
-                    value={textElement.text || ''}
-                    onChange={(e) => onUpdateElement(selectedElement.id, { text: e.target.value })}
-                  />
-                </div>
+                <>
+                  <div className="grid gap-2">
+                    <Label htmlFor="text-content">Text</Label>
+                    <Input
+                      id="text-content"
+                      type="text"
+                      value={textElement.text || ''}
+                      onChange={(e) => onUpdateElement(selectedElement.id, { text: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="font-size">Font Size (px)</Label>
+                    <Input
+                      id="font-size"
+                      type="number"
+                      value={textElement.fontSize ?? 16}
+                      onChange={(e) => onUpdateElement(selectedElement.id, { fontSize: parseInt(e.target.value) || 16 })}
+                    />
+                  </div>
+                </>
               )}
 
               {isDoor && doorElement && (

@@ -1,6 +1,6 @@
 "use client";
 
-import type { FloorElement, ElementType } from "@/lib/types";
+import type { FloorElement, ElementType, TextElement } from "@/lib/types";
 import { ElementRenderer } from "./elements";
 import React, { useRef, useState } from "react";
 import { Button } from "../ui/button";
@@ -262,6 +262,12 @@ export default function Canvas({
             updates.radius = Math.round(newRadius / (gridSnap/2)) * (gridSnap/2);
             updates.width = updates.radius * 2;
             updates.height = updates.radius * 2;
+        }
+
+        if (originalElement.type === 'text') {
+            const textEl = originalElement as TextElement;
+            const newFontSize = Math.max(8, Math.round(newHeight * 0.8));
+            (updates as Partial<TextElement>).fontSize = newFontSize;
         }
 
         onUpdateElement(resizeInfo.current.elementId, updates);

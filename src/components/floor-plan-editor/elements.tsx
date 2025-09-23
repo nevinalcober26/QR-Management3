@@ -129,8 +129,14 @@ export const ElementRenderer: React.FC<ElementProps> = ({
       );
     case "text": {
         const textEl = element as TextElement;
+        const textStyle: React.CSSProperties = {
+            fontSize: `${textEl.fontSize || 16}px`,
+        };
         return renderElement(
-            <div className="w-full h-full flex items-center justify-center text-foreground font-semibold text-lg p-1 select-none">
+            <div 
+                className="w-full h-full flex items-center justify-center text-foreground font-semibold p-1 select-none"
+                style={textStyle}
+            >
               {textEl.text}
             </div>
         );

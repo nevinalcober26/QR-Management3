@@ -35,6 +35,7 @@ export interface WindowElement extends BaseElement {
 export interface TextElement extends BaseElement {
   type: 'text';
   text: string;
+  fontSize: number;
 }
 
 export type FloorElement = TableElement | PlantElement | DoorElement | WindowElement | TextElement | BaseElement;
