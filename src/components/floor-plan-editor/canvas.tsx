@@ -12,6 +12,10 @@ interface CanvasProps {
   onSelectElement: (id: string | null, multiSelect?: boolean) => void;
   onUpdateElement: (id: string, updates: Partial<FloorElement>) => void;
   onAddElement: (type: ElementType, x: number, y: number) => void;
+  zoom: number;
+  pan: { x: number; y: number };
+  setZoom: (zoom: number | ((z: number) => number)) => void;
+  setPan: (pan: { x: number; y: number } | ((p: { x: number; y: number }) => { x: number; y: number })) => void;
 }
 
 export default function Canvas({
@@ -20,10 +24,12 @@ export default function Canvas({
   onSelectElement,
   onUpdateElement,
   onAddElement,
+  zoom,
+  pan,
+  setZoom,
+  setPan,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
   const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
   
@@ -153,10 +159,10 @@ export default function Canvas({
     if (isPanning.current) {
         const dx = e.clientX - panStart.current.x;
         const dy = e.clientY - panStart.current.y;
-        setPan({
-            x: pan.x + dx,
-            y: pan.y + dy,
-        });
+        setPan(p => ({
+            x: p.x + dx,
+            y: p.y + dy,
+        }));
         panStart.current = { x: e.clientX, y: e.clientY };
     } else if (dragInfo.current.isDragging && dragInfo.current.elementId) {
         const dx = (e.clientX - dragInfo.current.startX) / zoom;
@@ -257,7 +263,7 @@ export default function Canvas({
         const updates: Partial<FloorElement> = { width: newWidth, height: newHeight };
         
         if (originalElement.type === 'wall') {
-          // No special logic needed for walls anymore, they behave like other resizable elements
+            // Allow independent width/height resizing for walls
         } else if (originalElement.type === 'round-table' || originalElement.type === 'plant') {
             const newRadius = Math.max(newWidth, newHeight) / 2;
             updates.radius = Math.round(newRadius / (gridSnap/2)) * (gridSnap/2);
@@ -323,11 +329,6 @@ export default function Canvas({
     }
   };
   
-  const handleResetView = () => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-  };
-
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "copy";
@@ -390,3 +391,4 @@ export default function Canvas({
     
 
     
+

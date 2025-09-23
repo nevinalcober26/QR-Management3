@@ -94,6 +94,8 @@ export default function FloorPlanEditor({
   const [isDuplicateNameWarningOpen, setIsDuplicateNameWarningOpen] = useState(false);
   const [duplicateTableNames, setDuplicateTableNames] = useState<string[]>([]);
   const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
 
   const handleUndo = useCallback(() => {
     if (canUndo) {
@@ -112,6 +114,17 @@ export default function FloorPlanEditor({
       }));
     }
   }, [activeRoomId, canRedo]);
+
+  const handleZoom = (direction: 'in' | 'out') => {
+    const zoomFactor = direction === 'in' ? 1.1 : 0.9;
+    setZoom(z => Math.max(0.2, Math.min(2, z * zoomFactor)));
+  };
+
+  const handleResetView = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -258,13 +271,13 @@ export default function FloorPlanEditor({
         .flatMap(roomHistory => roomHistory.flat())
         .filter(el => el.type.includes('table'))
         .map(el => (el as TableElement).tableName);
-
-      const nameMatch = (tableEl.tableName || 'Table').match(/^([^\d]*)(\d*)$/);
-      const baseName = nameMatch ? nameMatch[1] : (tableEl.tableName || 'Table');
+  
+      const nameMatch = (tableEl.tableName || "T").match(/^([^\d]*)(\d*)$/);
+      const baseName = nameMatch ? nameMatch[1] : (tableEl.tableName || "T");
       
       let maxNum = 0;
       allTableNames.forEach(name => {
-        if (name.startsWith(baseName)) {
+        if (name && name.startsWith(baseName)) {
           const numPart = name.substring(baseName.length);
           const num = parseInt(numPart, 10);
           if (!isNaN(num) && num > maxNum) {
@@ -272,7 +285,7 @@ export default function FloorPlanEditor({
           }
         }
       });
-
+  
       tableEl.tableName = `${baseName}${maxNum + 1}`;
     }
   
@@ -375,8 +388,12 @@ export default function FloorPlanEditor({
               onSelectElement={handleSelectElement}
               onUpdateElement={handleUpdateElement}
               onAddElement={handleAddElement}
+              zoom={zoom}
+              pan={pan}
+              setZoom={setZoom}
+              setPan={setPan}
             />
-             <div className="absolute bottom-4 left-4 flex items-center gap-2">
+             <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2">
                 <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
                     <Undo className="w-5 h-5" />
                     <span className="sr-only">Undo</span>
@@ -394,16 +411,16 @@ export default function FloorPlanEditor({
                     <span className="sr-only">Multi Select</span>
                 </Button>
             </div>
-            <div className="absolute bottom-4 right-4 flex items-center gap-2">
-                <Button variant="outline" size="icon" onClick={() => {}}>
+            <div className="absolute bottom-4 right-4 z-10 flex items-center gap-2">
+                <Button variant="outline" size="icon" onClick={() => handleZoom('out')}>
                     <ZoomOut className="w-5 h-5" />
                     <span className="sr-only">Zoom Out</span>
                 </Button>
-                <Button variant="outline" size="icon" onClick={() => {}}>
+                <Button variant="outline" size="icon" onClick={() => handleZoom('in')}>
                     <ZoomIn className="w-5 h-5" />
                     <span className="sr-only">Zoom In</span>
                 </Button>
-                <Button variant="outline" size="icon" onClick={() => {}}>
+                <Button variant="outline" size="icon" onClick={handleResetView}>
                     <RefreshCcw className="w-5 h-5" />
                     <span className="sr-only">Reset Zoom</span>
                 </Button>
