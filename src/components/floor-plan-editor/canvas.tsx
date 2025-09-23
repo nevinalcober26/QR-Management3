@@ -4,8 +4,6 @@
 import type { FloorElement, ElementType, TextElement } from "@/lib/types";
 import { ElementRenderer } from "./elements";
 import React, { useRef, useState } from "react";
-import { Button } from "../ui/button";
-import { ZoomIn, ZoomOut, RefreshCcw, Undo, Redo, Rows3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CanvasProps {
@@ -14,10 +12,6 @@ interface CanvasProps {
   onSelectElement: (id: string | null, multiSelect?: boolean) => void;
   onUpdateElement: (id: string, updates: Partial<FloorElement>) => void;
   onAddElement: (type: ElementType, x: number, y: number) => void;
-  onUndo: () => void;
-  onRedo: () => void;
-  canUndo: boolean;
-  canRedo: boolean;
 }
 
 export default function Canvas({
@@ -26,18 +20,13 @@ export default function Canvas({
   onSelectElement,
   onUpdateElement,
   onAddElement,
-  onUndo,
-  onRedo,
-  canUndo,
-  canRedo,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
-  const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
-
+  
   const dragInfo = useRef<{
     isDragging: boolean;
     elementId: string | null;
@@ -89,7 +78,7 @@ export default function Canvas({
     e.preventDefault();
     e.stopPropagation();
 
-    onSelectElement(element.id, isMultiSelectMode || e.shiftKey);
+    onSelectElement(element.id, e.shiftKey);
 
     if (canvasRef.current) {
       dragInfo.current = {
@@ -325,10 +314,16 @@ export default function Canvas({
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    // Zoom disabled per user request
+     if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      setZoom(z => Math.max(0.2, Math.min(2, z * zoomFactor)));
+    } else {
+      setPan(p => ({ x: p.x - e.deltaX, y: p.y - e.deltaY }));
+    }
   };
   
-  const handleResetZoom = () => {
+  const handleResetView = () => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
   };
@@ -388,38 +383,6 @@ export default function Canvas({
           </div>
         ))}
       </div>
-      <div className="absolute bottom-4 left-4 flex items-center gap-2 z-10">
-            <Button variant="outline" size="icon" onClick={onUndo} disabled={!canUndo}>
-                <Undo className="w-5 h-5" />
-                <span className="sr-only">Undo</span>
-            </Button>
-            <Button variant="outline" size="icon" onClick={onRedo} disabled={!canRedo}>
-                <Redo className="w-5 h-5" />
-                <span className="sr-only">Redo</span>
-            </Button>
-            <Button 
-              variant={isMultiSelectMode ? "secondary" : "outline"} 
-              size="icon" 
-              onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
-            >
-                <Rows3 className="w-5 h-5" />
-                <span className="sr-only">Multi Select</span>
-            </Button>
-      </div>
-       <div className="absolute bottom-4 right-4 flex items-center gap-2 z-10">
-            <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.max(0.2, z - 0.1))}>
-                <ZoomOut className="w-5 h-5" />
-                <span className="sr-only">Zoom Out</span>
-            </Button>
-            <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.min(2, z + 0.1))}>
-                <ZoomIn className="w-5 h-5" />
-                <span className="sr-only">Zoom In</span>
-            </Button>
-            <Button variant="outline" size="icon" onClick={handleResetZoom}>
-                <RefreshCcw className="w-5 h-5" />
-                <span className="sr-only">Reset Zoom</span>
-            </Button>
-        </div>
     </div>
   );
 }

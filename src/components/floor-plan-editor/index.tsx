@@ -23,7 +23,7 @@ import Inspector from "./inspector";
 import { useState, useEffect, useCallback } from "react";
 import type { ElementType, FloorElement, TableElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { Building, Crown, Home, Sun, Maximize, Minimize } from "lucide-react";
+import { Building, Crown, Home, Sun, Maximize, Minimize, Undo, Redo, Rows3, ZoomIn, ZoomOut, RefreshCcw } from "lucide-react";
 import Header from "./header";
 import AddRoomDialog from "./add-room-dialog";
 import { cn } from "@/lib/utils";
@@ -94,7 +94,8 @@ export default function FloorPlanEditor({
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isDuplicateNameWarningOpen, setIsDuplicateNameWarningOpen] = useState(false);
   const [duplicateTableNames, setDuplicateTableNames] = useState<string[]>([]);
-  
+  const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
+
   const handleUndo = useCallback(() => {
     if (canUndo) {
       setHistoryIndex(prev => ({
@@ -307,7 +308,7 @@ export default function FloorPlanEditor({
       return;
     }
 
-    if (multiSelect) {
+    if (multiSelect || isMultiSelectMode) {
       setSelectedElementIds(prev => {
         if (prev.includes(id)) {
           return prev.filter(i => i !== id);
@@ -349,17 +350,47 @@ export default function FloorPlanEditor({
           <Sidebar
             onElementAdd={(type) => handleAddElement(type)}
           />
-          <Canvas
-            elements={activeElements}
-            selectedElementIds={selectedElementIds}
-            onSelectElement={handleSelectElement}
-            onUpdateElement={handleUpdateElement}
-            onAddElement={handleAddElement}
-            onUndo={handleUndo}
-            onRedo={handleRedo}
-            canUndo={canUndo}
-            canRedo={canRedo}
-          />
+          <div className="relative h-full w-full">
+            <Canvas
+              elements={activeElements}
+              selectedElementIds={selectedElementIds}
+              onSelectElement={handleSelectElement}
+              onUpdateElement={handleUpdateElement}
+              onAddElement={handleAddElement}
+            />
+            <div className="absolute bottom-4 left-4 flex items-center gap-2 z-10">
+                <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
+                    <Undo className="w-5 h-5" />
+                    <span className="sr-only">Undo</span>
+                </Button>
+                <Button variant="outline" size="icon" onClick={handleRedo} disabled={!canRedo}>
+                    <Redo className="w-5 h-5" />
+                    <span className="sr-only">Redo</span>
+                </Button>
+                <Button 
+                  variant={isMultiSelectMode ? "secondary" : "outline"} 
+                  size="icon" 
+                  onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
+                >
+                    <Rows3 className="w-5 h-5" />
+                    <span className="sr-only">Multi Select</span>
+                </Button>
+            </div>
+            <div className="absolute bottom-4 right-4 flex items-center gap-2 z-10">
+                <Button variant="outline" size="icon" onClick={() => {}}>
+                    <ZoomOut className="w-5 h-5" />
+                    <span className="sr-only">Zoom Out</span>
+                </Button>
+                <Button variant="outline" size="icon" onClick={() => {}}>
+                    <ZoomIn className="w-5 h-5" />
+                    <span className="sr-only">Zoom In</span>
+                </Button>
+                <Button variant="outline" size="icon" onClick={() => {}}>
+                    <RefreshCcw className="w-5 h-5" />
+                    <span className="sr-only">Reset Zoom</span>
+                </Button>
+            </div>
+          </div>
           <div className="hidden lg:block bg-card">
             <Inspector
               selectedElement={selectedElements.length === 1 ? selectedElements[0] : null}
