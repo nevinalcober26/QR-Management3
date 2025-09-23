@@ -388,7 +388,7 @@ export default function Canvas({
           </div>
         ))}
       </div>
-      <div className="absolute bottom-4 left-4 flex items-center gap-2">
+      <div className="absolute bottom-4 left-4 flex items-center gap-2 z-10">
             <Button variant="outline" size="icon" onClick={onUndo} disabled={!canUndo}>
                 <Undo className="w-5 h-5" />
                 <span className="sr-only">Undo</span>
@@ -406,7 +406,7 @@ export default function Canvas({
                 <span className="sr-only">Multi Select</span>
             </Button>
       </div>
-       <div className="absolute bottom-4 right-4 flex items-center gap-2">
+       <div className="absolute bottom-4 right-4 flex items-center gap-2 z-10">
             <Button variant="outline" size="icon" onClick={() => setZoom(z => Math.max(0.2, z - 0.1))}>
                 <ZoomOut className="w-5 h-5" />
                 <span className="sr-only">Zoom Out</span>
@@ -423,5 +423,3 @@ export default function Canvas({
     </div>
   );
 }
-
-    
