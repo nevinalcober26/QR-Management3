@@ -349,7 +349,7 @@ export default function FloorPlanEditor({
           <Sidebar
             onElementAdd={(type) => handleAddElement(type)}
           />
-          <div className="relative h-full w-full">
+          <div className="bg-card">
             <Canvas
               elements={activeElements}
               selectedElementIds={selectedElementIds}
@@ -357,38 +357,6 @@ export default function FloorPlanEditor({
               onUpdateElement={handleUpdateElement}
               onAddElement={handleAddElement}
             />
-            <div className="absolute bottom-4 left-4 flex items-center gap-2 z-10">
-                <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
-                    <Undo className="w-5 h-5" />
-                    <span className="sr-only">Undo</span>
-                </Button>
-                <Button variant="outline" size="icon" onClick={handleRedo} disabled={!canRedo}>
-                    <Redo className="w-5 h-5" />
-                    <span className="sr-only">Redo</span>
-                </Button>
-                <Button 
-                  variant={isMultiSelectMode ? "secondary" : "outline"} 
-                  size="icon" 
-                  onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
-                >
-                    <Rows3 className="w-5 h-5" />
-                    <span className="sr-only">Multi Select</span>
-                </Button>
-            </div>
-            <div className="absolute bottom-4 right-4 flex items-center gap-2 z-10">
-                <Button variant="outline" size="icon" onClick={() => {}}>
-                    <ZoomOut className="w-5 h-5" />
-                    <span className="sr-only">Zoom Out</span>
-                </Button>
-                <Button variant="outline" size="icon" onClick={() => {}}>
-                    <ZoomIn className="w-5 h-5" />
-                    <span className="sr-only">Zoom In</span>
-                </Button>
-                <Button variant="outline" size="icon" onClick={() => {}}>
-                    <RefreshCcw className="w-5 h-5" />
-                    <span className="sr-only">Reset Zoom</span>
-                </Button>
-            </div>
           </div>
           <div className="hidden lg:block bg-card">
             <Inspector
@@ -399,6 +367,40 @@ export default function FloorPlanEditor({
             />
           </div>
         </div>
+
+        <div className="absolute bottom-4 left-[300px] flex items-center gap-2 z-20">
+            <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
+                <Undo className="w-5 h-5" />
+                <span className="sr-only">Undo</span>
+            </Button>
+            <Button variant="outline" size="icon" onClick={handleRedo} disabled={!canRedo}>
+                <Redo className="w-5 h-5" />
+                <span className="sr-only">Redo</span>
+            </Button>
+            <Button 
+              variant={isMultiSelectMode ? "secondary" : "outline"} 
+              size="icon" 
+              onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
+            >
+                <Rows3 className="w-5 h-5" />
+                <span className="sr-only">Multi Select</span>
+            </Button>
+        </div>
+        <div className="absolute bottom-4 right-[340px] lg:right-[340px] flex items-center gap-2 z-20">
+            <Button variant="outline" size="icon" onClick={() => {}}>
+                <ZoomOut className="w-5 h-5" />
+                <span className="sr-only">Zoom Out</span>
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => {}}>
+                <ZoomIn className="w-5 h-5" />
+                <span className="sr-only">Zoom In</span>
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => {}}>
+                <RefreshCcw className="w-5 h-5" />
+                <span className="sr-only">Reset Zoom</span>
+            </Button>
+        </div>
+        
         <AddRoomDialog open={isAddRoomDialogOpen} onOpenChange={setIsAddRoomDialogOpen} onRoomAdd={handleAddRoom} />
         <AlertDialog open={isDuplicateNameWarningOpen} onOpenChange={setIsDuplicateNameWarningOpen}>
           <AlertDialogContent>
@@ -420,7 +422,3 @@ export default function FloorPlanEditor({
     </Dialog>
   );
 }
-
-    
-
-    
