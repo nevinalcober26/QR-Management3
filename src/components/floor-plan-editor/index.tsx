@@ -96,6 +96,7 @@ export default function FloorPlanEditor({
   const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [roomToDelete, setRoomToDelete] = useState<string | null>(null);
 
   const handleUndo = useCallback(() => {
     if (canUndo) {
@@ -170,7 +171,7 @@ export default function FloorPlanEditor({
     setIsAddRoomDialogOpen(false);
   };
 
-  const handleDeleteRoom = (roomId: string) => {
+  const attemptDeleteRoom = (roomId: string) => {
     if (rooms.length <= 1) {
       toast({
         variant: "destructive",
@@ -179,7 +180,17 @@ export default function FloorPlanEditor({
       });
       return;
     }
-    const roomToDelete = rooms.find(r => r.id === roomId);
+    
+    const roomElements = history[roomId]?.[historyIndex[roomId]] || [];
+    if (roomElements.length > 0) {
+        setRoomToDelete(roomId);
+    } else {
+        handleDeleteRoom(roomId);
+    }
+  };
+
+  const handleDeleteRoom = (roomId: string) => {
+    const roomToDeleteDetails = rooms.find(r => r.id === roomId);
     setRooms(prev => prev.filter(room => room.id !== roomId));
     setHistory(prev => {
         const newHistory = {...prev};
@@ -199,8 +210,9 @@ export default function FloorPlanEditor({
     
     toast({
         title: "Room Deleted",
-        description: `Room "${roomToDelete?.label}" has been deleted.`,
+        description: `Room "${roomToDeleteDetails?.label}" has been deleted.`,
     });
+    setRoomToDelete(null);
   };
 
   const handleAddElement = (type: ElementType, x = 150, y = 150) => {
@@ -442,7 +454,7 @@ export default function FloorPlanEditor({
             onActiveRoomChange={setActiveRoomId}
             onAddRoom={() => setIsAddRoomDialogOpen(true)}
             onSave={handleSave}
-            onDeleteRoom={handleDeleteRoom}
+            onDeleteRoom={attemptDeleteRoom}
             isFullScreen={isFullScreen}
             onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
         />
@@ -508,6 +520,7 @@ export default function FloorPlanEditor({
         </div>
         
         <AddRoomDialog open={isAddRoomDialogOpen} onOpenChange={setIsAddRoomDialogOpen} onRoomAdd={handleAddRoom} />
+        
         <AlertDialog open={isDuplicateNameWarningOpen} onOpenChange={setIsDuplicateNameWarningOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -524,9 +537,25 @@ export default function FloorPlanEditor({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <AlertDialog open={!!roomToDelete} onOpenChange={(open) => !open && setRoomToDelete(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to delete this room?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  The room "{rooms.find(r => r.id === roomToDelete)?.label}" contains floor plan elements. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setRoomToDelete(null)}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => roomToDelete && handleDeleteRoom(roomToDelete)}>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+
       </DialogContent>
     </Dialog>
   );
 }
-
-    
