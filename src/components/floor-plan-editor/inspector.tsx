@@ -43,7 +43,8 @@ export default function Inspector({
     selectedElement.type === "rectangle-table" ||
     selectedElement.type === "wall" ||
     selectedElement.type === "l-shape" ||
-    selectedElement.type === "curved-l-shape";
+    selectedElement.type === "curved-l-shape" ||
+    selectedElement.type === "rectangle";
 
 
   const handleRotationChange = (value: number) => {
