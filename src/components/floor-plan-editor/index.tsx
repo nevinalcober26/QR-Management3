@@ -23,7 +23,7 @@ import Inspector from "./inspector";
 import { useState, useEffect, useCallback } from "react";
 import type { ElementType, FloorElement, TableElement } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { Building, Crown, Home, Sun, Maximize, Minimize, Undo, Redo, Rows3, ZoomIn, ZoomOut, RefreshCcw } from "lucide-react";
+import { Building, Crown, Home, Sun, Copy, Undo, Redo, Rows3, ZoomIn, ZoomOut, RefreshCcw } from "lucide-react";
 import Header from "./header";
 import AddRoomDialog from "./add-room-dialog";
 import { cn } from "@/lib/utils";
@@ -293,7 +293,66 @@ export default function FloorPlanEditor({
     setSelectedElementIds([newElement.id]);
     toast({
       title: "Element Duplicated",
-      description: `New element created with name "${(newElement as TableElement).tableName || ''}".`,
+      description: `New element created.`,
+    });
+  };
+
+  const handleDuplicateSelection = (ids: string[]) => {
+    const elementsToDuplicate = elements.filter(el => ids.includes(el.id));
+    if (elementsToDuplicate.length === 0) return;
+
+    const newElements: FloorElement[] = [];
+    const newSelectedIds: string[] = [];
+
+    const allTableNames = Object.values(history)
+      .flatMap(roomHistory => roomHistory.flat())
+      .filter(el => el.type.includes('table'))
+      .map(el => (el as TableElement).tableName);
+      
+    let maxTableNumMap = new Map<string, number>();
+
+    elementsToDuplicate.forEach(originalElement => {
+      const newElement: FloorElement = {
+        ...originalElement,
+        id: crypto.randomUUID(),
+        x: originalElement.x + 20,
+        y: originalElement.y + 20,
+      };
+
+      if (newElement.type.includes("table")) {
+        const tableEl = newElement as TableElement;
+        const nameMatch = (tableEl.tableName || "T").match(/^([^\d]*)(\d*)$/);
+        const baseName = nameMatch ? nameMatch[1] : (tableEl.tableName || "T");
+
+        if (!maxTableNumMap.has(baseName)) {
+           let maxNum = 0;
+            allTableNames.forEach(name => {
+              if (name && name.startsWith(baseName)) {
+                const numPart = name.substring(baseName.length);
+                const num = parseInt(numPart, 10);
+                if (!isNaN(num) && num > maxNum) {
+                  maxNum = num;
+                }
+              }
+            });
+            maxTableNumMap.set(baseName, maxNum);
+        }
+        
+        let currentMax = maxTableNumMap.get(baseName) || 0;
+        currentMax++;
+        tableEl.tableName = `${baseName}${currentMax}`;
+        maxTableNumMap.set(baseName, currentMax);
+      }
+      
+      newElements.push(newElement);
+      newSelectedIds.push(newElement.id);
+    });
+
+    setElements(prev => [...(prev || []), ...newElements]);
+    setSelectedElementIds(newSelectedIds);
+    toast({
+      title: `${newElements.length} ${newElements.length > 1 ? 'Elements' : 'Element'} Duplicated`,
+      description: `New elements created with an offset.`,
     });
   };
 
@@ -428,10 +487,11 @@ export default function FloorPlanEditor({
           </div>
           <div className="hidden lg:block bg-card border-l">
             <Inspector
-              selectedElement={selectedElements.length === 1 ? selectedElements[0] : null}
+              selectedElements={selectedElements}
               onUpdateElement={handleUpdateElement}
               onDeleteElement={handleDeleteElement}
               onDuplicateElement={handleDuplicateElement}
+              onDuplicateSelection={handleDuplicateSelection}
             />
           </div>
         </div>

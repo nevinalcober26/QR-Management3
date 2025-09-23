@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -9,19 +10,24 @@ import { Copy, Trash2 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 
 interface InspectorProps {
-  selectedElement: FloorElement | null;
+  selectedElements: FloorElement[];
   onUpdateElement: (id: string, updates: Partial<FloorElement>) => void;
   onDeleteElement: (id: string) => void;
   onDuplicateElement: (id: string) => void;
+  onDuplicateSelection: (ids: string[]) => void;
 }
 
 export default function Inspector({
-  selectedElement,
+  selectedElements,
   onUpdateElement,
   onDeleteElement,
   onDuplicateElement,
+  onDuplicateSelection,
 }: InspectorProps) {
-  if (!selectedElement) {
+
+  const selectedElement = selectedElements.length === 1 ? selectedElements[0] : null;
+
+  if (selectedElements.length === 0) {
     return (
       <div className="p-4 border-l h-full flex items-center justify-center text-center">
         <p className="text-sm text-muted-foreground">
@@ -30,6 +36,34 @@ export default function Inspector({
       </div>
     );
   }
+  
+  if (selectedElements.length > 1) {
+    return (
+      <div className="p-4 border-l h-full flex flex-col">
+        <div className="flex-grow">
+          <h3 className="font-semibold text-lg mb-4">
+            {selectedElements.length} Elements Selected
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Bulk actions are available below. To edit individual properties, please select a single element.
+          </p>
+        </div>
+        <div className="mt-6 pt-6 border-t space-y-2">
+            <Button variant="outline" className="w-full" onClick={() => onDuplicateSelection(selectedElements.map(el => el.id))}>
+                <Copy className="mr-2 h-4 w-4" />
+                Duplicate Selection
+            </Button>
+            <Button variant="destructive" className="w-full" onClick={() => selectedElements.forEach(el => onDeleteElement(el.id))}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Selection
+            </Button>
+        </div>
+      </div>
+    );
+  }
+
+
+  if (!selectedElement) return null;
 
   const isTable = selectedElement.type.includes("table");
   const tableElement = isTable ? (selectedElement as TableElement) : null;
@@ -55,7 +89,7 @@ export default function Inspector({
   }
 
   return (
-    <div className="p-4 border-l h-full flex flex-col">
+    <div className="p-4 h-full flex flex-col">
       <ScrollArea className="flex-grow pr-2">
         <div className="space-y-6">
           <div>
