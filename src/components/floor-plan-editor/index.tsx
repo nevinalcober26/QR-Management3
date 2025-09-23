@@ -244,20 +244,34 @@ export default function FloorPlanEditor({
   const handleDuplicateElement = (id: string) => {
     const originalElement = (elements || []).find((el) => el.id === id);
     if (!originalElement) return;
-
+  
     const newElement: FloorElement = {
       ...originalElement,
       id: crypto.randomUUID(),
       x: originalElement.x + 20,
       y: originalElement.y + 20,
     };
-    
+  
     if (newElement.type.includes("table")) {
       const tableEl = newElement as TableElement;
-      tableEl.tableName = `${tableEl.tableName} (copy)`;
-    }
+      const baseName = (tableEl.tableName || "Table").replace(/ \(\d+\)$/, "");
+      let newNumber = 1;
+      let newName: string;
+      
+      const allTableNames = Object.values(history)
+        .flatMap(roomHistory => roomHistory[roomHistory.length - 1] || [])
+        .filter(el => el.type.includes('table'))
+        .map(el => (el as TableElement).tableName);
 
-    setElements(prev => ([...(prev || []), newElement]));
+      do {
+        newName = `${baseName} (${newNumber})`;
+        newNumber++;
+      } while (allTableNames.includes(newName));
+  
+      tableEl.tableName = newName;
+    }
+  
+    setElements((prev) => [...(prev || []), newElement]);
     setSelectedElementIds([newElement.id]);
     toast({
       title: "Element Duplicated",
@@ -345,11 +359,11 @@ export default function FloorPlanEditor({
             isFullScreen={isFullScreen}
             onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
         />
-        <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] overflow-hidden shadow-2xl flex-grow">
+        <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] overflow-hidden shadow-2xl flex-grow min-h-0">
           <Sidebar
             onElementAdd={(type) => handleAddElement(type)}
           />
-          <div className="bg-card">
+          <div className="bg-card relative min-h-0">
             <Canvas
               elements={activeElements}
               selectedElementIds={selectedElementIds}
@@ -357,8 +371,40 @@ export default function FloorPlanEditor({
               onUpdateElement={handleUpdateElement}
               onAddElement={handleAddElement}
             />
+            <div className="absolute bottom-4 left-4 flex items-center gap-2 z-20">
+                <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
+                    <Undo className="w-5 h-5" />
+                    <span className="sr-only">Undo</span>
+                </Button>
+                <Button variant="outline" size="icon" onClick={handleRedo} disabled={!canRedo}>
+                    <Redo className="w-5 h-5" />
+                    <span className="sr-only">Redo</span>
+                </Button>
+                <Button 
+                  variant={isMultiSelectMode ? "secondary" : "outline"} 
+                  size="icon" 
+                  onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
+                >
+                    <Rows3 className="w-5 h-5" />
+                    <span className="sr-only">Multi Select</span>
+                </Button>
+            </div>
+            <div className="absolute bottom-4 right-4 flex items-center gap-2 z-20">
+                <Button variant="outline" size="icon" onClick={() => {}}>
+                    <ZoomOut className="w-5 h-5" />
+                    <span className="sr-only">Zoom Out</span>
+                </Button>
+                <Button variant="outline" size="icon" onClick={() => {}}>
+                    <ZoomIn className="w-5 h-5" />
+                    <span className="sr-only">Zoom In</span>
+                </Button>
+                <Button variant="outline" size="icon" onClick={() => {}}>
+                    <RefreshCcw className="w-5 h-5" />
+                    <span className="sr-only">Reset Zoom</span>
+                </Button>
+            </div>
           </div>
-          <div className="hidden lg:block bg-card">
+          <div className="hidden lg:block bg-card border-l">
             <Inspector
               selectedElement={selectedElements.length === 1 ? selectedElements[0] : null}
               onUpdateElement={handleUpdateElement}
@@ -366,39 +412,6 @@ export default function FloorPlanEditor({
               onDuplicateElement={handleDuplicateElement}
             />
           </div>
-        </div>
-
-        <div className="absolute bottom-4 left-[300px] flex items-center gap-2 z-20">
-            <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
-                <Undo className="w-5 h-5" />
-                <span className="sr-only">Undo</span>
-            </Button>
-            <Button variant="outline" size="icon" onClick={handleRedo} disabled={!canRedo}>
-                <Redo className="w-5 h-5" />
-                <span className="sr-only">Redo</span>
-            </Button>
-            <Button 
-              variant={isMultiSelectMode ? "secondary" : "outline"} 
-              size="icon" 
-              onClick={() => setIsMultiSelectMode(!isMultiSelectMode)}
-            >
-                <Rows3 className="w-5 h-5" />
-                <span className="sr-only">Multi Select</span>
-            </Button>
-        </div>
-        <div className="absolute bottom-4 right-[340px] lg:right-[340px] flex items-center gap-2 z-20">
-            <Button variant="outline" size="icon" onClick={() => {}}>
-                <ZoomOut className="w-5 h-5" />
-                <span className="sr-only">Zoom Out</span>
-            </Button>
-            <Button variant="outline" size="icon" onClick={() => {}}>
-                <ZoomIn className="w-5 h-5" />
-                <span className="sr-only">Zoom In</span>
-            </Button>
-            <Button variant="outline" size="icon" onClick={() => {}}>
-                <RefreshCcw className="w-5 h-5" />
-                <span className="sr-only">Reset Zoom</span>
-            </Button>
         </div>
         
         <AddRoomDialog open={isAddRoomDialogOpen} onOpenChange={setIsAddRoomDialogOpen} onRoomAdd={handleAddRoom} />
