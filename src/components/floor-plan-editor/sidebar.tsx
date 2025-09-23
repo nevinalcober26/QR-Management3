@@ -55,15 +55,35 @@ export default function Sidebar({
     e.dataTransfer.effectAllowed = "copy";
   };
 
+  const renderTableElementList = (
+    elements: Readonly<(typeof tableElements)>
+  ) => (
+    <div className="flex flex-col gap-2">
+      {elements.map(({ type, icon: Icon, label }) => (
+        <Button
+          key={type}
+          variant="outline"
+          className="flex h-auto w-full cursor-grab justify-start gap-4 p-2 text-left"
+          onClick={() => onElementAdd(type)}
+          draggable
+          onDragStart={(e) => handleDragStart(e, type)}
+        >
+          <Icon className="h-6 w-6 text-accent" />
+          <span className="text-sm text-muted-foreground">{label}</span>
+        </Button>
+      ))}
+    </div>
+  );
+
   const renderElementButtons = (
-    elements: Readonly<(typeof tableElements | typeof otherElements)[number]>[]
+    elements: Readonly<(typeof otherElements)>
   ) => (
     <div className="grid grid-cols-2 gap-2">
       {elements.map(({ type, icon: Icon, label }) => (
         <Button
           key={type}
           variant="outline"
-          className="flex flex-col h-24 items-center justify-center gap-2 p-2 text-center cursor-grab"
+          className="flex h-24 flex-col items-center justify-center gap-2 p-2 text-center cursor-grab"
           onClick={() => onElementAdd(type)}
           draggable
           onDragStart={(e) => handleDragStart(e, type)}
@@ -88,7 +108,7 @@ export default function Sidebar({
                     Tables
                 </AccordionTrigger>
                 <AccordionContent className="p-2">
-                    {renderElementButtons(tableElements)}
+                    {renderTableElementList(tableElements)}
                 </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="other">
