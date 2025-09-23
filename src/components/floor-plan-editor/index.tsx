@@ -78,7 +78,6 @@ export default function FloorPlanEditor({
     
     setHistory(prev => {
       const currentRoomHistory = prev[activeRoomId] || [[]];
-      // Slice history to current index to discard redo states
       const newRoomHistory = currentRoomHistory.slice(0, historyIndex[activeRoomId] + 1);
       newRoomHistory.push(newElements);
       
@@ -346,18 +345,20 @@ export default function FloorPlanEditor({
             isFullScreen={isFullScreen}
             onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
         />
-        <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] h-full overflow-hidden shadow-2xl flex-grow">
+        <div className="grid grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_320px] overflow-hidden shadow-2xl flex-grow">
           <Sidebar
             onElementAdd={(type) => handleAddElement(type)}
           />
-          <div className="relative h-full w-full">
-            <Canvas
-              elements={activeElements}
-              selectedElementIds={selectedElementIds}
-              onSelectElement={handleSelectElement}
-              onUpdateElement={handleUpdateElement}
-              onAddElement={handleAddElement}
-            />
+          <div className="relative flex flex-col h-full w-full">
+            <div className="relative flex-grow h-0">
+              <Canvas
+                elements={activeElements}
+                selectedElementIds={selectedElementIds}
+                onSelectElement={handleSelectElement}
+                onUpdateElement={handleUpdateElement}
+                onAddElement={handleAddElement}
+              />
+            </div>
             <div className="absolute bottom-4 left-4 flex items-center gap-2 z-10">
                 <Button variant="outline" size="icon" onClick={handleUndo} disabled={!canUndo}>
                     <Undo className="w-5 h-5" />
@@ -421,3 +422,5 @@ export default function FloorPlanEditor({
     </Dialog>
   );
 }
+
+    
