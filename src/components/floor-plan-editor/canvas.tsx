@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { FloorElement, ElementType, TextElement } from "@/lib/types";
@@ -422,3 +423,5 @@ export default function Canvas({
     </div>
   );
 }
+
+    
