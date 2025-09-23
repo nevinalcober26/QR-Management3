@@ -39,7 +39,7 @@ export default function Inspector({
   
   if (selectedElements.length > 1) {
     return (
-      <div className="p-4 border-l h-full flex flex-col">
+      <div className="p-4 h-full flex flex-col">
         <div className="flex-grow">
           <h3 className="font-semibold text-lg mb-4">
             {selectedElements.length} Elements Selected
@@ -48,7 +48,7 @@ export default function Inspector({
             Bulk actions are available below. To edit individual properties, please select a single element.
           </p>
         </div>
-        <div className="mt-6 pt-6 border-t space-y-2">
+        <div className="mt-auto pt-4 border-t space-y-2">
             <Button variant="outline" className="w-full" onClick={() => onDuplicateSelection(selectedElements.map(el => el.id))}>
                 <Copy className="mr-2 h-4 w-4" />
                 Duplicate Selection
@@ -207,7 +207,7 @@ export default function Inspector({
           </div>
         </div>
       </ScrollArea>
-      <div className="mt-6 pt-6 border-t space-y-2">
+      <div className="mt-auto pt-4 border-t space-y-2">
         <Button variant="outline" className="w-full" onClick={() => onDuplicateElement(selectedElement.id)}>
           <Copy className="mr-2 h-4 w-4" />
           Duplicate Element
@@ -220,3 +220,5 @@ export default function Inspector({
     </div>
   );
 }
+
+    

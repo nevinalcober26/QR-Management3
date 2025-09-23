@@ -11,6 +11,7 @@ interface CanvasProps {
   selectedElementIds: string[];
   onSelectElement: (id: string | null, multiSelect?: boolean) => void;
   onUpdateElement: (id: string, updates: Partial<FloorElement>) => void;
+  onBulkUpdateElements: (updates: { id: string; updates: Partial<FloorElement> }[]) => void;
   onAddElement: (type: ElementType, x: number, y: number) => void;
   zoom: number;
   pan: { x: number; y: number };
@@ -23,6 +24,7 @@ export default function Canvas({
   selectedElementIds,
   onSelectElement,
   onUpdateElement,
+  onBulkUpdateElements,
   onAddElement,
   zoom,
   pan,
@@ -35,19 +37,16 @@ export default function Canvas({
   
   const dragInfo = useRef<{
     isDragging: boolean;
-    elementId: string | null;
+    elementStartPositions: Map<string, {x: number, y: number}>;
     startX: number;
     startY: number;
-    elementStartX: number;
-    elementStartY: number;
   }>({
     isDragging: false,
-    elementId: null,
+    elementStartPositions: new Map(),
     startX: 0,
     startY: 0,
-    elementStartX: 0,
-    elementStartY: 0,
   });
+
 
   const resizeInfo = useRef<{
     isResizing: boolean;
@@ -85,15 +84,25 @@ export default function Canvas({
     e.stopPropagation();
 
     onSelectElement(element.id, e.shiftKey);
+    
+    // If the clicked element is part of a selection, prepare to drag all selected elements.
+    const isMultiDrag = selectedElementIds.length > 1 && selectedElementIds.includes(element.id);
+    const idsToDrag = isMultiDrag ? selectedElementIds : [element.id];
+    
+    const startPositions = new Map<string, { x: number; y: number }>();
+    idsToDrag.forEach(id => {
+      const el = elements.find(e => e.id === id);
+      if (el) {
+        startPositions.set(id, { x: el.x, y: el.y });
+      }
+    });
 
     if (canvasRef.current) {
       dragInfo.current = {
         isDragging: true,
-        elementId: element.id,
+        elementStartPositions: startPositions,
         startX: e.clientX,
         startY: e.clientY,
-        elementStartX: element.x,
-        elementStartY: element.y,
       };
       resizeInfo.current.isResizing = false;
       rotateInfo.current.isRotating = false;
@@ -164,17 +173,20 @@ export default function Canvas({
             y: p.y + dy,
         }));
         panStart.current = { x: e.clientX, y: e.clientY };
-    } else if (dragInfo.current.isDragging && dragInfo.current.elementId) {
-        const dx = (e.clientX - dragInfo.current.startX) / zoom;
-        const dy = (e.clientY - dragInfo.current.startY) / zoom;
+    } else if (dragInfo.current.isDragging && dragInfo.current.elementStartPositions.size > 0) {
+      const dx = (e.clientX - dragInfo.current.startX) / zoom;
+      const dy = (e.clientY - dragInfo.current.startY) / zoom;
 
-        let newX = dragInfo.current.elementStartX + dx;
-        let newY = dragInfo.current.elementStartY + dy;
+      const updates: { id: string; updates: Partial<FloorElement> }[] = [];
 
-        const draggedElement = elements.find(el => el.id === dragInfo.current.elementId);
+      dragInfo.current.elementStartPositions.forEach((startPos, id) => {
+        let newX = startPos.x + dx;
+        let newY = startPos.y + dy;
+
+        const draggedElement = elements.find(el => el.id === id);
         let snappedToWall = false;
 
-        if (draggedElement?.type === 'wall' && draggedElement.rotation % 90 === 0) {
+        if (draggedElement?.type === 'wall' && draggedElement.rotation % 90 === 0 && dragInfo.current.elementStartPositions.size === 1) {
             for (const otherElement of elements) {
                 if (otherElement.id === draggedElement.id || otherElement.type !== 'wall' || otherElement.rotation % 90 !== 0) continue;
 
@@ -246,7 +258,9 @@ export default function Canvas({
           }
         }
         
-        onUpdateElement(dragInfo.current.elementId, { x: newX, y: newY });
+        updates.push({ id, updates: { x: newX, y: newY } });
+      });
+      onBulkUpdateElements(updates);
     } else if (resizeInfo.current.isResizing && resizeInfo.current.elementId) {
         const dx = (e.clientX - resizeInfo.current.startX) / zoom;
         const dy = (e.clientY - resizeInfo.current.startY) / zoom;
@@ -301,7 +315,7 @@ export default function Canvas({
 
   const handleMouseUp = () => {
     dragInfo.current.isDragging = false;
-    dragInfo.current.elementId = null;
+    dragInfo.current.elementStartPositions.clear();
     resizeInfo.current.isResizing = false;
     resizeInfo.current.elementId = null;
     rotateInfo.current.isRotating = false;
@@ -389,6 +403,3 @@ export default function Canvas({
 }
 
     
-
-    
-

@@ -248,6 +248,16 @@ export default function FloorPlanEditor({
       return el;
     }));
   };
+  
+  const handleBulkUpdateElements = (updates: { id: string; updates: Partial<FloorElement> }[]) => {
+    const updateMap = new Map(updates.map(u => [u.id, u.updates]));
+    setElements(prev => (prev || []).map(el => {
+      if (updateMap.has(el.id)) {
+        return { ...el, ...updateMap.get(el.id) };
+      }
+      return el;
+    }));
+  };
 
   const handleDeleteElement = (id: string) => {
     setElements(prev => (prev || []).filter((el) => el.id !== id));
@@ -446,6 +456,7 @@ export default function FloorPlanEditor({
               selectedElementIds={selectedElementIds}
               onSelectElement={handleSelectElement}
               onUpdateElement={handleUpdateElement}
+              onBulkUpdateElements={handleBulkUpdateElements}
               onAddElement={handleAddElement}
               zoom={zoom}
               pan={pan}
@@ -517,3 +528,5 @@ export default function FloorPlanEditor({
     </Dialog>
   );
 }
+
+    
