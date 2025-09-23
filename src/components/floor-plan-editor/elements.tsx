@@ -67,7 +67,7 @@ export const ElementRenderer: React.FC<ElementProps> = ({
 
   const commonProps = {
     style,
-    className: cn(elementBaseClasses, isSelected && selectedClasses, isTable && "z-10"),
+    className: cn(elementBaseClasses, isSelected && selectedClasses, (isTable || element.type === 'wall') && "z-10"),
   };
 
   const renderElement = (children: React.ReactNode) => (

@@ -255,15 +255,15 @@ export default function Canvas({
         newHeight = Math.max(gridSnap, Math.round(newHeight / gridSnap) * gridSnap);
 
         const updates: Partial<FloorElement> = { width: newWidth, height: newHeight };
-
-        if (originalElement.type === 'round-table' || originalElement.type === 'plant') {
+        
+        if (originalElement.type === 'wall') {
+          // No special logic needed for walls anymore, they behave like other resizable elements
+        } else if (originalElement.type === 'round-table' || originalElement.type === 'plant') {
             const newRadius = Math.max(newWidth, newHeight) / 2;
             updates.radius = Math.round(newRadius / (gridSnap/2)) * (gridSnap/2);
             updates.width = updates.radius * 2;
             updates.height = updates.radius * 2;
-        }
-
-        if (originalElement.type === 'text') {
+        } else if (originalElement.type === 'text') {
             const textEl = originalElement as TextElement;
             const newFontSize = Math.max(8, Math.round(newHeight * 0.8));
             (updates as Partial<TextElement>).fontSize = newFontSize;
