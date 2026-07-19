@@ -685,10 +685,17 @@ export default function QRCodesPage() {
                       </div>
                     </SelectTrigger>
                     <SelectContent>
-                      {items.filter(i => !i.qr).map(item => (
-                        <SelectItem key={item.id} value={item.id}>{item.id}</SelectItem>
+                      {items.map(item => (
+                        <SelectItem key={item.id} value={item.id}>
+                          <div className="flex items-center justify-between w-full min-w-[200px] gap-4">
+                            <span className="font-bold">Table {item.id}</span>
+                            <Badge variant="outline" className="text-[9px] h-4.5 px-2 font-bold uppercase tracking-tight opacity-40 bg-slate-50 border-slate-200 text-slate-500">
+                              {item.floor === 'floor1' ? 'Ground' : item.floor === 'floor2' ? '1st Floor' : 'Terrace'}
+                            </Badge>
+                          </div>
+                        </SelectItem>
                       ))}
-                      {items.filter(i => !i.qr).length === 0 && (
+                      {items.length === 0 && (
                         <SelectItem value="none" disabled>No tables available</SelectItem>
                       )}
                     </SelectContent>
