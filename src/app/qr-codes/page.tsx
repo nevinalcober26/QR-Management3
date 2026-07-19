@@ -26,6 +26,8 @@ import {
   Trash2,
   Upload,
   FileDown,
+  FileImage,
+  Info,
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,6 +65,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -93,6 +96,7 @@ export default function QRCodesPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [previewTableId, setPreviewTableId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -241,7 +245,11 @@ export default function QRCodesPage() {
                 <p className="text-sm text-slate-400 font-medium">Create, edit, and manage QR codes for your tables.</p>
               </div>
               <div className="flex items-center gap-3">
-                <Button variant="outline" className="text-[13px] font-bold gap-2 shadow-none border-slate-200 text-slate-600 h-10 px-6 hover:bg-slate-50 rounded-lg">
+                <Button 
+                  variant="outline" 
+                  className="text-[13px] font-bold gap-2 shadow-none border-slate-200 text-slate-600 h-10 px-6 hover:bg-slate-50 rounded-lg"
+                  onClick={() => setIsDownloadModalOpen(true)}
+                >
                   <Download className="w-4 h-4" />
                   Download All
                 </Button>
@@ -595,6 +603,72 @@ export default function QRCodesPage() {
               <FileDown className="w-4 h-4 text-slate-400" />
               SVG
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Download Format Modal */}
+      <Dialog open={isDownloadModalOpen} onOpenChange={setIsDownloadModalOpen}>
+        <DialogContent className="sm:max-w-[800px] p-0 border-none bg-white shadow-2xl overflow-visible [&>button]:hidden rounded-[32px]">
+          {/* Custom Teal Close Button */}
+          <Button 
+            onClick={() => setIsDownloadModalOpen(false)}
+            className="absolute -top-6 -left-6 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-white shadow-xl flex items-center justify-center p-0 z-50 border-4 border-white"
+          >
+            <X className="w-7 h-7" />
+          </Button>
+
+          <div className="p-12 pb-6">
+            <DialogHeader className="text-left space-y-3">
+              <DialogTitle className="text-4xl font-extrabold text-[#111827] tracking-tight leading-tight">Choose Download Format</DialogTitle>
+              <DialogDescription className="text-slate-500 font-medium text-lg leading-relaxed flex items-center gap-2 flex-wrap">
+                You are about to download QR codes for 
+                <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/10 px-3 py-0.5 text-base font-bold rounded-lg shadow-sm">
+                  30 table(s)
+                </Badge>
+                . Select your preferred format to continue.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="px-12 py-8 grid grid-cols-2 gap-8">
+            {/* SVG Option */}
+            <div className="group relative bg-white border border-slate-100 rounded-[28px] p-10 flex flex-col items-center justify-center text-center gap-6 cursor-pointer hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+              <div className="w-20 h-20 rounded-[22px] bg-[#EF4444] flex items-center justify-center shadow-xl shadow-red-500/20 group-hover:scale-110 transition-transform">
+                <FileDown className="w-10 h-10 text-white" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">Download as SVG</h3>
+                <p className="text-base text-slate-400 font-medium">Perfect for printing & sharing</p>
+              </div>
+            </div>
+
+            {/* PNG Option */}
+            <div className="group relative bg-white border border-slate-100 rounded-[28px] p-10 flex flex-col items-center justify-center text-center gap-6 cursor-pointer hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+              <div className="w-20 h-20 rounded-[22px] bg-[#F59E0B] flex items-center justify-center shadow-xl shadow-orange-500/20 group-hover:scale-110 transition-transform">
+                <FileImage className="w-10 h-10 text-white" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">Download as PNGs</h3>
+                <p className="text-base text-slate-400 font-medium">Individual PNG image files</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-10 bg-slate-50/30 rounded-b-[32px] flex items-center justify-between">
+            <div className="flex items-center gap-3 text-primary">
+              <Info className="w-5 h-5" />
+              <span className="text-[15px] font-bold tracking-tight">Select a format to proceed</span>
+            </div>
+            <DialogFooter className="sm:justify-end">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsDownloadModalOpen(false)}
+                className="h-12 px-10 rounded-xl border-slate-200 text-base font-bold text-slate-500 hover:bg-white hover:text-slate-900 hover:border-slate-300 shadow-none transition-all"
+              >
+                Cancel
+              </Button>
+            </DialogFooter>
           </div>
         </DialogContent>
       </Dialog>
