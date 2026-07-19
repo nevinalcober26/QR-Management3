@@ -291,7 +291,7 @@ export default function QRCodesPage() {
   if (!mounted) return null;
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
+    <div className="flex h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
       {/* Sidebar */}
       <aside className="w-[280px] bg-white flex flex-col shrink-0 border-r border-slate-100 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
         <div className="p-8 pb-6 flex items-center">
