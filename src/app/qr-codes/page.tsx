@@ -360,7 +360,7 @@ export default function QRCodesPage() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Topbar - Fixed Header */}
-        <header className="shrink-0 h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
+        <header className="fixed top-0 right-0 left-[280px] h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
           <div className="flex items-center gap-4 flex-1">
             <Button asChild variant="outline" size="icon" className="w-9 h-9 shrink-0 border-slate-200 hover:bg-slate-50 rounded-lg">
               <Link href="/">
@@ -427,8 +427,8 @@ export default function QRCodesPage() {
         </header>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
-          <div className="p-8 max-w-7xl mx-auto space-y-6">
+        <div className="flex-1 overflow-y-auto bg-[#F8FAFC] mt-16">
+          <div className="p-8 max-w-7xl mx-auto space-y-4">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Manage QR Codes</h1>
@@ -455,7 +455,7 @@ export default function QRCodesPage() {
 
             {/* Table Container */}
             <div className="bg-white rounded-[20px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-slate-50 flex items-center justify-between gap-4 h-16">
+              <div className="p-3 border-b border-slate-50 flex items-center justify-between gap-4 h-14">
                 {selectedIds.length > 0 ? (
                   <div className="flex items-center gap-4 w-full">
                     <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setSelectedIds([])}>
@@ -535,7 +535,7 @@ export default function QRCodesPage() {
                           <Sparkles className="w-3.5 h-3.5 text-[#0CB5A8]" />
                           Generate Missing QR
                         </Button>
-                        <div className="absolute -top-1.5 -right-1 w-4.5 h-4.5 bg-[#EF4444] rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white font-bold shadow-sm">
+                        <div className="absolute -top-1.5 -right-1 w-5 h-5 bg-[#EF4444] rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white font-bold shadow-sm">
                           {items.filter(i => !i.qr).length}
                         </div>
                       </div>
@@ -545,21 +545,21 @@ export default function QRCodesPage() {
               </div>
 
               <div className="overflow-x-auto">
-                <Table>
+                <Table className="compact-table">
                   <TableHeader className="bg-[#F9FAFB]">
                     <TableRow className="hover:bg-transparent border-slate-100">
-                      <TableHead className="w-12 px-6">
+                      <TableHead className="w-12 px-6 py-2.5">
                         <Checkbox 
                           className="rounded border-slate-300 data-[state=checked]:bg-[#0CB5A8] data-[state=checked]:border-[#0CB5A8] h-3.5 w-3.5" 
                           checked={isAllSelected}
                           onCheckedChange={toggleSelectAll}
                         />
                       </TableHead>
-                      <TableHead className="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-3">Table <ChevronDown className="inline w-2.5 h-2.5 ml-0.5 text-slate-300" /></TableHead>
-                      <TableHead className="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-3">QR Preview</TableHead>
-                      <TableHead className="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-3">Status</TableHead>
-                      <TableHead className="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-3">Created at</TableHead>
-                      <TableHead className="text-right px-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest py-3">Actions</TableHead>
+                      <TableHead className="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-2.5">Table <ChevronDown className="inline w-2.5 h-2.5 ml-0.5 text-slate-300" /></TableHead>
+                      <TableHead className="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-2.5">QR Preview</TableHead>
+                      <TableHead className="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-2.5">Status</TableHead>
+                      <TableHead className="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-2.5">Created at</TableHead>
+                      <TableHead className="text-right px-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest py-2.5">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -567,22 +567,22 @@ export default function QRCodesPage() {
                       <TableRow 
                         key={row.id} 
                         className={cn(
-                          "hover:bg-slate-50/50 border-slate-50 transition-colors h-14",
+                          "hover:bg-slate-50/50 border-slate-50 transition-colors h-11",
                           selectedIds.includes(row.id) && "bg-slate-50/30"
                         )}
                       >
-                        <TableCell className="px-6">
+                        <TableCell className="px-6 py-1">
                           <Checkbox 
                             className="rounded border-slate-300 data-[state=checked]:bg-[#0CB5A8] data-[state=checked]:border-[#0CB5A8] h-3.5 w-3.5" 
                             checked={selectedIds.includes(row.id)}
                             onCheckedChange={() => toggleSelectRow(row.id)}
                           />
                         </TableCell>
-                        <TableCell className="font-bold text-slate-900 text-[14px]">{row.id}</TableCell>
-                        <TableCell>
+                        <TableCell className="font-bold text-slate-900 text-[13px] py-1">{row.id}</TableCell>
+                        <TableCell className="py-1">
                           {row.qr ? (
                             <div 
-                              className="w-10 h-10 border border-slate-100 rounded-lg p-1.5 bg-white shadow-sm flex items-center justify-center cursor-pointer hover:border-[#0CB5A8]/20 transition-colors"
+                              className="w-8 h-8 border border-slate-100 rounded-lg p-1 bg-white shadow-sm flex items-center justify-center cursor-pointer hover:border-[#0CB5A8]/20 transition-colors"
                               onClick={() => handleOpenPreview(row.id)}
                             >
                               <img src={row.qr} alt={`QR ${row.id}`} className="w-full h-full object-contain" />
@@ -591,7 +591,7 @@ export default function QRCodesPage() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              className="h-7 text-[9px] font-bold gap-1.5 px-2.5 border-slate-200 rounded-lg text-slate-500 hover:bg-[#0CB5A8]/10 hover:text-slate-500 shadow-none uppercase tracking-tight"
+                              className="h-6 text-[8px] font-bold gap-1 px-2 border-slate-200 rounded-lg text-slate-500 hover:bg-[#0CB5A8]/10 hover:text-slate-500 shadow-none uppercase tracking-tight"
                               onClick={() => triggerGenerate([row.id])}
                             >
                               <div className="grid grid-cols-2 gap-0.5 opacity-60">
@@ -604,9 +604,9 @@ export default function QRCodesPage() {
                             </Button>
                           )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-1">
                           <div className={cn(
-                            "inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-bold",
+                            "inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold",
                             row.status === 'Active' 
                               ? "bg-[#0CB5A8]/5 text-[#0CB5A8] border border-[#0CB5A8]/10" 
                               : "bg-red-50 text-red-400 border border-red-100"
@@ -614,39 +614,39 @@ export default function QRCodesPage() {
                             {row.status}
                           </div>
                         </TableCell>
-                        <TableCell className="text-[12px] text-slate-400 font-medium">{row.date}</TableCell>
-                        <TableCell className="text-right px-8">
+                        <TableCell className="text-[11px] text-slate-400 font-medium py-1">{row.date}</TableCell>
+                        <TableCell className="text-right px-8 py-1">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full text-slate-300 hover:text-slate-900 hover:bg-slate-50">
+                              <Button variant="ghost" size="icon" className="w-7 h-7 rounded-full text-slate-300 hover:text-slate-900 hover:bg-slate-50">
                                 <MoreHorizontal className="w-3.5 h-3.5" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48 rounded-xl border-slate-100 p-1.5 shadow-xl">
-                              <DropdownMenuLabel className="px-2.5 py-1.5 text-[13px] font-bold text-slate-900 tracking-tight">Actions</DropdownMenuLabel>
+                            <DropdownMenuContent align="end" className="w-44 rounded-xl border-slate-100 p-1 shadow-xl">
+                              <DropdownMenuLabel className="px-2 py-1 text-[12px] font-bold text-slate-900 tracking-tight">Actions</DropdownMenuLabel>
                               <DropdownMenuSeparator className="bg-slate-50 mx-0" />
                               <DropdownMenuItem 
-                                className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-slate-600 focus:bg-[#0CB5A8]/10 hover:bg-[#0CB5A8]/10 cursor-pointer transition-colors focus:text-[#0CB5A8]"
+                                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-600 focus:bg-[#0CB5A8]/10 hover:bg-[#0CB5A8]/10 cursor-pointer transition-colors focus:text-[#0CB5A8]"
                                 onClick={() => triggerGenerate([row.id])}
                               >
-                                <Sparkles className="w-3.5 h-3.5 text-[#0CB5A8]" />
-                                <span className="text-[13px] font-medium tracking-tight">{row.qr ? 'Regenerate' : 'Generate'}</span>
+                                <Sparkles className="w-3 h-3 text-[#0CB5A8]" />
+                                <span className="text-[12px] font-medium tracking-tight">{row.qr ? 'Regenerate' : 'Generate'}</span>
                               </DropdownMenuItem>
                               {row.qr && (
                                 <>
                                   <DropdownMenuItem 
-                                    className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-slate-600 focus:bg-[#0CB5A8]/10 hover:bg-[#0CB5A8]/10 cursor-pointer transition-colors focus:text-[#0CB5A8]"
+                                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-600 focus:bg-[#0CB5A8]/10 hover:bg-[#0CB5A8]/10 cursor-pointer transition-colors focus:text-[#0CB5A8]"
                                     onClick={() => handleDownload(row.id)}
                                   >
-                                    <Download className="w-3.5 h-3.5 text-slate-400" />
-                                    <span className="text-[13px] font-medium tracking-tight">Download</span>
+                                    <Download className="w-3 h-3 text-slate-400" />
+                                    <span className="text-[12px] font-medium tracking-tight">Download</span>
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
-                                    className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[#EF4444] focus:bg-red-50 hover:bg-red-50 cursor-pointer transition-colors focus:text-[#EF4444]"
+                                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[#EF4444] focus:bg-red-50 hover:bg-red-50 cursor-pointer transition-colors focus:text-[#EF4444]"
                                     onClick={() => handleDelete(row.id)}
                                   >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                    <span className="text-[13px] font-medium tracking-tight">Delete</span>
+                                    <Trash2 className="w-3 h-3" />
+                                    <span className="text-[12px] font-medium tracking-tight">Delete</span>
                                   </DropdownMenuItem>
                                 </>
                               )}
@@ -657,7 +657,7 @@ export default function QRCodesPage() {
                     ))}
                     {filteredItems.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center text-slate-400 text-xs">
+                        <TableCell colSpan={6} className="h-20 text-center text-slate-400 text-xs">
                           No tables found for this floor.
                         </TableCell>
                       </TableRow>
@@ -666,10 +666,10 @@ export default function QRCodesPage() {
                 </Table>
               </div>
 
-              <div className="p-4 border-t border-slate-50 bg-[#F9FAFB]/50 flex items-center justify-between">
+              <div className="p-3 border-t border-slate-50 bg-[#F9FAFB]/50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Select defaultValue="10">
-                    <SelectTrigger className="w-28 h-8 text-[12px] border-slate-200 bg-white rounded-lg font-medium shadow-none">
+                    <SelectTrigger className="w-24 h-7 text-[11px] border-slate-200 bg-white rounded-lg font-medium shadow-none">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -678,21 +678,21 @@ export default function QRCodesPage() {
                       <SelectItem value="50">50 per page</SelectItem>
                     </SelectContent>
                   </Select>
-                  <span className="text-[12px] text-slate-400 font-medium">
+                  <span className="text-[11px] text-slate-400 font-medium">
                     Showing <span className="text-slate-900 font-bold">1 to {filteredItems.length}</span> of <span className="text-slate-900 font-bold">{items.length}</span> results
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button variant="outline" size="icon" className="w-7 h-7 rounded-lg border-slate-200 bg-white hover:bg-[#0CB5A8]/10 hover:text-slate-400 shadow-none">
-                    <ChevronRight className="w-3.5 h-3.5 rotate-180 text-slate-400" />
+                  <Button variant="outline" size="icon" className="w-6 h-6 rounded-lg border-slate-200 bg-white hover:bg-[#0CB5A8]/10 hover:text-slate-400 shadow-none">
+                    <ChevronRight className="w-3 h-3 rotate-180 text-slate-400" />
                   </Button>
-                  <Button className="w-7 h-7 rounded-lg bg-[#0CB5A8] text-white text-[12px] font-bold p-0 shadow-none border-none">1</Button>
-                  <Button variant="ghost" className="w-7 h-7 rounded-lg text-[12px] font-bold p-0 text-slate-400 hover:bg-slate-100">2</Button>
-                  <Button variant="ghost" className="w-7 h-7 rounded-lg text-[12px] font-bold p-0 text-slate-400 hover:bg-slate-100">3</Button>
-                  <span className="px-1 text-slate-300 text-[12px] font-bold">...</span>
-                  <Button variant="ghost" className="w-7 h-7 rounded-lg text-[12px] font-bold p-0 text-slate-400 hover:bg-slate-100">21</Button>
-                  <Button variant="outline" size="icon" className="w-7 h-7 rounded-lg border-slate-200 bg-white hover:bg-[#0CB5A8]/10 hover:text-slate-400 shadow-none">
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <Button className="w-6 h-6 rounded-lg bg-[#0CB5A8] text-white text-[11px] font-bold p-0 shadow-none border-none">1</Button>
+                  <Button variant="ghost" className="w-6 h-6 rounded-lg text-[11px] font-bold p-0 text-slate-400 hover:bg-slate-100">2</Button>
+                  <Button variant="ghost" className="w-6 h-6 rounded-lg text-[11px] font-bold p-0 text-slate-400 hover:bg-slate-100">3</Button>
+                  <span className="px-1 text-slate-300 text-[11px] font-bold">...</span>
+                  <Button variant="ghost" className="w-6 h-6 rounded-lg text-[11px] font-bold p-0 text-slate-400 hover:bg-slate-100">21</Button>
+                  <Button variant="outline" size="icon" className="w-6 h-6 rounded-lg border-slate-200 bg-white hover:bg-[#0CB5A8]/10 hover:text-slate-400 shadow-none">
+                    <ChevronRight className="w-3 h-3 text-slate-400" />
                   </Button>
                 </div>
               </div>
