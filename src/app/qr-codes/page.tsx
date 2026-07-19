@@ -254,7 +254,7 @@ export default function QRCodesPage() {
           <SidebarItem icon={Plug} label="Integration" hasAdd />
         </div>
 
-        {/* Sidebar Footer - More Compact */}
+        {/* Sidebar Footer */}
         <div className="bg-[#111827] p-5 rounded-t-[28px] mt-auto">
           {/* Restaurant Profile Card */}
           <div className="bg-[#1E293B] rounded-[20px] p-3.5 flex items-center justify-between group cursor-pointer transition-colors hover:bg-[#2D3748] shadow-lg">
@@ -366,7 +366,7 @@ export default function QRCodesPage() {
               <div className="flex items-center gap-3">
                 <Button 
                   variant="outline" 
-                  className="text-[13px] font-bold gap-2 shadow-none border-slate-200 text-slate-600 h-10 px-6 hover:bg-slate-50 rounded-lg"
+                  className="text-[13px] font-bold gap-2 shadow-none border-slate-200 text-slate-600 h-10 px-6 hover:bg-[#0CB5A8]/10 hover:text-slate-600 rounded-lg"
                   onClick={() => setIsDownloadModalOpen(true)}
                 >
                   <Download className="w-4 h-4" />
@@ -407,7 +407,7 @@ export default function QRCodesPage() {
                   </Select>
                 </div>
                 <div className="relative">
-                  <Button variant="outline" className="h-11 text-[13px] font-bold gap-2 border-slate-200 hover:bg-slate-50 rounded-xl px-5 text-slate-700 shadow-none">
+                  <Button variant="outline" className="h-11 text-[13px] font-bold gap-2 border-slate-200 hover:bg-[#0CB5A8]/10 hover:text-slate-700 rounded-xl px-5 text-slate-700 shadow-none">
                     <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
                     Generate Missing QR
                   </Button>
@@ -446,7 +446,7 @@ export default function QRCodesPage() {
                             <div className="flex items-center gap-2">
                               <Button 
                                 variant="outline" 
-                                className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none"
+                                className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none"
                                 onClick={() => selectedIds.forEach(id => handleGenerate(id))}
                               >
                                 <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
@@ -454,7 +454,7 @@ export default function QRCodesPage() {
                               </Button>
                               <Button 
                                 variant="outline" 
-                                className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none"
+                                className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none"
                                 onClick={() => selectedIds.forEach(id => handleDownload(id))}
                               >
                                 <Download className="w-4 h-4 text-slate-400" />
@@ -518,7 +518,7 @@ export default function QRCodesPage() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              className="h-8 text-[10px] font-bold gap-2 px-3.5 border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50 shadow-none uppercase tracking-tight"
+                              className="h-8 text-[10px] font-bold gap-2 px-3.5 border-slate-200 rounded-lg text-slate-500 hover:bg-[#0CB5A8]/10 hover:text-slate-500 shadow-none uppercase tracking-tight"
                               onClick={() => handleGenerate(row.id)}
                             >
                               <div className="grid grid-cols-2 gap-0.5 opacity-60">
@@ -604,7 +604,7 @@ export default function QRCodesPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Button variant="outline" size="icon" className="w-8 h-8 rounded-lg border-slate-200 bg-white hover:bg-slate-50 shadow-none">
+                  <Button variant="outline" size="icon" className="w-8 h-8 rounded-lg border-slate-200 bg-white hover:bg-[#0CB5A8]/10 hover:text-slate-400 shadow-none">
                     <ChevronRight className="w-4 h-4 rotate-180 text-slate-400" />
                   </Button>
                   <Button className="w-8 h-8 rounded-lg bg-[#0CB5A8] text-white text-[13px] font-bold p-0 shadow-none border-none">1</Button>
@@ -612,7 +612,7 @@ export default function QRCodesPage() {
                   <Button variant="ghost" className="w-8 h-8 rounded-lg text-[13px] font-bold p-0 text-slate-400 hover:bg-slate-100">3</Button>
                   <span className="px-1.5 text-slate-300 text-[13px] font-bold">...</span>
                   <Button variant="ghost" className="w-8 h-8 rounded-lg text-[13px] font-bold p-0 text-slate-400 hover:bg-slate-100">21</Button>
-                  <Button variant="outline" size="icon" className="w-8 h-8 rounded-lg border-slate-200 bg-white hover:bg-slate-50 shadow-none">
+                  <Button variant="outline" size="icon" className="w-8 h-8 rounded-lg border-slate-200 bg-white hover:bg-[#0CB5A8]/10 hover:text-slate-400 shadow-none">
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </Button>
                 </div>
@@ -725,7 +725,7 @@ export default function QRCodesPage() {
           <SheetFooter className="p-10 pt-6 mt-auto">
             <div className="flex items-center justify-end gap-4 w-full">
               <SheetClose asChild>
-                <Button variant="outline" className="h-12 px-8 rounded-xl border-slate-200 text-[14px] font-bold text-slate-600 hover:bg-slate-50 shadow-none">
+                <Button variant="outline" className="h-12 px-8 rounded-xl border-slate-200 text-[14px] font-bold text-slate-600 hover:bg-[#0CB5A8]/10 hover:text-slate-600 shadow-none">
                   Cancel
                 </Button>
               </SheetClose>
@@ -774,11 +774,11 @@ export default function QRCodesPage() {
           </div>
 
           <div className="p-8 pt-0 flex items-center justify-center gap-4">
-            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none gap-2" onClick={() => handleDownload(previewTableId!)}>
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none gap-2" onClick={() => handleDownload(previewTableId!)}>
               <Download className="w-4 h-4 text-slate-400" />
               PNG
             </Button>
-            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none gap-2" onClick={() => handleDownload(previewTableId!)}>
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none gap-2" onClick={() => handleDownload(previewTableId!)}>
               <FileDown className="w-4 h-4 text-slate-400" />
               SVG
             </Button>
