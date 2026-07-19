@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import FloorPlanEditor from "@/components/floor-plan-editor";
 import Image from "next/image";
+import Link from "next/link";
+import { Grid3X3, Layout } from "lucide-react";
 
 export default function Home() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -17,10 +19,17 @@ export default function Home() {
         <p className="mt-6 text-lg leading-8 text-muted-foreground">
           Design and visualize your space with a modern, intuitive, and AI-powered floor plan tool.
         </p>
-        <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Button onClick={() => setIsEditorOpen(true)} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button onClick={() => setIsEditorOpen(true)} size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-[200px] h-12 text-base font-semibold">
+            <Layout className="w-5 h-5 mr-2" />
             Edit Floor Plan
           </Button>
+          <Link href="/qr-codes">
+            <Button variant="outline" size="lg" className="border-primary/20 hover:bg-primary/10 min-w-[200px] h-12 text-base font-semibold">
+              <Grid3X3 className="w-5 h-5 mr-2 text-primary" />
+              Manage QR Codes
+            </Button>
+          </Link>
         </div>
       </div>
       <div className="mt-16 w-full max-w-4xl">
