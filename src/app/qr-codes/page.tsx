@@ -455,119 +455,112 @@ export default function QRCodesPage() {
 
             {/* Table Container */}
             <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
-              <div className="p-5 border-b border-slate-50 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="relative w-80">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                    <Input placeholder="Search Tables" className="pl-10 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 focus-visible:bg-white placeholder:text-slate-400" />
+              <div className="p-5 border-b border-slate-50 flex items-center justify-between gap-4 h-[84px]">
+                {selectedIds.length > 0 ? (
+                  <div className="flex items-center gap-4 w-full">
+                    <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setSelectedIds([])}>
+                      <div className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 group-hover:text-slate-900 transition-colors">
+                        <X className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[16px] font-extrabold text-slate-900 leading-none">{selectedIds.length}</span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">SELECTED</span>
+                      </div>
+                    </div>
+                    
+                    <Separator orientation="vertical" className="h-8 bg-slate-100 mx-2" />
+                    
+                    <div className="flex items-center gap-3">
+                      <Button 
+                        variant="outline" 
+                        className="h-11 px-6 gap-2 border-slate-100 rounded-xl text-[14px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none bg-slate-50/50"
+                        onClick={() => triggerGenerate(selectedIds)}
+                      >
+                        <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
+                        Generate
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className={cn(
+                          "h-11 px-6 gap-2 border-slate-100 rounded-xl text-[14px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none bg-slate-50/50",
+                          isDownloadDeleteDisabled && "opacity-20 pointer-events-none"
+                        )}
+                        onClick={() => selectedIds.forEach(id => handleDownload(id))}
+                      >
+                        <Download className="w-4 h-4 text-slate-400" />
+                        Download
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        className={cn(
+                          "h-11 px-6 gap-2 bg-[#FEE2E2]/50 hover:bg-[#FEE2E2] rounded-xl text-[14px] font-bold text-[#EF4444] transition-colors",
+                          isDownloadDeleteDisabled && "opacity-20 pointer-events-none"
+                        )}
+                        onClick={() => selectedIds.forEach(id => handleDelete(id))}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </Button>
+                    </div>
                   </div>
-                  <Select value={selectedFloor} onValueChange={setSelectedFloor}>
-                    <SelectTrigger className="w-44 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 font-medium shadow-none text-slate-600">
-                      <SelectValue placeholder="All Floors" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Floors</SelectItem>
-                      <SelectItem value="floor1">Ground Floor</SelectItem>
-                      <SelectItem value="floor2">First Floor</SelectItem>
-                      <SelectItem value="terrace">Outdoor Terrace</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="relative">
-                  <Button 
-                    variant="outline" 
-                    className="h-11 text-[13px] font-bold gap-2 border-slate-200 hover:bg-[#0CB5A8]/10 hover:text-slate-700 rounded-xl px-5 text-slate-700 shadow-none group"
-                    onClick={() => {
-                      const missingIds = items.filter(i => !i.qr).map(i => i.id);
-                      if (missingIds.length > 0) performGeneration(missingIds);
-                    }}
-                  >
-                    <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
-                    Generate Missing QR
-                  </Button>
-                  <div className="absolute -top-1.5 -right-1 w-5 h-5 bg-[#EF4444] rounded-full border-2 border-white flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
-                    {items.filter(i => !i.qr).length}
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="relative w-80">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                        <Input placeholder="Search Tables" className="pl-10 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 focus-visible:bg-white placeholder:text-slate-400" />
+                      </div>
+                      <Select value={selectedFloor} onValueChange={setSelectedFloor}>
+                        <SelectTrigger className="w-44 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 font-medium shadow-none text-slate-600">
+                          <SelectValue placeholder="All Floors" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Floors</SelectItem>
+                          <SelectItem value="floor1">Ground Floor</SelectItem>
+                          <SelectItem value="floor2">First Floor</SelectItem>
+                          <SelectItem value="terrace">Outdoor Terrace</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {items.filter(i => !i.qr).length > 0 && (
+                      <div className="relative">
+                        <Button 
+                          variant="outline" 
+                          className="h-11 text-[13px] font-bold gap-2 border-slate-200 hover:bg-[#0CB5A8]/10 hover:text-slate-700 rounded-xl px-5 text-slate-700 shadow-none group"
+                          onClick={() => {
+                            const missingIds = items.filter(i => !i.qr).map(i => i.id);
+                            if (missingIds.length > 0) performGeneration(missingIds);
+                          }}
+                        >
+                          <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
+                          Generate Missing QR
+                        </Button>
+                        <div className="absolute -top-1.5 -right-1 w-5 h-5 bg-[#EF4444] rounded-full border-2 border-white flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
+                          {items.filter(i => !i.qr).length}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader className={cn("transition-colors", selectedIds.length > 0 ? "bg-white" : "bg-[#F9FAFB]")}>
-                    {selectedIds.length > 0 ? (
-                      <TableRow className="hover:bg-transparent border-slate-100">
-                        <TableHead className="w-16 px-7">
-                          <Checkbox 
-                            className="rounded border-slate-300 data-[state=checked]:bg-[#0CB5A8] data-[state=checked]:border-[#0CB5A8] h-4 w-4" 
-                            checked={isAllSelected}
-                            onCheckedChange={toggleSelectAll}
-                          />
-                        </TableHead>
-                        <TableHead colSpan={5} className="py-4">
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setSelectedIds([])}>
-                              <div className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 group-hover:text-slate-900 transition-colors">
-                                <X className="w-3.5 h-3.5" />
-                              </div>
-                              <div className="flex flex-col gap-0.5">
-                                <span className="text-[15px] font-bold text-slate-900 leading-tight">{selectedIds.length}</span>
-                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">selected</span>
-                              </div>
-                            </div>
-                            
-                            <Separator orientation="vertical" className="h-8 bg-slate-100 mx-2" />
-                            
-                            <div className="flex items-center gap-2">
-                              <Button 
-                                variant="outline" 
-                                className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none"
-                                onClick={() => triggerGenerate(selectedIds)}
-                              >
-                                <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
-                                Generate
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                className={cn(
-                                  "h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none",
-                                  isDownloadDeleteDisabled && "opacity-20 pointer-events-none"
-                                )}
-                                onClick={() => selectedIds.forEach(id => handleDownload(id))}
-                              >
-                                <Download className="w-4 h-4 text-slate-400" />
-                                Download
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                className={cn(
-                                  "h-10 px-5 gap-2 bg-[#FEE2E2]/50 hover:bg-[#FEE2E2] rounded-xl text-[13px] font-bold text-[#EF4444] transition-colors",
-                                  isDownloadDeleteDisabled && "opacity-20 pointer-events-none"
-                                )}
-                                onClick={() => selectedIds.forEach(id => handleDelete(id))}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Delete
-                              </Button>
-                            </div>
-                          </div>
-                        </TableHead>
-                      </TableRow>
-                    ) : (
-                      <TableRow className="hover:bg-transparent border-slate-100">
-                        <TableHead className="w-16 px-7">
-                          <Checkbox 
-                            className="rounded border-slate-300 data-[state=checked]:bg-[#0CB5A8] data-[state=checked]:border-[#0CB5A8] h-4 w-4" 
-                            checked={isAllSelected}
-                            onCheckedChange={toggleSelectAll}
-                          />
-                        </TableHead>
-                        <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Table <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
-                        <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">QR Preview <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
-                        <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Status <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
-                        <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Created at</TableHead>
-                        <TableHead className="text-right px-10 text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Actions</TableHead>
-                      </TableRow>
-                    )}
+                  <TableHeader className="bg-[#F9FAFB]">
+                    <TableRow className="hover:bg-transparent border-slate-100">
+                      <TableHead className="w-16 px-7">
+                        <Checkbox 
+                          className="rounded border-slate-300 data-[state=checked]:bg-[#0CB5A8] data-[state=checked]:border-[#0CB5A8] h-4 w-4" 
+                          checked={isAllSelected}
+                          onCheckedChange={toggleSelectAll}
+                        />
+                      </TableHead>
+                      <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Table <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
+                      <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">QR Preview <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
+                      <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Status <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
+                      <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Created at</TableHead>
+                      <TableHead className="text-right px-10 text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Actions</TableHead>
+                    </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredItems.map((row) => (
@@ -599,7 +592,7 @@ export default function QRCodesPage() {
                               variant="outline" 
                               size="sm" 
                               className="h-8 text-[10px] font-bold gap-2 px-3.5 border-slate-200 rounded-lg text-slate-500 hover:bg-[#0CB5A8]/10 hover:text-slate-500 shadow-none uppercase tracking-tight"
-                              onClick={() => performGeneration([row.id])}
+                              onClick={() => triggerGenerate([row.id])}
                             >
                               <div className="grid grid-cols-2 gap-0.5 opacity-60">
                                 <div className="w-0.5 h-0.5 bg-slate-400 rounded-full" />
