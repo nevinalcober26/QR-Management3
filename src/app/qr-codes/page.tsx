@@ -5,19 +5,16 @@ import {
   LayoutGrid, 
   BarChart3, 
   LineChart, 
-  List, 
-  BookOpen, 
+  Plus, 
   Grid3X3, 
   Users, 
   Settings, 
-  Link as LinkIcon, 
   Search, 
   Calendar, 
   RefreshCcw, 
   ArrowLeft,
   ChevronDown,
   Download,
-  Plus,
   MoreHorizontal,
   Sparkles,
   ChevronRight,
@@ -28,12 +25,9 @@ import {
   FileDown,
   FileImage,
   Info,
-  Layers,
-  Layout,
-  ClipboardList,
-  Contact,
-  Plug,
   Armchair,
+  ClipboardList,
+  Plug,
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,6 +67,16 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -171,6 +175,10 @@ export default function QRCodesPage() {
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
   const [selectedFloor, setSelectedFloor] = useState('all');
 
+  // Regeneration logic state
+  const [idsToGenerate, setIdsToGenerate] = useState<string[]>([]);
+  const [isRegenerateConfirmOpen, setIsRegenerateConfirmOpen] = useState(false);
+
   // Drawer Table Selector State
   const [tableSearchTerm, setTableSearchTerm] = useState('');
   const [isTableSelectorOpen, setIsTableSelectorOpen] = useState(false);
@@ -204,7 +212,8 @@ export default function QRCodesPage() {
     setIsPreviewOpen(true);
   };
 
-  const handleGenerate = (id: string) => {
+  // The actual generation logic
+  const performGeneration = (targetIds: string[]) => {
     const now = new Date();
     const formattedDate = now.toLocaleString('en-US', { 
       month: 'short', 
@@ -216,15 +225,32 @@ export default function QRCodesPage() {
     }).replace(',', ' at');
 
     setItems(prev => prev.map(item => 
-      item.id === id 
-        ? { ...item, qr: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${id}`, status: 'Active', date: formattedDate }
+      targetIds.includes(item.id)
+        ? { ...item, qr: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.id}`, status: 'Active', date: formattedDate }
         : item
     ));
 
     toast({
-      title: "QR Code Generated",
-      description: `QR code for table ${id} has been created successfully.`,
+      title: targetIds.length > 1 ? "QR Codes Generated" : "QR Code Generated",
+      description: targetIds.length > 1 
+        ? `${targetIds.length} QR codes have been updated successfully.`
+        : `QR code for table ${targetIds[0]} has been created successfully.`,
     });
+    
+    setIdsToGenerate([]);
+    setIsRegenerateConfirmOpen(false);
+  };
+
+  // Trigger generation with confirmation if needed
+  const triggerGenerate = (targetIds: string[]) => {
+    const itemsWithExistingQR = items.filter(item => targetIds.includes(item.id) && item.qr);
+    
+    if (itemsWithExistingQR.length > 0) {
+      setIdsToGenerate(targetIds);
+      setIsRegenerateConfirmOpen(true);
+    } else {
+      performGeneration(targetIds);
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -247,6 +273,11 @@ export default function QRCodesPage() {
   const isAllSelected = selectedIds.length === filteredItems.length && filteredItems.length > 0;
   const lookbackOptions = ['1 W', '1 M', '3 M', '6 M', '1 Y', '3 Y'];
 
+  // Logic for header buttons based on selection
+  const selectedItems = useMemo(() => items.filter(item => selectedIds.includes(item.id)), [items, selectedIds]);
+  const hasSelectionWithoutQR = useMemo(() => selectedItems.some(item => !item.qr), [selectedItems]);
+  const isDownloadDeleteDisabled = useMemo(() => hasSelectionWithoutQR, [hasSelectionWithoutQR]);
+
   // Smart Search for Table Selector in Drawer
   const filteredDrawerTables = useMemo(() => {
     const term = tableSearchTerm.toLowerCase();
@@ -256,10 +287,7 @@ export default function QRCodesPage() {
     );
   }, [items, tableSearchTerm]);
 
-  // Prevent hydration mismatch by only rendering after mount
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
@@ -448,6 +476,10 @@ export default function QRCodesPage() {
                   <Button 
                     variant="outline" 
                     className="h-11 text-[13px] font-bold gap-2 border-slate-200 hover:bg-[#0CB5A8]/10 hover:text-slate-700 rounded-xl px-5 text-slate-700 shadow-none group"
+                    onClick={() => {
+                      const missingIds = items.filter(i => !i.qr).map(i => i.id);
+                      if (missingIds.length > 0) performGeneration(missingIds);
+                    }}
                   >
                     <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
                     Generate Missing QR
@@ -488,14 +520,17 @@ export default function QRCodesPage() {
                               <Button 
                                 variant="outline" 
                                 className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none"
-                                onClick={() => selectedIds.forEach(id => handleGenerate(id))}
+                                onClick={() => triggerGenerate(selectedIds)}
                               >
                                 <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
                                 Generate
                               </Button>
                               <Button 
                                 variant="outline" 
-                                className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none"
+                                className={cn(
+                                  "h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-[#0CB5A8]/10 hover:text-slate-700 shadow-none",
+                                  isDownloadDeleteDisabled && "opacity-20 pointer-events-none"
+                                )}
                                 onClick={() => selectedIds.forEach(id => handleDownload(id))}
                               >
                                 <Download className="w-4 h-4 text-slate-400" />
@@ -503,7 +538,10 @@ export default function QRCodesPage() {
                               </Button>
                               <Button 
                                 variant="ghost" 
-                                className="h-10 px-5 gap-2 bg-[#FEE2E2]/50 hover:bg-[#FEE2E2] rounded-xl text-[13px] font-bold text-[#EF4444] transition-colors"
+                                className={cn(
+                                  "h-10 px-5 gap-2 bg-[#FEE2E2]/50 hover:bg-[#FEE2E2] rounded-xl text-[13px] font-bold text-[#EF4444] transition-colors",
+                                  isDownloadDeleteDisabled && "opacity-20 pointer-events-none"
+                                )}
                                 onClick={() => selectedIds.forEach(id => handleDelete(id))}
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -560,7 +598,7 @@ export default function QRCodesPage() {
                               variant="outline" 
                               size="sm" 
                               className="h-8 text-[10px] font-bold gap-2 px-3.5 border-slate-200 rounded-lg text-slate-500 hover:bg-[#0CB5A8]/10 hover:text-slate-500 shadow-none uppercase tracking-tight"
-                              onClick={() => handleGenerate(row.id)}
+                              onClick={() => performGeneration([row.id])}
                             >
                               <div className="grid grid-cols-2 gap-0.5 opacity-60">
                                 <div className="w-0.5 h-0.5 bg-slate-400 rounded-full" />
@@ -593,15 +631,14 @@ export default function QRCodesPage() {
                             <DropdownMenuContent align="end" className="w-56 rounded-xl border-slate-100 p-2 shadow-xl">
                               <DropdownMenuLabel className="px-3 py-2 text-[15px] font-bold text-slate-900 tracking-tight">Actions</DropdownMenuLabel>
                               <DropdownMenuSeparator className="bg-slate-50 mx-0" />
-                              {!row.qr ? (
-                                <DropdownMenuItem 
-                                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 focus:bg-[#0CB5A8]/10 hover:bg-[#0CB5A8]/10 cursor-pointer transition-colors focus:text-[#0CB5A8]"
-                                  onClick={() => handleGenerate(row.id)}
-                                >
-                                  <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
-                                  <span className="text-[14px] font-medium tracking-tight">Generate</span>
-                                </DropdownMenuItem>
-                              ) : (
+                              <DropdownMenuItem 
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 focus:bg-[#0CB5A8]/10 hover:bg-[#0CB5A8]/10 cursor-pointer transition-colors focus:text-[#0CB5A8]"
+                                onClick={() => triggerGenerate([row.id])}
+                              >
+                                <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
+                                <span className="text-[14px] font-medium tracking-tight">{row.qr ? 'Regenerate' : 'Generate'}</span>
+                              </DropdownMenuItem>
+                              {row.qr && (
                                 <>
                                   <DropdownMenuItem 
                                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 focus:bg-[#0CB5A8]/10 hover:bg-[#0CB5A8]/10 cursor-pointer transition-colors focus:text-[#0CB5A8]"
@@ -694,7 +731,6 @@ export default function QRCodesPage() {
               <div className="space-y-2">
                 <Label className="text-[13px] font-bold text-slate-700">Table Name/Number <span className="text-red-500">*</span></Label>
                 
-                {/* Custom Table Selector Popover matching design exactly */}
                 <Popover open={isTableSelectorOpen} onOpenChange={setIsTableSelectorOpen}>
                   <PopoverTrigger asChild>
                     <div className="flex items-center justify-between w-full h-12 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-400 px-4 cursor-pointer hover:border-[#0CB5A8]/40 transition-colors focus:ring-2 focus:ring-[#0CB5A8]/20">
@@ -713,7 +749,6 @@ export default function QRCodesPage() {
                   </PopoverTrigger>
                   <PopoverContent className="w-[520px] p-0 border-none shadow-2xl rounded-[20px] overflow-hidden" align="start">
                     <div className="p-4 space-y-4">
-                      {/* Smart Search Bar with Teal Border */}
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
                         <Input 
@@ -816,7 +851,7 @@ export default function QRCodesPage() {
                 className="h-12 px-8 rounded-xl bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white border-none shadow-lg shadow-[#0CB5A8]/20 text-[14px] font-bold"
                 onClick={() => {
                   if (selectedTableInDrawer) {
-                    handleGenerate(selectedTableInDrawer.id);
+                    performGeneration([selectedTableInDrawer.id]);
                     setIsDrawerOpen(false);
                     setSelectedTableInDrawer(null);
                   }
@@ -868,6 +903,27 @@ export default function QRCodesPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Regeneration Confirmation Dialog */}
+      <AlertDialog open={isRegenerateConfirmOpen} onOpenChange={setIsRegenerateConfirmOpen}>
+        <AlertDialogContent className="rounded-2xl border-none shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl font-bold text-slate-900">Regenerate QR Code?</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-500 font-medium">
+              One or more selected tables already have active QR codes. Regenerating will replace them. Do you want to proceed?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="rounded-xl border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="rounded-xl bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold border-none"
+              onClick={() => performGeneration(idsToGenerate)}
+            >
+              Confirm Regeneration
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Download Format Modal */}
       <Dialog open={isDownloadModalOpen} onOpenChange={setIsDownloadModalOpen}>
