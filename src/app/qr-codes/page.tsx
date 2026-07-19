@@ -75,6 +75,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
@@ -124,6 +129,7 @@ export default function QRCodesPage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [previewTableId, setPreviewTableId] = useState<string | null>(null);
+  const [lookbackWindow, setLookbackWindow] = useState('3 M');
 
   useEffect(() => {
     setMounted(true);
@@ -189,6 +195,8 @@ export default function QRCodesPage() {
   };
 
   const isAllSelected = selectedIds.length === items.length && items.length > 0;
+
+  const lookbackOptions = ['1 W', '1 M', '3 M', '6 M', '1 Y', '3 Y'];
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
@@ -266,11 +274,38 @@ export default function QRCodesPage() {
                 <div className="pl-10 bg-slate-50/50 border border-slate-100 h-10 rounded-md w-full" />
               )}
             </div>
-            <div className="flex items-center gap-2 px-3 h-10 bg-white rounded-lg border border-slate-200 text-[13px] font-medium text-slate-600 shrink-0 cursor-pointer hover:bg-slate-50 transition-colors">
-              <Calendar className="w-4 h-4 text-slate-400" />
-              <span>Last 3M</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-            </div>
+            
+            {/* Lookback Window Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <div className="flex items-center gap-2 px-3 h-10 bg-white rounded-lg border border-slate-200 text-[13px] font-medium text-slate-600 shrink-0 cursor-pointer hover:bg-slate-50 transition-colors">
+                  <Calendar className="w-4 h-4 text-slate-400" />
+                  <span>Last {lookbackWindow}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[380px] p-6 rounded-[24px] border-slate-100 shadow-2xl" align="start">
+                <div className="space-y-4">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">DAY(S) LOOKBACK WINDOW</span>
+                  <div className="grid grid-cols-3 gap-3">
+                    {lookbackOptions.map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => setLookbackWindow(option)}
+                        className={cn(
+                          "h-14 rounded-xl border text-[15px] font-bold transition-all",
+                          lookbackWindow === option 
+                            ? "bg-primary/5 border-primary text-primary" 
+                            : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
+                        )}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="flex items-center gap-6">
@@ -326,13 +361,13 @@ export default function QRCodesPage() {
                   <div className="relative w-80" suppressHydrationWarning>
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                     {mounted ? (
-                      <Input placeholder="Search Tables" className="pl-10 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 focus-visible:bg-white" />
+                      <Input placeholder="Search Tables" className="pl-10 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 focus-visible:bg-white placeholder:text-slate-400" />
                     ) : (
                       <div className="pl-10 h-11 border border-slate-100 rounded-xl w-full bg-slate-50/50" />
                     )}
                   </div>
                   <Select defaultValue="all">
-                    <SelectTrigger className="w-44 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 font-medium shadow-none">
+                    <SelectTrigger className="w-44 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 font-medium shadow-none text-slate-600">
                       <SelectValue placeholder="All Floors" />
                     </SelectTrigger>
                     <SelectContent>
