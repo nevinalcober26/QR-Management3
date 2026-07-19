@@ -256,6 +256,11 @@ export default function QRCodesPage() {
     );
   }, [items, tableSearchTerm]);
 
+  // Prevent hydration mismatch by only rendering after mount
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
       {/* Sidebar */}
