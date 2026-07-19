@@ -254,29 +254,29 @@ export default function QRCodesPage() {
           <SidebarItem icon={Plug} label="Integration" hasAdd />
         </div>
 
-        {/* Sidebar Footer Design 100% fidelity */}
-        <div className="bg-[#111827] p-6 rounded-t-[32px] mt-auto">
+        {/* Sidebar Footer - More Compact */}
+        <div className="bg-[#111827] p-5 rounded-t-[28px] mt-auto">
           {/* Restaurant Profile Card */}
-          <div className="bg-[#1E293B] rounded-[24px] p-4 flex items-center justify-between group cursor-pointer transition-colors hover:bg-[#2D3748] shadow-lg">
+          <div className="bg-[#1E293B] rounded-[20px] p-3.5 flex items-center justify-between group cursor-pointer transition-colors hover:bg-[#2D3748] shadow-lg">
             <div className="flex items-center gap-3">
-              <Avatar className="w-11 h-11 border-2 border-white/10 shadow-lg">
+              <Avatar className="w-10 h-10 border-2 border-white/10 shadow-lg">
                 <AvatarImage src="https://picsum.photos/seed/restaurant/100/100" />
                 <AvatarFallback className="bg-[#0CB5A8]/20 text-[#0CB5A8] font-bold">B</AvatarFallback>
               </Avatar>
               <div className="flex flex-col min-w-0">
-                <span className="text-[11px] text-[#0CB5A8] font-bold uppercase tracking-wider leading-none mb-1">BLOOMSBURY'S</span>
-                <span className="text-[14px] font-bold text-white tracking-tight">Ras Al Khaimah</span>
+                <span className="text-[10px] text-[#0CB5A8] font-bold uppercase tracking-wider leading-none mb-1">BLOOMSBURY'S</span>
+                <span className="text-[13px] font-bold text-white tracking-tight">Ras Al Khaimah</span>
               </div>
             </div>
             <ChevronDown className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
           </div>
 
           {/* Help & Support */}
-          <div className="flex items-center gap-3 px-4 py-6 mt-1 group cursor-pointer">
+          <div className="flex items-center gap-3 px-3.5 py-4 mt-1 group cursor-pointer">
             <div className="w-6 h-6 rounded-full border-2 border-[#0CB5A8] flex items-center justify-center group-hover:bg-[#0CB5A8]/10 transition-colors">
               <HelpCircle className="w-3.5 h-3.5 text-[#0CB5A8]" />
             </div>
-            <span className="text-[15px] font-semibold text-slate-400 group-hover:text-white transition-colors">Help & Support</span>
+            <span className="text-[14px] font-semibold text-slate-400 group-hover:text-white transition-colors">Help & Support</span>
           </div>
         </div>
       </aside>
