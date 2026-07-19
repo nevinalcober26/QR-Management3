@@ -176,6 +176,10 @@ export default function QRCodesPage() {
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
   const [selectedFloor, setSelectedFloor] = useState('all');
 
+  // Drawer Customization State
+  const [qrColor, setQrColor] = useState('#000000');
+  const [qrBgColor, setQrBgColor] = useState('#FFFFFF');
+
   // Regeneration logic state
   const [idsToGenerate, setIdsToGenerate] = useState<string[]>([]);
   const [isRegenerateConfirmOpen, setIsRegenerateConfirmOpen] = useState(false);
@@ -213,7 +217,6 @@ export default function QRCodesPage() {
     setIsPreviewOpen(true);
   };
 
-  // The actual generation logic
   const performGeneration = (targetIds: string[]) => {
     const now = new Date();
     const formattedDate = now.toLocaleString('en-US', { 
@@ -227,7 +230,7 @@ export default function QRCodesPage() {
 
     setItems(prev => prev.map(item => 
       targetIds.includes(item.id)
-        ? { ...item, qr: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.id}`, status: 'Active', date: formattedDate }
+        ? { ...item, qr: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.id}&color=${qrColor.substring(1)}&bgcolor=${qrBgColor.substring(1)}`, status: 'Active', date: formattedDate }
         : item
     ));
 
@@ -242,7 +245,6 @@ export default function QRCodesPage() {
     setIsRegenerateConfirmOpen(false);
   };
 
-  // Trigger generation with confirmation if needed
   const triggerGenerate = (targetIds: string[]) => {
     const itemsWithExistingQR = items.filter(item => targetIds.includes(item.id) && item.qr);
     
@@ -274,17 +276,18 @@ export default function QRCodesPage() {
   const isAllSelected = selectedIds.length === filteredItems.length && filteredItems.length > 0;
   const lookbackOptions = ['1 W', '1 M', '3 M', '6 M', '1 Y', '3 Y'];
 
-  // Logic for header buttons based on selection
   const selectedItems = useMemo(() => items.filter(item => selectedIds.includes(item.id)), [items, selectedIds]);
   const hasSelectionWithoutQR = useMemo(() => selectedItems.some(item => !item.qr), [selectedItems]);
   const isDownloadDeleteDisabled = useMemo(() => hasSelectionWithoutQR, [hasSelectionWithoutQR]);
 
-  // Smart Search for Table Selector in Drawer
+  // Smart Search for Table Selector in Drawer - ONLY show tables WITHOUT QR
   const filteredDrawerTables = useMemo(() => {
     const term = tableSearchTerm.toLowerCase();
     return items.filter(item => 
-      item.id.toLowerCase().includes(term) || 
-      getFloorName(item.floor).toLowerCase().includes(term)
+      !item.qr && (
+        item.id.toLowerCase().includes(term) || 
+        getFloorName(item.floor).toLowerCase().includes(term)
+      )
     );
   }, [items, tableSearchTerm]);
 
@@ -819,15 +822,45 @@ export default function QRCodesPage() {
                 <div className="space-y-2">
                   <Label className="text-[13px] font-bold text-slate-700">QR Color</Label>
                   <div className="relative group">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-black border border-slate-200 shadow-sm" />
-                    <Input defaultValue="#000000" className="h-12 pl-14 bg-white border-slate-200 rounded-xl text-[14px] font-medium focus-visible:ring-[#0CB5A8]/20" />
+                    <div 
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg border border-slate-200 shadow-sm cursor-pointer" 
+                      style={{ backgroundColor: qrColor }}
+                      onClick={() => document.getElementById('qr-color-picker')?.click()}
+                    />
+                    <input 
+                      id="qr-color-picker"
+                      type="color" 
+                      className="sr-only" 
+                      value={qrColor} 
+                      onChange={(e) => setQrColor(e.target.value)} 
+                    />
+                    <Input 
+                      value={qrColor} 
+                      onChange={(e) => setQrColor(e.target.value)}
+                      className="h-12 pl-14 bg-white border-slate-200 rounded-xl text-[14px] font-medium focus-visible:ring-[#0CB5A8]/20" 
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[13px] font-bold text-slate-700">QR background</Label>
                   <div className="relative group">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white border border-slate-200 shadow-sm" />
-                    <Input defaultValue="#FFFFFF" className="h-12 pl-14 bg-white border-slate-200 rounded-xl text-[14px] font-medium focus-visible:ring-[#0CB5A8]/20" />
+                    <div 
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg border border-slate-200 shadow-sm cursor-pointer" 
+                      style={{ backgroundColor: qrBgColor }}
+                      onClick={() => document.getElementById('qr-bg-color-picker')?.click()}
+                    />
+                    <input 
+                      id="qr-bg-color-picker"
+                      type="color" 
+                      className="sr-only" 
+                      value={qrBgColor} 
+                      onChange={(e) => setQrBgColor(e.target.value)} 
+                    />
+                    <Input 
+                      value={qrBgColor}
+                      onChange={(e) => setQrBgColor(e.target.value)}
+                      className="h-12 pl-14 bg-white border-slate-200 rounded-xl text-[14px] font-medium focus-visible:ring-[#0CB5A8]/20" 
+                    />
                   </div>
                 </div>
               </div>
@@ -879,7 +912,7 @@ export default function QRCodesPage() {
           <div className="px-8 py-10 flex items-center justify-center">
             <div className="w-64 h-64 border border-slate-100 rounded-[32px] p-8 bg-white shadow-sm flex items-center justify-center">
               <img 
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${previewTableId}`} 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${previewTableId}&color=${qrColor.substring(1)}&bgcolor=${qrBgColor.substring(1)}`} 
                 alt="QR Code Preview" 
                 className="w-full h-full object-contain"
               />
