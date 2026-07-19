@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   LayoutGrid, 
   BarChart3, 
@@ -22,6 +22,8 @@ import {
   Sparkles,
   ChevronRight,
   HelpCircle,
+  X,
+  Trash2,
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,7 +70,7 @@ const SidebarSectionLabel = ({ label }: { label: string }) => (
 );
 
 export default function QRCodesPage() {
-  const tableData = [
+  const tableData = useMemo(() => [
     { id: 'T1', qr: null, status: 'Inactive', date: 'NA' },
     { id: 'T2', qr: null, status: 'Inactive', date: 'NA' },
     { id: 'T3', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T3', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
@@ -76,7 +78,25 @@ export default function QRCodesPage() {
     { id: 'T5', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T5', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
     { id: 'T6', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T6', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
     { id: 'T7', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T7', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-  ];
+  ], []);
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === tableData.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(tableData.map(row => row.id));
+    }
+  };
+
+  const toggleSelectRow = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const isAllSelected = selectedIds.length === tableData.length;
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900">
@@ -229,23 +249,79 @@ export default function QRCodesPage() {
 
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-[#F9FAFB]">
-                    <TableRow className="hover:bg-transparent border-slate-100">
-                      <TableHead className="w-16 px-7">
-                        <Checkbox className="rounded border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4" />
-                      </TableHead>
-                      <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Table <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
-                      <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">QR Preview <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
-                      <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Status <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
-                      <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Created at</TableHead>
-                      <TableHead className="text-right px-10 text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Actions</TableHead>
-                    </TableRow>
+                  <TableHeader className={cn("transition-colors", selectedIds.length > 0 ? "bg-white" : "bg-[#F9FAFB]")}>
+                    {selectedIds.length > 0 ? (
+                      <TableRow className="hover:bg-transparent border-slate-100">
+                        <TableHead className="w-16 px-7">
+                          <Checkbox 
+                            className="rounded border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4" 
+                            checked={isAllSelected}
+                            onCheckedChange={toggleSelectAll}
+                          />
+                        </TableHead>
+                        <TableHead colSpan={5} className="py-4">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setSelectedIds([])}>
+                              <div className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 group-hover:text-slate-900 transition-colors">
+                                <X className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-[15px] font-bold text-slate-900 leading-tight">{selectedIds.length}</span>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tight">selected</span>
+                              </div>
+                            </div>
+                            
+                            <Separator orientation="vertical" className="h-8 bg-slate-100 mx-2" />
+                            
+                            <div className="flex items-center gap-2">
+                              <Button variant="outline" className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none">
+                                <Sparkles className="w-4 h-4 text-primary" />
+                                Generate
+                              </Button>
+                              <Button variant="outline" className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-300 hover:bg-slate-50 shadow-none">
+                                <Download className="w-4 h-4" />
+                                Download
+                              </Button>
+                              <Button variant="ghost" className="h-10 px-5 gap-2 bg-[#FEE2E2]/50 hover:bg-[#FEE2E2] rounded-xl text-[13px] font-bold text-[#EF4444] transition-colors">
+                                <Trash2 className="w-4 h-4" />
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
+                        </TableHead>
+                      </TableRow>
+                    ) : (
+                      <TableRow className="hover:bg-transparent border-slate-100">
+                        <TableHead className="w-16 px-7">
+                          <Checkbox 
+                            className="rounded border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4" 
+                            checked={isAllSelected}
+                            onCheckedChange={toggleSelectAll}
+                          />
+                        </TableHead>
+                        <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Table <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
+                        <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">QR Preview <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
+                        <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Status <ChevronDown className="inline w-3 h-3 ml-1 text-slate-300" /></TableHead>
+                        <TableHead className="text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Created at</TableHead>
+                        <TableHead className="text-right px-10 text-[11px] font-bold text-slate-400 uppercase tracking-widest py-5">Actions</TableHead>
+                      </TableRow>
+                    )}
                   </TableHeader>
                   <TableBody>
                     {tableData.map((row) => (
-                      <TableRow key={row.id} className="hover:bg-slate-50/50 border-slate-50 transition-colors h-20">
+                      <TableRow 
+                        key={row.id} 
+                        className={cn(
+                          "hover:bg-slate-50/50 border-slate-50 transition-colors h-20",
+                          selectedIds.includes(row.id) && "bg-slate-50/30"
+                        )}
+                      >
                         <TableCell className="px-7">
-                          <Checkbox className="rounded border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4" />
+                          <Checkbox 
+                            className="rounded border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4" 
+                            checked={selectedIds.includes(row.id)}
+                            onCheckedChange={() => toggleSelectRow(row.id)}
+                          />
                         </TableCell>
                         <TableCell className="font-bold text-slate-900 text-[15px]">{row.id}</TableCell>
                         <TableCell>
@@ -300,7 +376,7 @@ export default function QRCodesPage() {
                     </SelectContent>
                   </Select>
                   <span className="text-[13px] text-slate-400 font-medium">
-                    Showing <span className="text-slate-900 font-bold">1 to 6</span> of <span className="text-slate-900 font-bold">124</span> results
+                    Showing <span className="text-slate-900 font-bold">1 to {tableData.length}</span> of <span className="text-slate-900 font-bold">124</span> results
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
