@@ -28,6 +28,11 @@ import {
   FileDown,
   FileImage,
   Info,
+  Layers,
+  Layout,
+  ClipboardList,
+  Contact,
+  Plug,
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -86,22 +91,33 @@ import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
 
 const SidebarItem = ({ icon: Icon, label, active = false, hasAdd = false }: { icon: any, label: string, active?: boolean, hasAdd?: boolean }) => (
-  <div className={cn(
-    "group flex items-center justify-between px-6 py-2.5 cursor-pointer transition-colors relative",
-    active ? "bg-slate-50 text-primary" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-  )}>
-    <div className="flex items-center gap-3">
-      <Icon className={cn("w-[18px] h-[18px]", active ? "text-primary" : "text-slate-400 group-hover:text-slate-600")} />
-      <span className={cn("text-[13px] font-medium", active && "font-semibold")}>{label}</span>
+  <div className="px-4 py-0.5">
+    <div className={cn(
+      "group flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all rounded-xl",
+      active ? "bg-primary/10 text-primary" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+    )}>
+      <div className="flex items-center gap-3">
+        <Icon className={cn("w-[18px] h-[18px]", active ? "text-primary" : "text-slate-400 group-hover:text-slate-600")} />
+        <span className={cn("text-[13px] font-semibold tracking-tight")}>{label}</span>
+      </div>
+      {hasAdd && (
+        <div className="border border-slate-200 rounded w-4.5 h-4.5 flex items-center justify-center bg-white shadow-sm">
+          <Plus className="w-2.5 h-2.5 text-slate-400" />
+        </div>
+      )}
     </div>
-    {hasAdd && <div className="border border-slate-200 rounded p-0.5"><Plus className="w-2.5 h-2.5 text-slate-400" /></div>}
-    {active && <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-primary rounded-l-full" />}
   </div>
 );
 
 const SidebarSectionLabel = ({ label }: { label: string }) => (
-  <div className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+  <div className="px-8 py-3.5 mt-2 first:mt-0 text-[11px] font-bold text-slate-400/80 uppercase tracking-[0.15em]">
     {label}
+  </div>
+);
+
+const SidebarDivider = () => (
+  <div className="px-8 py-2">
+    <div className="border-t border-dotted border-slate-200 w-full" />
   </div>
 );
 
@@ -201,54 +217,67 @@ export default function QRCodesPage() {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-white flex flex-col shrink-0 border-r border-slate-100">
-        <div className="p-7 pb-4">
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col gap-0.5">
-               <div className="w-6 h-1 bg-primary rounded-full" />
-               <div className="w-6 h-1 bg-primary rounded-full" />
-               <div className="w-4 h-1 bg-primary rounded-full" />
-            </div>
-            <span className="text-xl font-bold text-[#111827] tracking-tight">eMenu</span>
+      <aside className="w-[280px] bg-white flex flex-col shrink-0 border-r border-slate-100 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <div className="p-8 pb-6 flex items-center gap-3">
+          <div className="flex flex-col gap-1 w-8">
+            <div className="h-1 bg-primary rounded-full w-full" />
+            <div className="h-1 bg-primary rounded-full w-full" />
+            <div className="h-1 bg-primary rounded-full w-2/3" />
           </div>
+          <span className="text-2xl font-black text-[#111827] tracking-tighter">eMenu</span>
         </div>
 
-        <div className="flex-1 overflow-y-auto pt-2">
+        <Separator className="bg-slate-50" />
+
+        <div className="flex-1 overflow-y-auto pt-4 pb-8 no-scrollbar">
           <SidebarSectionLabel label="OVERVIEW" />
           <SidebarItem icon={LayoutGrid} label="Dashboard" />
           <SidebarItem icon={BarChart3} label="Analytics" />
           <SidebarItem icon={LineChart} label="Reports" />
 
+          <SidebarDivider />
+
           <SidebarSectionLabel label="MANAGEMENT" />
-          <SidebarItem icon={List} label="Order List" />
+          <SidebarItem icon={ClipboardList} label="Order List" />
           <SidebarItem icon={BookOpen} label="Menu Builder" />
           <SidebarItem icon={Grid3X3} label="Table Operations" active />
           <SidebarItem icon={Users} label="Guest Directory" />
 
+          <SidebarDivider />
+
           <SidebarSectionLabel label="CONFIGURATION" />
           <SidebarItem icon={Settings} label="Settings" hasAdd />
 
+          <SidebarDivider />
+
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={LinkIcon} label="Integration" hasAdd />
+          <SidebarItem icon={Plug} label="Integration" hasAdd />
         </div>
 
-        <div className="p-5 mt-auto">
-          <div className="bg-[#111827] text-white rounded-xl p-4 flex items-center justify-between mb-4 shadow-lg">
-            <div className="flex items-center gap-3">
-              <Avatar className="w-8 h-8 rounded-lg border border-slate-700">
-                <AvatarImage src="https://picsum.photos/seed/restaurant/100/100" />
-                <AvatarFallback>B</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col min-w-0">
-                <span className="text-[10px] text-primary font-bold uppercase tracking-wider">BLOOMSBURY'S</span>
-                <span className="text-[11px] font-medium truncate opacity-80">Ras Al Khaimah</span>
+        {/* Sidebar Bottom Profile Section */}
+        <div className="p-4 mt-auto">
+          <div className="bg-[#111827] text-white rounded-[24px] p-4.5 flex flex-col gap-4 shadow-2xl relative overflow-hidden group cursor-pointer">
+            <div className="flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-10 h-10 rounded-[14px] border border-white/10 shadow-lg">
+                  <AvatarImage src="https://picsum.photos/seed/restaurant/100/100" />
+                  <AvatarFallback className="bg-primary/20 text-primary font-bold">B</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none mb-1">BLOOMSBURY'S</span>
+                  <span className="text-[12px] font-semibold truncate text-slate-300">Ras Al Khaimah</span>
+                </div>
               </div>
+              <ChevronDown className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            {/* Glossy overlay effect */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none" />
           </div>
-          <div className="flex items-center gap-2.5 text-slate-500 hover:text-primary cursor-pointer transition-colors px-2 py-1">
-            <HelpCircle className="w-4 h-4" />
-            <span className="text-[13px] font-medium">Help & Support</span>
+          <div className="flex items-center gap-3 text-slate-500 hover:text-primary cursor-pointer transition-all px-4 py-5 mt-2 group">
+            <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+              <HelpCircle className="w-[18px] h-[18px] text-primary" />
+            </div>
+            <span className="text-[14px] font-bold tracking-tight">Help & Support</span>
           </div>
         </div>
       </aside>
@@ -284,16 +313,16 @@ export default function QRCodesPage() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-4 rounded-[20px] border-slate-100 shadow-xl" align="start">
-                <div className="space-y-3">
+              <PopoverContent className="w-[220px] p-3 rounded-[20px] border-slate-100 shadow-xl" align="start">
+                <div className="space-y-2.5">
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">DAY(S) LOOKBACK WINDOW</span>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {lookbackOptions.map((option) => (
                       <button
                         key={option}
                         onClick={() => setLookbackWindow(option)}
                         className={cn(
-                          "h-10 rounded-lg border text-[13px] font-bold transition-all",
+                          "h-8 rounded-lg border text-[11px] font-bold transition-all",
                           lookbackWindow === option 
                             ? "bg-primary/5 border-primary text-primary" 
                             : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
