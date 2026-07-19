@@ -126,36 +126,52 @@ type TableDataItem = {
   qr: string | null;
   status: 'Active' | 'Inactive';
   date: string;
+  floor: string;
 };
+
+const INITIAL_MOCK_DATA: TableDataItem[] = [
+  // Ground Floor
+  { id: 'G1', qr: null, status: 'Inactive', date: 'NA', floor: 'floor1' },
+  { id: 'G2', qr: null, status: 'Inactive', date: 'NA', floor: 'floor1' },
+  { id: 'G3', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=G3', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM', floor: 'floor1' },
+  { id: 'G4', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=G4', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM', floor: 'floor1' },
+  // First Floor
+  { id: 'F1', qr: null, status: 'Inactive', date: 'NA', floor: 'floor2' },
+  { id: 'F2', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=F2', status: 'Active', date: 'Aug 02, 2024 at 11:20 AM', floor: 'floor2' },
+  { id: 'F3', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=F3', status: 'Active', date: 'Aug 02, 2024 at 11:20 AM', floor: 'floor2' },
+  // Outdoor Terrace
+  { id: 'T1', qr: null, status: 'Inactive', date: 'NA', floor: 'terrace' },
+  { id: 'T2', qr: null, status: 'Inactive', date: 'NA', floor: 'terrace' },
+  { id: 'T3', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T3', status: 'Active', date: 'Sep 10, 2024 at 4:30 PM', floor: 'terrace' },
+  { id: 'T4', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T4', status: 'Active', date: 'Sep 10, 2024 at 4:30 PM', floor: 'terrace' },
+];
 
 export default function QRCodesPage() {
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
-  const [items, setItems] = useState<TableDataItem[]>([
-    { id: 'T1', qr: null, status: 'Inactive', date: 'NA' },
-    { id: 'T2', qr: null, status: 'Inactive', date: 'NA' },
-    { id: 'T3', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T3', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-    { id: 'T4', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T4', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-    { id: 'T5', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T5', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-    { id: 'T6', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T6', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-    { id: 'T7', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T7', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-  ]);
+  const [items, setItems] = useState<TableDataItem[]>(INITIAL_MOCK_DATA);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [previewTableId, setPreviewTableId] = useState<string | null>(null);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
+  const [selectedFloor, setSelectedFloor] = useState('all');
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const filteredItems = useMemo(() => {
+    if (selectedFloor === 'all') return items;
+    return items.filter(item => item.floor === selectedFloor);
+  }, [items, selectedFloor]);
+
   const toggleSelectAll = () => {
-    if (selectedIds.length === items.length) {
+    if (selectedIds.length === filteredItems.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(items.map(row => row.id));
+      setSelectedIds(filteredItems.map(row => row.id));
     }
   };
 
@@ -210,7 +226,7 @@ export default function QRCodesPage() {
     });
   };
 
-  const isAllSelected = selectedIds.length === items.length && items.length > 0;
+  const isAllSelected = selectedIds.length === filteredItems.length && filteredItems.length > 0;
 
   const lookbackOptions = ['1 W', '1 M', '3 M', '6 M', '1 Y', '3 Y'];
 
@@ -312,16 +328,16 @@ export default function QRCodesPage() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[220px] p-3 rounded-[20px] border-slate-100 shadow-xl" align="start">
-                <div className="space-y-2.5">
+              <PopoverContent className="w-[180px] p-2 rounded-[16px] border-slate-100 shadow-xl" align="start">
+                <div className="space-y-2">
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">DAY(S) LOOKBACK WINDOW</span>
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="grid grid-cols-3 gap-1">
                     {lookbackOptions.map((option) => (
                       <button
                         key={option}
                         onClick={() => setLookbackWindow(option)}
                         className={cn(
-                          "h-8 rounded-lg border text-[11px] font-bold transition-all",
+                          "h-7 rounded-lg border text-[10px] font-bold transition-all",
                           lookbackWindow === option 
                             ? "bg-[#0CB5A8]/5 border-[#0CB5A8] text-[#0CB5A8]" 
                             : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
@@ -366,10 +382,10 @@ export default function QRCodesPage() {
               <div className="flex items-center gap-3">
                 <Button 
                   variant="outline" 
-                  className="text-[13px] font-bold gap-2 shadow-none border-slate-200 text-slate-600 h-10 px-6 hover:bg-[#0CB5A8]/10 hover:text-slate-600 rounded-lg"
+                  className="text-[13px] font-bold gap-2 shadow-none border-slate-200 text-slate-600 h-10 px-6 hover:bg-[#0CB5A8]/10 hover:text-slate-600 rounded-lg group"
                   onClick={() => setIsDownloadModalOpen(true)}
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
                   Download All
                 </Button>
                 <Button 
@@ -394,7 +410,7 @@ export default function QRCodesPage() {
                       <div className="pl-10 h-11 border border-slate-100 rounded-xl w-full bg-slate-50/50" />
                     )}
                   </div>
-                  <Select defaultValue="all">
+                  <Select value={selectedFloor} onValueChange={setSelectedFloor}>
                     <SelectTrigger className="w-44 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 font-medium shadow-none text-slate-600">
                       <SelectValue placeholder="All Floors" />
                     </SelectTrigger>
@@ -407,7 +423,10 @@ export default function QRCodesPage() {
                   </Select>
                 </div>
                 <div className="relative">
-                  <Button variant="outline" className="h-11 text-[13px] font-bold gap-2 border-slate-200 hover:bg-[#0CB5A8]/10 hover:text-slate-700 rounded-xl px-5 text-slate-700 shadow-none">
+                  <Button 
+                    variant="outline" 
+                    className="h-11 text-[13px] font-bold gap-2 border-slate-200 hover:bg-[#0CB5A8]/10 hover:text-slate-700 rounded-xl px-5 text-slate-700 shadow-none group"
+                  >
                     <Sparkles className="w-4 h-4 text-[#0CB5A8]" />
                     Generate Missing QR
                   </Button>
@@ -490,7 +509,7 @@ export default function QRCodesPage() {
                     )}
                   </TableHeader>
                   <TableBody>
-                    {items.map((row) => (
+                    {filteredItems.map((row) => (
                       <TableRow 
                         key={row.id} 
                         className={cn(
@@ -583,6 +602,13 @@ export default function QRCodesPage() {
                         </TableCell>
                       </TableRow>
                     ))}
+                    {filteredItems.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="h-32 text-center text-slate-400">
+                          No tables found for this floor.
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </div>
@@ -600,7 +626,7 @@ export default function QRCodesPage() {
                     </SelectContent>
                   </Select>
                   <span className="text-[13px] text-slate-400 font-medium">
-                    Showing <span className="text-slate-900 font-bold">1 to {items.length}</span> of <span className="text-slate-900 font-bold">124</span> results
+                    Showing <span className="text-slate-900 font-bold">1 to {filteredItems.length}</span> of <span className="text-slate-900 font-bold">{items.length}</span> results
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
