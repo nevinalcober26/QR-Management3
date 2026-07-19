@@ -491,7 +491,7 @@ export default function QRCodesPage() {
                               <DropdownMenuSeparator className="bg-slate-50 mx-0" />
                               {!row.qr ? (
                                 <DropdownMenuItem 
-                                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors"
+                                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 focus:bg-primary/10 hover:bg-primary/10 cursor-pointer transition-colors focus:text-primary"
                                   onClick={() => handleGenerate(row.id)}
                                 >
                                   <Sparkles className="w-4 h-4 text-primary" />
@@ -500,14 +500,14 @@ export default function QRCodesPage() {
                               ) : (
                                 <>
                                   <DropdownMenuItem 
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 focus:bg-primary/10 hover:bg-primary/10 cursor-pointer transition-colors focus:text-primary"
                                     onClick={() => handleDownload(row.id)}
                                   >
                                     <Download className="w-4 h-4 text-slate-400" />
                                     <span className="text-[14px] font-medium tracking-tight">Download</span>
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#EF4444] hover:bg-red-50 cursor-pointer transition-colors"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#EF4444] focus:bg-red-50 hover:bg-red-50 cursor-pointer transition-colors focus:text-[#EF4444]"
                                     onClick={() => handleDelete(row.id)}
                                   >
                                     <Trash2 className="w-4 h-4" />
