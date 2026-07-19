@@ -284,16 +284,16 @@ export default function QRCodesPage() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[380px] p-6 rounded-[24px] border-slate-100 shadow-2xl" align="start">
-                <div className="space-y-4">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">DAY(S) LOOKBACK WINDOW</span>
-                  <div className="grid grid-cols-3 gap-3">
+              <PopoverContent className="w-[280px] p-4 rounded-[20px] border-slate-100 shadow-xl" align="start">
+                <div className="space-y-3">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">DAY(S) LOOKBACK WINDOW</span>
+                  <div className="grid grid-cols-3 gap-2">
                     {lookbackOptions.map((option) => (
                       <button
                         key={option}
                         onClick={() => setLookbackWindow(option)}
                         className={cn(
-                          "h-14 rounded-xl border text-[15px] font-bold transition-all",
+                          "h-10 rounded-lg border text-[13px] font-bold transition-all",
                           lookbackWindow === option 
                             ? "bg-primary/5 border-primary text-primary" 
                             : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
