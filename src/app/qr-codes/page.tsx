@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   LayoutGrid, 
   BarChart3, 
@@ -70,6 +70,13 @@ const SidebarSectionLabel = ({ label }: { label: string }) => (
 );
 
 export default function QRCodesPage() {
+  const [mounted, setMounted] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const tableData = useMemo(() => [
     { id: 'T1', qr: null, status: 'Inactive', date: 'NA' },
     { id: 'T2', qr: null, status: 'Inactive', date: 'NA' },
@@ -79,8 +86,6 @@ export default function QRCodesPage() {
     { id: 'T6', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T6', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
     { id: 'T7', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T7', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
   ], []);
-
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const toggleSelectAll = () => {
     if (selectedIds.length === tableData.length) {
@@ -165,10 +170,14 @@ export default function QRCodesPage() {
             </Button>
             <div className="relative w-full max-w-lg" suppressHydrationWarning>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-              <Input 
-                placeholder="Order #, table, customer name, email, phone..." 
-                className="pl-10 bg-slate-50/50 border-slate-100 shadow-none text-[13px] h-10 placeholder:text-slate-400 focus-visible:ring-primary/20"
-              />
+              {mounted ? (
+                <Input 
+                  placeholder="Order #, table, customer name, email, phone..." 
+                  className="pl-10 bg-slate-50/50 border-slate-100 shadow-none text-[13px] h-10 placeholder:text-slate-400 focus-visible:ring-primary/20"
+                />
+              ) : (
+                <div className="pl-10 bg-slate-50/50 border border-slate-100 h-10 rounded-md w-full" />
+              )}
             </div>
             <div className="flex items-center gap-2 px-3 h-10 bg-white rounded-lg border border-slate-200 text-[13px] font-medium text-slate-600 shrink-0 cursor-pointer hover:bg-slate-50 transition-colors">
               <Calendar className="w-4 h-4 text-slate-400" />
@@ -220,9 +229,13 @@ export default function QRCodesPage() {
             <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
               <div className="p-5 border-b border-slate-50 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 flex-1">
-                  <div className="relative w-80">
+                  <div className="relative w-80" suppressHydrationWarning>
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                    <Input placeholder="Search Tables" className="pl-10 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 focus-visible:bg-white" />
+                    {mounted ? (
+                      <Input placeholder="Search Tables" className="pl-10 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 focus-visible:bg-white" />
+                    ) : (
+                      <div className="pl-10 h-11 border border-slate-100 rounded-xl w-full bg-slate-50/50" />
+                    )}
                   </div>
                   <Select defaultValue="all">
                     <SelectTrigger className="w-44 h-11 border-slate-100 rounded-xl text-[13px] bg-slate-50/50 font-medium shadow-none">
