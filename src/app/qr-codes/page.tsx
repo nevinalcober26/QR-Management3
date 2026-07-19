@@ -138,12 +138,12 @@ export default function QRCodesPage() {
         {/* Topbar */}
         <header className="h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
-            <Link href="/">
-              <Button variant="outline" size="icon" className="w-9 h-9 shrink-0 border-slate-200 hover:bg-slate-50 rounded-lg">
+            <Button asChild variant="outline" size="icon" className="w-9 h-9 shrink-0 border-slate-200 hover:bg-slate-50 rounded-lg">
+              <Link href="/">
                 <ArrowLeft className="w-4 h-4 text-slate-400" />
-              </Button>
-            </Link>
-            <div className="relative w-full max-w-lg">
+              </Link>
+            </Button>
+            <div className="relative w-full max-w-lg" suppressHydrationWarning>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
               <Input 
                 placeholder="Order #, table, customer name, email, phone..." 

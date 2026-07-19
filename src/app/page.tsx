@@ -24,12 +24,12 @@ export default function Home() {
             <Layout className="w-5 h-5 mr-2" />
             Edit Floor Plan
           </Button>
-          <Link href="/qr-codes">
-            <Button variant="outline" size="lg" className="border-primary/20 hover:bg-primary/10 min-w-[200px] h-12 text-base font-semibold">
+          <Button asChild variant="outline" size="lg" className="border-primary/20 hover:bg-primary/10 min-w-[200px] h-12 text-base font-semibold">
+            <Link href="/qr-codes">
               <Grid3X3 className="w-5 h-5 mr-2 text-primary" />
               Manage QR Codes
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
       <div className="mt-16 w-full max-w-4xl">
