@@ -24,6 +24,7 @@ import {
   HelpCircle,
   X,
   Trash2,
+  Upload,
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 
@@ -72,6 +83,7 @@ const SidebarSectionLabel = ({ label }: { label: string }) => (
 export default function QRCodesPage() {
   const [mounted, setMounted] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -104,7 +116,7 @@ export default function QRCodesPage() {
   const isAllSelected = selectedIds.length === tableData.length;
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900">
+    <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
       {/* Sidebar */}
       <aside className="w-64 bg-white flex flex-col shrink-0 border-r border-slate-100">
         <div className="p-7 pb-4">
@@ -218,7 +230,10 @@ export default function QRCodesPage() {
                   <Download className="w-4 h-4" />
                   Download All
                 </Button>
-                <Button className="text-[13px] font-bold gap-2 shadow-sm bg-primary hover:bg-primary/90 text-primary-foreground h-10 px-6 rounded-lg border-none">
+                <Button 
+                  className="text-[13px] font-bold gap-2 shadow-sm bg-primary hover:bg-primary/90 text-primary-foreground h-10 px-6 rounded-lg border-none"
+                  onClick={() => setIsDrawerOpen(true)}
+                >
                   <Plus className="w-4 h-4" />
                   Create QR Code
                 </Button>
@@ -410,6 +425,118 @@ export default function QRCodesPage() {
           </div>
         </div>
       </main>
+
+      {/* Side Drawer: Generate New QR Code */}
+      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <SheetContent side="right" className="w-[600px] sm:max-w-[600px] p-0 border-none bg-white shadow-2xl flex flex-col [&>button]:hidden">
+          {/* Header area with custom teal close button */}
+          <div className="flex items-start justify-between p-10 pb-6 relative">
+            <div className="space-y-1">
+              <SheetTitle className="text-4xl font-extrabold text-[#111827] tracking-tight leading-tight">Generate New QR Code</SheetTitle>
+              <SheetDescription className="text-slate-400 font-medium text-base">Create a new QR code</SheetDescription>
+            </div>
+            <Button 
+              onClick={() => setIsDrawerOpen(false)}
+              className="absolute -left-16 top-10 w-12 h-12 rounded-full bg-primary hover:bg-primary/90 text-white shadow-xl flex items-center justify-center p-0"
+            >
+              <X className="w-6 h-6" />
+            </Button>
+          </div>
+
+          <Separator className="mx-10 w-auto bg-slate-100" />
+
+          {/* Form Content */}
+          <div className="flex-1 overflow-y-auto p-10 space-y-12">
+            {/* Table Details Section */}
+            <div className="space-y-6">
+              <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">TABLE DETAILS</Label>
+              <div className="space-y-2">
+                <Label className="text-[13px] font-bold text-slate-700">Table Name/Number <span className="text-red-500">*</span></Label>
+                <div className="relative">
+                  <Select>
+                    <SelectTrigger className="w-full h-12 bg-white border-slate-200 rounded-xl text-[14px] font-medium text-slate-400 px-4 focus:ring-primary/20">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center">
+                          <LayoutGrid className="w-4 h-4 text-primary" />
+                        </div>
+                        <SelectValue placeholder="Select a table number..." />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="T1">T1</SelectItem>
+                      <SelectItem value="T2">T2</SelectItem>
+                      <SelectItem value="T3">T3</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* QR Customization Section */}
+            <div className="space-y-6">
+              <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">QR CUSTOMIZATION</Label>
+              
+              {/* Upload Box */}
+              <div className="border-2 border-dashed border-slate-200 rounded-24px p-12 flex flex-col items-center justify-center gap-4 bg-slate-50/30 hover:bg-slate-50/50 transition-colors cursor-pointer group rounded-[24px]">
+                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                  <Upload className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-center space-y-1">
+                  <p className="text-[15px] font-bold text-slate-900 tracking-tight">Click to upload logo</p>
+                  <p className="text-[12px] font-medium text-slate-400">PNG, JPG (max. 2MB)</p>
+                </div>
+              </div>
+
+              {/* Quality Select */}
+              <div className="space-y-2">
+                <Label className="text-[13px] font-bold text-slate-700">Quality</Label>
+                <Select defaultValue="low">
+                  <SelectTrigger className="w-full h-12 bg-white border-slate-200 rounded-xl text-[14px] font-medium px-4 focus:ring-primary/20">
+                    <SelectValue placeholder="Select quality" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Color Inputs Row */}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-[13px] font-bold text-slate-700">QR Color</Label>
+                  <div className="relative group">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-black border border-slate-200 shadow-sm" />
+                    <Input defaultValue="#000000" className="h-12 pl-14 bg-white border-slate-200 rounded-xl text-[14px] font-medium focus-visible:ring-primary/20" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[13px] font-bold text-slate-700">QR background</Label>
+                  <div className="relative group">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white border border-slate-200 shadow-sm" />
+                    <Input defaultValue="#FFFFFF" className="h-12 pl-14 bg-white border-slate-200 rounded-xl text-[14px] font-medium focus-visible:ring-primary/20" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Actions */}
+          <SheetFooter className="p-10 pt-6 mt-auto">
+            <div className="flex items-center justify-end gap-4 w-full">
+              <SheetClose asChild>
+                <Button variant="outline" className="h-12 px-8 rounded-xl border-slate-200 text-[14px] font-bold text-slate-600 hover:bg-slate-50 shadow-none">
+                  Cancel
+                </Button>
+              </SheetClose>
+              <Button className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-white border-none shadow-lg shadow-primary/20 text-[14px] font-bold">
+                Create QR Code
+              </Button>
+            </div>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
