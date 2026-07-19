@@ -359,8 +359,8 @@ export default function QRCodesPage() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        {/* Topbar */}
-        <header className="h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4">
+        {/* Topbar - Fixed Header */}
+        <header className="sticky top-0 z-20 h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
             <Button asChild variant="outline" size="icon" className="w-9 h-9 shrink-0 border-slate-200 hover:bg-slate-50 rounded-lg">
               <Link href="/">
