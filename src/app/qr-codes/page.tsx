@@ -25,6 +25,7 @@ import {
   X,
   Trash2,
   Upload,
+  FileDown,
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +57,13 @@ import {
   SheetFooter,
   SheetClose,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
@@ -84,6 +92,8 @@ export default function QRCodesPage() {
   const [mounted, setMounted] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewTableId, setPreviewTableId] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -111,6 +121,11 @@ export default function QRCodesPage() {
     setSelectedIds(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
+  };
+
+  const handleOpenPreview = (id: string) => {
+    setPreviewTableId(id);
+    setIsPreviewOpen(true);
   };
 
   const isAllSelected = selectedIds.length === tableData.length;
@@ -354,7 +369,10 @@ export default function QRCodesPage() {
                         <TableCell className="font-bold text-slate-900 text-[15px]">{row.id}</TableCell>
                         <TableCell>
                           {row.qr ? (
-                            <div className="w-12 h-12 border border-slate-100 rounded-lg p-2 bg-white shadow-sm flex items-center justify-center cursor-pointer hover:border-primary/20 transition-colors">
+                            <div 
+                              className="w-12 h-12 border border-slate-100 rounded-lg p-2 bg-white shadow-sm flex items-center justify-center cursor-pointer hover:border-primary/20 transition-colors"
+                              onClick={() => handleOpenPreview(row.id)}
+                            >
                               <img src={row.qr} alt={`QR ${row.id}`} className="w-full h-full object-contain" />
                             </div>
                           ) : (
@@ -537,6 +555,49 @@ export default function QRCodesPage() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      {/* QR Preview Modal */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="sm:max-w-[480px] p-0 border-none bg-white shadow-2xl overflow-visible [&>button]:hidden">
+          {/* Custom Teal Close Button */}
+          <Button 
+            onClick={() => setIsPreviewOpen(false)}
+            className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 text-white shadow-xl flex items-center justify-center p-0 z-50 border-4 border-white"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+
+          <div className="p-8 pb-4">
+            <DialogHeader className="text-left space-y-1">
+              <DialogTitle className="text-2xl font-extrabold text-[#111827] tracking-tight">Preview</DialogTitle>
+              <DialogDescription className="text-slate-400 font-medium text-[15px]">
+                Viewing QR code for table <span className="text-slate-900 font-bold">"{previewTableId}"</span>.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="px-8 py-10 flex items-center justify-center">
+            <div className="w-64 h-64 border border-slate-100 rounded-[32px] p-8 bg-white shadow-sm flex items-center justify-center">
+              <img 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${previewTableId}`} 
+                alt="QR Code Preview" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+
+          <div className="p-8 pt-0 flex items-center justify-center gap-4">
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none gap-2">
+              <Download className="w-4 h-4 text-slate-400" />
+              PNG
+            </Button>
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none gap-2">
+              <FileDown className="w-4 h-4 text-slate-400" />
+              SVG
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
