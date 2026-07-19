@@ -49,7 +49,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/select";
 import {
   Sheet,
   SheetContent,
@@ -621,12 +621,14 @@ export default function QRCodesPage() {
           <div className="p-12 pb-6">
             <DialogHeader className="text-left space-y-3">
               <DialogTitle className="text-4xl font-extrabold text-[#111827] tracking-tight leading-tight">Choose Download Format</DialogTitle>
-              <DialogDescription className="text-slate-500 font-medium text-lg leading-relaxed flex items-center gap-2 flex-wrap">
-                You are about to download QR codes for 
-                <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/10 px-3 py-0.5 text-base font-bold rounded-lg shadow-sm">
-                  30 table(s)
-                </Badge>
-                . Select your preferred format to continue.
+              <DialogDescription asChild>
+                <div className="text-slate-500 font-medium text-lg leading-relaxed flex items-center gap-2 flex-wrap">
+                  You are about to download QR codes for 
+                  <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/10 px-3 py-0.5 text-base font-bold rounded-lg shadow-sm">
+                    30 table(s)
+                  </Badge>
+                  . Select your preferred format to continue.
+                </div>
               </DialogDescription>
             </DialogHeader>
           </div>
