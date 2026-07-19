@@ -32,7 +32,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -67,9 +67,18 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+import { useToast } from "@/hooks/use-toast";
 
 const SidebarItem = ({ icon: Icon, label, active = false, hasAdd = false }: { icon: any, label: string, active?: boolean, hasAdd?: boolean }) => (
   <div className={cn(
@@ -91,8 +100,25 @@ const SidebarSectionLabel = ({ label }: { label: string }) => (
   </div>
 );
 
+type TableDataItem = {
+  id: string;
+  qr: string | null;
+  status: 'Active' | 'Inactive';
+  date: string;
+};
+
 export default function QRCodesPage() {
   const [mounted, setMounted] = useState(false);
+  const { toast } = useToast();
+  const [items, setItems] = useState<TableDataItem[]>([
+    { id: 'T1', qr: null, status: 'Inactive', date: 'NA' },
+    { id: 'T2', qr: null, status: 'Inactive', date: 'NA' },
+    { id: 'T3', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T3', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
+    { id: 'T4', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T4', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
+    { id: 'T5', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T5', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
+    { id: 'T6', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T6', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
+    { id: 'T7', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T7', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
+  ]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -103,21 +129,11 @@ export default function QRCodesPage() {
     setMounted(true);
   }, []);
 
-  const tableData = useMemo(() => [
-    { id: 'T1', qr: null, status: 'Inactive', date: 'NA' },
-    { id: 'T2', qr: null, status: 'Inactive', date: 'NA' },
-    { id: 'T3', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T3', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-    { id: 'T4', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T4', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-    { id: 'T5', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T5', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-    { id: 'T6', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T6', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-    { id: 'T7', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=T7', status: 'Active', date: 'Jul 15, 2024 at 1:05 PM' },
-  ], []);
-
   const toggleSelectAll = () => {
-    if (selectedIds.length === tableData.length) {
+    if (selectedIds.length === items.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(tableData.map(row => row.id));
+      setSelectedIds(items.map(row => row.id));
     }
   };
 
@@ -132,7 +148,47 @@ export default function QRCodesPage() {
     setIsPreviewOpen(true);
   };
 
-  const isAllSelected = selectedIds.length === tableData.length;
+  const handleGenerate = (id: string) => {
+    const now = new Date();
+    const formattedDate = now.toLocaleString('en-US', { 
+      month: 'short', 
+      day: '2-digit', 
+      year: 'numeric', 
+      hour: 'numeric', 
+      minute: '2-digit', 
+      hour12: true 
+    }).replace(',', ' at');
+
+    setItems(prev => prev.map(item => 
+      item.id === id 
+        ? { ...item, qr: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${id}`, status: 'Active', date: formattedDate }
+        : item
+    ));
+
+    toast({
+      title: "QR Code Generated",
+      description: `QR code for table ${id} has been created successfully.`,
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    setItems(prev => prev.filter(item => item.id !== id));
+    setSelectedIds(prev => prev.filter(i => i !== id));
+    toast({
+      variant: "destructive",
+      title: "Table Deleted",
+      description: `Table ${id} has been removed from the list.`,
+    });
+  };
+
+  const handleDownload = (id: string) => {
+    toast({
+      title: "Download Started",
+      description: `QR code for table ${id} is being downloaded.`,
+    });
+  };
+
+  const isAllSelected = selectedIds.length === items.length && items.length > 0;
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
@@ -293,7 +349,7 @@ export default function QRCodesPage() {
                     Generate Missing QR
                   </Button>
                   <div className="absolute -top-1.5 -right-1 w-5 h-5 bg-[#EF4444] rounded-full border-2 border-white flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
-                    2
+                    {items.filter(i => !i.qr).length}
                   </div>
                 </div>
               </div>
@@ -325,15 +381,27 @@ export default function QRCodesPage() {
                             <Separator orientation="vertical" className="h-8 bg-slate-100 mx-2" />
                             
                             <div className="flex items-center gap-2">
-                              <Button variant="outline" className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none">
+                              <Button 
+                                variant="outline" 
+                                className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none"
+                                onClick={() => selectedIds.forEach(id => handleGenerate(id))}
+                              >
                                 <Sparkles className="w-4 h-4 text-primary" />
                                 Generate
                               </Button>
-                              <Button variant="outline" className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-300 hover:bg-slate-50 shadow-none">
-                                <Download className="w-4 h-4" />
+                              <Button 
+                                variant="outline" 
+                                className="h-10 px-5 gap-2 border-slate-100 rounded-xl text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none"
+                                onClick={() => selectedIds.forEach(id => handleDownload(id))}
+                              >
+                                <Download className="w-4 h-4 text-slate-400" />
                                 Download
                               </Button>
-                              <Button variant="ghost" className="h-10 px-5 gap-2 bg-[#FEE2E2]/50 hover:bg-[#FEE2E2] rounded-xl text-[13px] font-bold text-[#EF4444] transition-colors">
+                              <Button 
+                                variant="ghost" 
+                                className="h-10 px-5 gap-2 bg-[#FEE2E2]/50 hover:bg-[#FEE2E2] rounded-xl text-[13px] font-bold text-[#EF4444] transition-colors"
+                                onClick={() => selectedIds.forEach(id => handleDelete(id))}
+                              >
                                 <Trash2 className="w-4 h-4" />
                                 Delete
                               </Button>
@@ -359,7 +427,7 @@ export default function QRCodesPage() {
                     )}
                   </TableHeader>
                   <TableBody>
-                    {tableData.map((row) => (
+                    {items.map((row) => (
                       <TableRow 
                         key={row.id} 
                         className={cn(
@@ -384,7 +452,12 @@ export default function QRCodesPage() {
                               <img src={row.qr} alt={`QR ${row.id}`} className="w-full h-full object-contain" />
                             </div>
                           ) : (
-                            <Button variant="outline" size="sm" className="h-8 text-[10px] font-bold gap-2 px-3.5 border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50 shadow-none uppercase tracking-tight">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-8 text-[10px] font-bold gap-2 px-3.5 border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50 shadow-none uppercase tracking-tight"
+                              onClick={() => handleGenerate(row.id)}
+                            >
                               <div className="grid grid-cols-2 gap-0.5 opacity-60">
                                 <div className="w-0.5 h-0.5 bg-slate-400 rounded-full" />
                                 <div className="w-0.5 h-0.5 bg-slate-400 rounded-full" />
@@ -407,9 +480,43 @@ export default function QRCodesPage() {
                         </TableCell>
                         <TableCell className="text-[13px] text-slate-400 font-medium">{row.date}</TableCell>
                         <TableCell className="text-right px-10">
-                          <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full text-slate-300 hover:text-slate-900 hover:bg-slate-50">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full text-slate-300 hover:text-slate-900 hover:bg-slate-50">
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56 rounded-xl border-slate-100 p-2 shadow-xl">
+                              <DropdownMenuLabel className="px-3 py-2 text-[15px] font-bold text-slate-900 tracking-tight">Actions</DropdownMenuLabel>
+                              <DropdownMenuSeparator className="bg-slate-50 mx-0" />
+                              {!row.qr ? (
+                                <DropdownMenuItem 
+                                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors"
+                                  onClick={() => handleGenerate(row.id)}
+                                >
+                                  <Sparkles className="w-4 h-4 text-primary" />
+                                  <span className="text-[14px] font-medium tracking-tight">Generate</span>
+                                </DropdownMenuItem>
+                              ) : (
+                                <>
+                                  <DropdownMenuItem 
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors"
+                                    onClick={() => handleDownload(row.id)}
+                                  >
+                                    <Download className="w-4 h-4 text-slate-400" />
+                                    <span className="text-[14px] font-medium tracking-tight">Download</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#EF4444] hover:bg-red-50 cursor-pointer transition-colors"
+                                    onClick={() => handleDelete(row.id)}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                    <span className="text-[14px] font-medium tracking-tight">Delete</span>
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -430,7 +537,7 @@ export default function QRCodesPage() {
                     </SelectContent>
                   </Select>
                   <span className="text-[13px] text-slate-400 font-medium">
-                    Showing <span className="text-slate-900 font-bold">1 to {tableData.length}</span> of <span className="text-slate-900 font-bold">124</span> results
+                    Showing <span className="text-slate-900 font-bold">1 to {items.length}</span> of <span className="text-slate-900 font-bold">124</span> results
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -489,9 +596,12 @@ export default function QRCodesPage() {
                       </div>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="T1">T1</SelectItem>
-                      <SelectItem value="T2">T2</SelectItem>
-                      <SelectItem value="T3">T3</SelectItem>
+                      {items.filter(i => !i.qr).map(item => (
+                        <SelectItem key={item.id} value={item.id}>{item.id}</SelectItem>
+                      ))}
+                      {items.filter(i => !i.qr).length === 0 && (
+                        <SelectItem value="none" disabled>No tables available</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -503,7 +613,7 @@ export default function QRCodesPage() {
               <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">QR CUSTOMIZATION</Label>
               
               {/* Upload Box */}
-              <div className="border-2 border-dashed border-slate-200 rounded-24px p-12 flex flex-col items-center justify-center gap-4 bg-slate-50/30 hover:bg-slate-50/50 transition-colors cursor-pointer group rounded-[24px]">
+              <div className="border-2 border-dashed border-slate-200 rounded-[24px] p-12 flex flex-col items-center justify-center gap-4 bg-slate-50/30 hover:bg-slate-50/50 transition-colors cursor-pointer group">
                 <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
                   <Upload className="w-6 h-6 text-white" />
                 </div>
@@ -556,7 +666,13 @@ export default function QRCodesPage() {
                   Cancel
                 </Button>
               </SheetClose>
-              <Button className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-white border-none shadow-lg shadow-primary/20 text-[14px] font-bold">
+              <Button 
+                className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-white border-none shadow-lg shadow-primary/20 text-[14px] font-bold"
+                onClick={() => {
+                  // Logic to generate based on selection would go here
+                  setIsDrawerOpen(false);
+                }}
+              >
                 Create QR Code
               </Button>
             </div>
@@ -595,11 +711,11 @@ export default function QRCodesPage() {
           </div>
 
           <div className="p-8 pt-0 flex items-center justify-center gap-4">
-            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none gap-2">
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none gap-2" onClick={() => handleDownload(previewTableId!)}>
               <Download className="w-4 h-4 text-slate-400" />
               PNG
             </Button>
-            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none gap-2">
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 shadow-none gap-2" onClick={() => handleDownload(previewTableId!)}>
               <FileDown className="w-4 h-4 text-slate-400" />
               SVG
             </Button>
@@ -625,7 +741,7 @@ export default function QRCodesPage() {
                 <div className="text-slate-500 font-medium text-lg leading-relaxed flex items-center gap-2 flex-wrap">
                   You are about to download QR codes for 
                   <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/10 px-3 py-0.5 text-base font-bold rounded-lg shadow-sm">
-                    30 table(s)
+                    {items.filter(i => i.qr).length} table(s)
                   </Badge>
                   . Select your preferred format to continue.
                 </div>
