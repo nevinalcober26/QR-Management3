@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -324,9 +325,9 @@ export default function QRCodesPage() {
 
         <div className="flex-1 overflow-y-auto pt-4 pb-8 no-scrollbar">
           <SidebarSectionLabel label="OVERVIEW" />
-          <SidebarItem icon={LayoutGrid} label="Dashboard" />
+          <SidebarItem icon={LayoutGrid} label="Live Order Hub" />
           <SidebarItem icon={BarChart3} label="Analytics" />
-          <SidebarItem icon={LineChart} label="Reports" />
+          <SidebarItem icon={LineChart} label="Report" hasAdd />
 
           <SidebarDivider />
 
