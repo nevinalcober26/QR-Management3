@@ -412,7 +412,7 @@ export default function QRCodesPage() {
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
                   placeholder="Order #, table, customer name, email, phone..." 
-                  className="border-none shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-transparent"
+                  className="border-white bg-white shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-white"
                   value={headerSearchQuery}
                   onChange={(e) => setHeaderSearchQuery(e.target.value)}
                   onFocus={() => setIsHeaderSearchFocused(true)}
