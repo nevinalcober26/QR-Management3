@@ -175,6 +175,7 @@ export default function QRCodesPage() {
   const [previewTableId, setPreviewTableId] = useState<string | null>(null);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
   const [selectedFloor, setSelectedFloor] = useState('all');
+  const [mainSearchTerm, setMainSearchTerm] = useState('');
 
   // Drawer Customization State
   const [qrColor, setQrColor] = useState('#000000');
@@ -194,9 +195,19 @@ export default function QRCodesPage() {
   }, []);
 
   const filteredItems = useMemo(() => {
-    if (selectedFloor === 'all') return items;
-    return items.filter(item => item.floor === selectedFloor);
-  }, [items, selectedFloor]);
+    let filtered = items;
+    if (selectedFloor !== 'all') {
+      filtered = filtered.filter(item => item.floor === selectedFloor);
+    }
+    if (mainSearchTerm) {
+      const term = mainSearchTerm.toLowerCase();
+      filtered = filtered.filter(item => 
+        item.id.toLowerCase().includes(term) || 
+        getFloorName(item.floor).toLowerCase().includes(term)
+      );
+    }
+    return filtered;
+  }, [items, selectedFloor, mainSearchTerm]);
 
   const toggleSelectAll = () => {
     if (selectedIds.length === filteredItems.length) {
@@ -509,10 +520,6 @@ export default function QRCodesPage() {
                 ) : (
                   <>
                     <div className="flex items-center gap-2 flex-1">
-                      <div className="relative w-72">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
-                        <Input placeholder="Search Tables" className="pl-9 h-9 border-slate-100 rounded-lg text-[12px] bg-slate-50/50 focus-visible:bg-white placeholder:text-slate-400" />
-                      </div>
                       <Select value={selectedFloor} onValueChange={setSelectedFloor}>
                         <SelectTrigger className="w-40 h-9 border-slate-100 rounded-lg text-[12px] bg-slate-50/50 font-medium shadow-none text-slate-600">
                           <SelectValue placeholder="All Floors" />
@@ -524,6 +531,15 @@ export default function QRCodesPage() {
                           <SelectItem value="terrace">Outdoor Terrace</SelectItem>
                         </SelectContent>
                       </Select>
+                      <div className="relative w-72">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
+                        <Input 
+                          placeholder="Search Tables" 
+                          className="pl-9 h-9 border-slate-100 rounded-lg text-[12px] bg-slate-50/50 focus-visible:bg-white placeholder:text-slate-400"
+                          value={mainSearchTerm}
+                          onChange={(e) => setMainSearchTerm(e.target.value)}
+                        />
+                      </div>
                     </div>
                     {items.filter(i => !i.qr).length > 0 && (
                       <div className="relative">
@@ -661,7 +677,7 @@ export default function QRCodesPage() {
                     {filteredItems.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={6} className="h-20 text-center text-slate-400 text-xs">
-                          No tables found for this floor.
+                          No tables found matching your search.
                         </TableCell>
                       </TableRow>
                     )}
