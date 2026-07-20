@@ -178,6 +178,10 @@ export default function QRCodesPage() {
   const [selectedFloor, setSelectedFloor] = useState('all');
   const [mainSearchTerm, setMainSearchTerm] = useState('');
 
+  // Global Header Smart Search State
+  const [headerSearchQuery, setHeaderSearchQuery] = useState('');
+  const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
+
   // Drawer Customization State
   const [qrColor, setQrColor] = useState('#000000');
   const [qrBgColor, setQrBgColor] = useState('#FFFFFF');
@@ -209,6 +213,25 @@ export default function QRCodesPage() {
     }
     return filtered;
   }, [items, selectedFloor, mainSearchTerm]);
+
+  const smartSearchResults = useMemo(() => {
+    if (!headerSearchQuery) return [];
+    const query = headerSearchQuery.toLowerCase();
+    const mockData = [
+      { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
+      { type: 'Table', value: 'Table 24', sub: 'Dining area' },
+      { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
+      { type: 'Order', value: '#10294', sub: 'Jul 16, 2024' },
+      { type: 'Table', value: 'Table F2', sub: 'First Floor' },
+      { type: 'Customer', value: 'Sarah Parker', sub: 'sarah.p@domain.com' },
+      { type: 'Order', value: '#10295', sub: 'Jul 17, 2024' },
+    ];
+    return mockData.filter(item => 
+      item.value.toLowerCase().includes(query) || 
+      item.type.toLowerCase().includes(query) ||
+      item.sub.toLowerCase().includes(query)
+    );
+  }, [headerSearchQuery]);
 
   const toggleSelectAll = () => {
     if (selectedIds.length === filteredItems.length) {
@@ -390,7 +413,42 @@ export default function QRCodesPage() {
                 <Input 
                   placeholder="Order #, table, customer name, email, phone..." 
                   className="border-none shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-transparent"
+                  value={headerSearchQuery}
+                  onChange={(e) => setHeaderSearchQuery(e.target.value)}
+                  onFocus={() => setIsHeaderSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setIsHeaderSearchFocused(false), 200)}
                 />
+                
+                {/* Smart Search Results Dropdown */}
+                {isHeaderSearchFocused && headerSearchQuery && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-2 max-h-[300px] overflow-y-auto no-scrollbar">
+                      <div className="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Search Results</div>
+                      {smartSearchResults.length > 0 ? (
+                        smartSearchResults.map((result, idx) => (
+                          <div key={idx} className="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors cursor-default rounded-lg group">
+                            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all">
+                              {result.type === 'Order' && <ClipboardList className="w-4 h-4 text-slate-400" />}
+                              {result.type === 'Table' && <Armchair className="w-4 h-4 text-slate-400" />}
+                              {result.type === 'Customer' && <Users className="w-4 h-4 text-slate-400" />}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[13px] font-bold text-slate-900 leading-tight">{result.value}</span>
+                              <span className="text-[11px] text-slate-400 font-medium">{result.sub}</span>
+                            </div>
+                            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                               <Badge variant="outline" className="text-[9px] font-bold text-slate-400 border-slate-200 px-1.5 py-0 h-4">{result.type}</Badge>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-8 text-center">
+                          <p className="text-[13px] text-slate-400 font-medium italic">No matches found for "{headerSearchQuery}"</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
               
               <div className="w-[1px] h-6 bg-slate-200 shrink-0" />
