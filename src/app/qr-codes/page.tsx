@@ -526,7 +526,7 @@ export default function QRCodesPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All Floors</SelectItem>
-                          <SelectItem value="floor1">Ground Floor</SelectItem>
+                          <SelectItem value="floor1">Dining area</SelectItem>
                           <SelectItem value="floor2">First Floor</SelectItem>
                           <SelectItem value="terrace">Outdoor Terrace</SelectItem>
                         </SelectContent>
@@ -776,7 +776,10 @@ export default function QRCodesPage() {
                         <span className="text-[13px] font-bold text-slate-500">{filteredDrawerTables.length} tables available</span>
                       </div>
 
-                      <ScrollArea className="h-[320px] -mx-4">
+                      <ScrollArea 
+                        className="h-[320px] -mx-4"
+                        onWheel={(e) => e.stopPropagation()}
+                      >
                         <div className="px-4">
                           {filteredDrawerTables.map((item) => (
                             <div 
