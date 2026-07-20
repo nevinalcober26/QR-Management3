@@ -372,7 +372,7 @@ export default function QRCodesPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
         {/* Topbar - Fixed Position */}
         <header className="fixed top-0 right-0 left-[280px] h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
           <div className="flex items-center gap-4 flex-1">
@@ -428,14 +428,14 @@ export default function QRCodesPage() {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2.5 text-[10px] font-bold bg-[#0CB5A8]/5 px-3.5 py-1.5 rounded-full border border-[#0CB5A8]/10">
-              <RefreshCcw className="w-3 h-3 text-[#0CB5A8]" />
-              <span className="text-[#0CB5A8] uppercase tracking-tight">POS SYNCED</span>
-              <Separator orientation="vertical" className="h-2.5 bg-[#0CB5A8]/20 mx-1" />
-              <span className="text-[#0CB5A8]/60 uppercase tracking-tight font-bold">JULY 02, 2:42 PM</span>
+            <div className="flex items-center gap-2.5 text-[10px] font-bold bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-200 text-slate-900 hover:bg-[#0CB5A8]/5 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-all cursor-default group/pos">
+              <RefreshCcw className="w-3 h-3 text-slate-500 group-hover/pos:text-[#0CB5A8] transition-colors" />
+              <span className="uppercase tracking-tight">POS SYNCED</span>
+              <Separator orientation="vertical" className="h-2.5 bg-slate-200 group-hover/pos:bg-[#0CB5A8]/20 mx-1" />
+              <span className="text-slate-500 group-hover/pos:text-[#0CB5A8]/60 uppercase tracking-tight font-bold">JULY 02, 2:42 PM</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-9 h-9 flex items-center justify-center bg-[#0CB5A8]/5 text-[#0CB5A8] rounded-lg border border-[#0CB5A8]/10 cursor-pointer hover:bg-[#0CB5A8]/10 transition-colors">
+              <div className="w-9 h-9 flex items-center justify-center bg-slate-50 text-slate-500 rounded-lg border border-slate-200 cursor-pointer hover:bg-[#0CB5A8]/10 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-colors">
                 <LayoutGrid className="w-[18px] h-[18px]" />
               </div>
               <Avatar className="w-9 h-9 border-2 border-slate-100 shadow-sm">
@@ -447,7 +447,7 @@ export default function QRCodesPage() {
         </header>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto bg-[#F8FAFC] mt-16">
+        <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
           <div className="p-8 max-w-7xl mx-auto space-y-8">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
