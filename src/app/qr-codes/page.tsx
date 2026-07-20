@@ -407,12 +407,12 @@ export default function QRCodesPage() {
             </Button>
             
             {/* Unified Search & Date Picker component */}
-            <div className="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden h-10 w-full max-w-2xl transition-all focus-within:ring-2 focus-within:ring-[#0CB5A8]/20 focus-within:border-[#0CB5A8]/40">
+            <div className="flex items-center bg-white border border-slate-200 rounded-none overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
                   placeholder="Order #, table, customer name, email, phone..." 
-                  className="border-white bg-white shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-white"
+                  className="border-none bg-white shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-white rounded-none"
                   value={headerSearchQuery}
                   onChange={(e) => setHeaderSearchQuery(e.target.value)}
                   onFocus={() => setIsHeaderSearchFocused(true)}
@@ -421,13 +421,13 @@ export default function QRCodesPage() {
                 
                 {/* Smart Search Results Dropdown */}
                 {isHeaderSearchFocused && headerSearchQuery && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-none shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                     <div className="p-2 max-h-[300px] overflow-y-auto no-scrollbar">
                       <div className="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Search Results</div>
                       {smartSearchResults.length > 0 ? (
                         smartSearchResults.map((result, idx) => (
-                          <div key={idx} className="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors cursor-default rounded-lg group">
-                            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all">
+                          <div key={idx} className="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors cursor-default rounded-none group">
+                            <div className="w-8 h-8 rounded-none bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all">
                               {result.type === 'Order' && <ClipboardList className="w-4 h-4 text-slate-400" />}
                               {result.type === 'Table' && <Armchair className="w-4 h-4 text-slate-400" />}
                               {result.type === 'Customer' && <Users className="w-4 h-4 text-slate-400" />}
@@ -437,7 +437,7 @@ export default function QRCodesPage() {
                               <span className="text-[11px] text-slate-400 font-medium">{result.sub}</span>
                             </div>
                             <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                               <Badge variant="outline" className="text-[9px] font-bold text-slate-400 border-slate-200 px-1.5 py-0 h-4">{result.type}</Badge>
+                               <Badge variant="outline" className="text-[9px] font-bold text-slate-400 border-slate-200 px-1.5 py-0 h-4 rounded-none">{result.type}</Badge>
                             </div>
                           </div>
                         ))
@@ -461,7 +461,7 @@ export default function QRCodesPage() {
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                   </div>
                 </PopoverTrigger>
-                <PopoverContent className="w-[180px] p-2.5 rounded-[16px] border-slate-100 shadow-xl" align="end">
+                <PopoverContent className="w-[180px] p-2.5 rounded-none border-slate-100 shadow-xl" align="end">
                   <div className="space-y-2">
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">LOOKBACK WINDOW</span>
                     <div className="grid grid-cols-3 gap-1">
@@ -470,7 +470,7 @@ export default function QRCodesPage() {
                           key={option}
                           onClick={() => setLookbackWindow(option)}
                           className={cn(
-                            "h-7 rounded-lg border text-[10px] font-bold transition-all",
+                            "h-7 rounded-none border text-[10px] font-bold transition-all",
                             lookbackWindow === option 
                               ? "bg-[#0CB5A8]/5 border-[#0CB5A8] text-[#0CB5A8]" 
                               : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
@@ -498,7 +498,7 @@ export default function QRCodesPage() {
                 <LayoutGrid className="w-[18px] h-[18px]" />
               </div>
               <Avatar className="w-9 h-9 border-2 border-slate-100 shadow-sm">
-                <AvatarImage src="https://picsum.photos/seed/chef/100/100" />
+                <AvatarImage src="https://picsum.photos/seed/restaurant/100/100" />
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
             </div>
@@ -811,9 +811,9 @@ export default function QRCodesPage() {
                 
                 <Popover open={isTableSelectorOpen} onOpenChange={setIsTableSelectorOpen}>
                   <PopoverTrigger asChild>
-                    <div className="flex items-center justify-between w-full h-12 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-400 px-4 cursor-pointer hover:border-[#0CB5A8]/40 transition-colors focus:ring-2 focus:ring-[#0CB5A8]/20">
+                    <div className="flex items-center justify-between w-full h-12 bg-white border border-slate-200 rounded-none text-[14px] font-medium text-slate-400 px-4 cursor-pointer hover:border-[#0CB5A8]/40 transition-colors">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-[#0CB5A8]/5 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-[#0CB5A8]/5 rounded-none flex items-center justify-center">
                           <LayoutGrid className="w-4 h-4 text-[#0CB5A8]" />
                         </div>
                         {selectedTableInDrawer ? (
@@ -825,13 +825,13 @@ export default function QRCodesPage() {
                       <ChevronDown className="w-4 h-4 text-slate-400" />
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[520px] p-0 border-none shadow-2xl rounded-[20px] overflow-hidden" align="start">
+                  <PopoverContent className="w-[520px] p-0 border-none shadow-2xl rounded-none overflow-hidden" align="start">
                     <div className="p-4 space-y-4">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
                         <Input 
                           placeholder="Search by number..." 
-                          className="h-11 pl-10 border-[#0CB5A8] border-2 rounded-xl text-[14px] font-medium placeholder:text-slate-400 focus-visible:ring-0 focus-visible:border-[#0CB5A8]"
+                          className="h-11 pl-10 border-[#0CB5A8] border-2 rounded-none text-[14px] font-medium placeholder:text-slate-400 focus-visible:ring-0 focus-visible:border-[#0CB5A8]"
                           value={tableSearchTerm}
                           onChange={(e) => setTableSearchTerm(e.target.value)}
                         />
@@ -854,9 +854,9 @@ export default function QRCodesPage() {
                                 setIsTableSelectorOpen(false);
                                 setTableSearchTerm('');
                               }}
-                              className="group flex items-center gap-4 p-3.5 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors border-b border-slate-50 last:border-0"
+                              className="group flex items-center gap-4 p-3.5 hover:bg-slate-50 rounded-none cursor-pointer transition-colors border-b border-slate-50 last:border-0"
                             >
-                              <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
+                              <div className="w-10 h-10 bg-slate-100 rounded-none flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
                                 <Armchair className="w-5 h-5" />
                               </div>
                               <div className="flex flex-col">
