@@ -373,7 +373,7 @@ export default function QRCodesPage() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        {/* Topbar - Fixed Header */}
+        {/* Topbar - Fixed Position */}
         <header className="fixed top-0 right-0 left-[280px] h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
           <div className="flex items-center gap-4 flex-1">
             <Button asChild variant="outline" size="icon" className="w-9 h-9 shrink-0 border-slate-200 hover:bg-slate-50 rounded-lg">
@@ -381,44 +381,50 @@ export default function QRCodesPage() {
                 <ArrowLeft className="w-4 h-4 text-slate-400" />
               </Link>
             </Button>
-            <div className="relative w-full max-w-lg">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-              <Input 
-                placeholder="Order #, table, customer name, email, phone..." 
-                className="pl-10 bg-slate-50/50 border-slate-100 shadow-none text-[13px] h-10 placeholder:text-slate-400 focus-visible:ring-[#0CB5A8]/20"
-              />
-            </div>
             
-            <Popover>
-              <PopoverTrigger asChild>
-                <div className="flex items-center gap-2 px-3 h-10 bg-white rounded-lg border border-slate-200 text-[13px] font-medium text-slate-600 shrink-0 cursor-pointer hover:bg-slate-50 transition-colors">
-                  <Calendar className="w-4 h-4 text-slate-400" />
-                  <span>Last {lookbackWindow}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-[180px] p-2.5 rounded-[16px] border-slate-100 shadow-xl" align="start">
-                <div className="space-y-2">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">DAY(S) LOOKBACK WINDOW</span>
-                  <div className="grid grid-cols-3 gap-1">
-                    {lookbackOptions.map((option) => (
-                      <button
-                        key={option}
-                        onClick={() => setLookbackWindow(option)}
-                        className={cn(
-                          "h-7 rounded-lg border text-[10px] font-bold transition-all",
-                          lookbackWindow === option 
-                            ? "bg-[#0CB5A8]/5 border-[#0CB5A8] text-[#0CB5A8]" 
-                            : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
-                        )}
-                      >
-                        {option}
-                      </button>
-                    ))}
+            {/* Unified Search & Date Picker component */}
+            <div className="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden h-10 w-full max-w-2xl transition-all focus-within:ring-2 focus-within:ring-[#0CB5A8]/20 focus-within:border-[#0CB5A8]/40">
+              <div className="flex items-center flex-1 px-3.5 relative">
+                <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                <Input 
+                  placeholder="Order #, table, customer name, email, phone..." 
+                  className="border-none shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-transparent"
+                />
+              </div>
+              
+              <div className="w-[1px] h-6 bg-slate-200 shrink-0" />
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <div className="flex items-center gap-2 px-4 h-full text-[13px] font-medium text-slate-600 shrink-0 cursor-pointer hover:bg-slate-50 transition-colors">
+                    <Calendar className="w-4 h-4 text-slate-400" />
+                    <span className="text-slate-500">Last {lookbackWindow}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                   </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+                </PopoverTrigger>
+                <PopoverContent className="w-[180px] p-2.5 rounded-[16px] border-slate-100 shadow-xl" align="end">
+                  <div className="space-y-2">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">LOOKBACK WINDOW</span>
+                    <div className="grid grid-cols-3 gap-1">
+                      {lookbackOptions.map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => setLookbackWindow(option)}
+                          className={cn(
+                            "h-7 rounded-lg border text-[10px] font-bold transition-all",
+                            lookbackWindow === option 
+                              ? "bg-[#0CB5A8]/5 border-[#0CB5A8] text-[#0CB5A8]" 
+                              : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
+                          )}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
           <div className="flex items-center gap-6">
@@ -469,7 +475,7 @@ export default function QRCodesPage() {
 
             {/* Table Container */}
             <div className="bg-white rounded-[20px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-slate-50 flex items-center justify-between gap-4 h-16">
+              <div className="p-4 border-b border-slate-50 flex items-center justify-between gap-4">
                 {selectedIds.length > 0 ? (
                   <div className="flex items-center gap-4 w-full">
                     <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setSelectedIds([])}>
