@@ -325,9 +325,9 @@ export default function QRCodesPage() {
 
         <div className="flex-1 overflow-y-auto pt-4 pb-8 no-scrollbar">
           <SidebarSectionLabel label="OVERVIEW" />
-          <SidebarItem icon={LayoutGrid} label="Live Order Hub" />
-          <SidebarItem icon={BarChart3} label="Analytics" />
-          <SidebarItem icon={LineChart} label="Report" hasAdd />
+          <SidebarItem icon={LayoutGrid} label="Dashboard" />
+          <SidebarItem icon={BarChart3} label="Live Order Hub" />
+          <SidebarItem icon={LineChart} label="Reports" hasAdd />
 
           <SidebarDivider />
 
@@ -962,18 +962,15 @@ export default function QRCodesPage() {
         <AlertDialogContent className="rounded-2xl border-none shadow-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl font-bold text-slate-900">Regenerate QR Code?</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-500 font-medium">
-              One or more selected tables already have active QR codes. Regenerating will replace them. Do you want to proceed?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel className="rounded-xl border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
             <AlertDialogAction 
               className="rounded-xl bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold border-none"
               onClick={() => performGeneration(idsToGenerate)}
             >
               Confirm Regeneration
             </AlertDialogAction>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="rounded-xl border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
