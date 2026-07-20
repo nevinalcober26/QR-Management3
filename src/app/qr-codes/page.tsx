@@ -407,7 +407,7 @@ export default function QRCodesPage() {
             </Button>
             
             {/* Unified Search & Date Picker component */}
-            <div className="flex items-center bg-white border border-slate-200 rounded-none overflow-hidden h-10 w-full max-w-2xl transition-all">
+            <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
