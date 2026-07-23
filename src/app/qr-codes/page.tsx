@@ -98,8 +98,8 @@ import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const SidebarItem = ({ icon: Icon, label, active = false, hasAdd = false }: { icon: any, label: string, active?: boolean, hasAdd?: boolean }) => (
-  <div className="px-4 py-0.5">
+const SidebarItem = ({ icon: Icon, label, active = false, hasAdd = false, href = "#" }: { icon: any, label: string, active?: boolean, hasAdd?: boolean, href?: string }) => (
+  <Link href={href} className="px-4 py-0.5 block">
     <div className={cn(
       "group flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all rounded-xl",
       active ? "bg-[#0CB5A8]/10 text-[#0CB5A8]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
@@ -114,7 +114,7 @@ const SidebarItem = ({ icon: Icon, label, active = false, hasAdd = false }: { ic
         </div>
       )}
     </div>
-  </div>
+  </Link>
 );
 
 const SidebarSectionLabel = ({ label }: { label: string }) => (
@@ -221,16 +221,8 @@ export default function QRCodesPage() {
       { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
       { type: 'Table', value: 'Table 24', sub: 'Dining area' },
       { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
-      { type: 'Order', value: '#10294', sub: 'Jul 16, 2024' },
-      { type: 'Table', value: 'Table F2', sub: 'First Floor' },
-      { type: 'Customer', value: 'Sarah Parker', sub: 'sarah.p@domain.com' },
-      { type: 'Order', value: '#10295', sub: 'Jul 17, 2024' },
     ];
-    return mockData.filter(item => 
-      item.value.toLowerCase().includes(query) || 
-      item.type.toLowerCase().includes(query) ||
-      item.sub.toLowerCase().includes(query)
-    );
+    return mockData.filter(item => item.value.toLowerCase().includes(query));
   }, [headerSearchQuery]);
 
   const toggleSelectAll = () => {
@@ -348,7 +340,7 @@ export default function QRCodesPage() {
 
         <div className="flex-1 overflow-y-auto pt-4 pb-8 no-scrollbar">
           <SidebarSectionLabel label="OVERVIEW" />
-          <SidebarItem icon={LayoutGrid} label="Dashboard" />
+          <SidebarItem icon={LayoutGrid} label="Dashboard" href="/dashboard" />
           <SidebarItem icon={BarChart3} label="Live Order Hub" />
           <SidebarItem icon={LineChart} label="Reports" hasAdd />
 
@@ -357,7 +349,7 @@ export default function QRCodesPage() {
           <SidebarSectionLabel label="MANAGEMENT" />
           <SidebarItem icon={ClipboardList} label="Order List" />
           <SidebarItem icon={BookOpen} label="Menu Builder" />
-          <SidebarItem icon={Grid3X3} label="Table Operations" active />
+          <SidebarItem icon={Grid3X3} label="Table Operations" active href="/qr-codes" />
           <SidebarItem icon={Users} label="Guest Directory" />
 
           <SidebarDivider />
@@ -406,13 +398,12 @@ export default function QRCodesPage() {
               </Link>
             </Button>
             
-            {/* Unified Search & Date Picker component */}
             <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
                   placeholder="Order #, table, customer name, email, phone..." 
-                  className="border-none bg-white shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-white rounded-none"
+                  className="border-none shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-transparent"
                   value={headerSearchQuery}
                   onChange={(e) => setHeaderSearchQuery(e.target.value)}
                   onFocus={() => setIsHeaderSearchFocused(true)}
@@ -435,9 +426,6 @@ export default function QRCodesPage() {
                             <div className="flex flex-col">
                               <span className="text-[13px] font-bold text-slate-900 leading-tight">{result.value}</span>
                               <span className="text-[11px] text-slate-400 font-medium">{result.sub}</span>
-                            </div>
-                            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                               <Badge variant="outline" className="text-[9px] font-bold text-slate-400 border-slate-200 px-1.5 py-0 h-4 rounded-none">{result.type}</Badge>
                             </div>
                           </div>
                         ))
@@ -487,14 +475,14 @@ export default function QRCodesPage() {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2.5 text-[10px] font-bold bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-200 text-slate-900 hover:bg-[#0CB5A8]/5 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-all cursor-default group/pos">
-              <RefreshCcw className="w-3 h-3 text-slate-500 group-hover/pos:text-[#0CB5A8] transition-colors" />
+            <div className="flex items-center gap-2.5 text-[10px] font-bold bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-200 text-slate-400 hover:bg-[#0CB5A8]/5 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-all cursor-default group/pos">
+              <RefreshCcw className="w-3 h-3 text-slate-400 group-hover/pos:text-[#0CB5A8] transition-colors" />
               <span className="uppercase tracking-tight">POS SYNCED</span>
               <Separator orientation="vertical" className="h-2.5 bg-slate-200 group-hover/pos:bg-[#0CB5A8]/20 mx-1" />
-              <span className="text-slate-500 group-hover/pos:text-[#0CB5A8]/60 uppercase tracking-tight font-bold">JULY 02, 2:42 PM</span>
+              <span className="text-slate-400 group-hover/pos:text-[#0CB5A8]/60 uppercase tracking-tight font-bold">JULY 02, 2:42 PM</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-9 h-9 flex items-center justify-center bg-slate-50 text-slate-500 rounded-lg border border-slate-200 cursor-pointer hover:bg-[#0CB5A8]/10 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-colors">
+              <div className="w-9 h-9 flex items-center justify-center bg-slate-50 text-slate-400 rounded-lg border border-slate-200 cursor-pointer hover:bg-[#0CB5A8]/10 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-colors">
                 <LayoutGrid className="w-[18px] h-[18px]" />
               </div>
               <Avatar className="w-9 h-9 border-2 border-slate-100 shadow-sm">
