@@ -18,7 +18,6 @@ import {
   Plug,
   BookOpen,
   History,
-  Download,
   FileDown,
   ChevronRight,
   ChevronLeft,
@@ -29,8 +28,13 @@ import {
   Wallet,
   AlertTriangle,
   Ban,
-  ArrowUpRight,
-  Armchair
+  Armchair,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  CreditCard,
+  Banknote,
+  QrCode
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,8 +52,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+
+// --- Types & Mock Data ---
+
+type PaymentStatus = 'Paid' | 'Pending' | 'Voided';
+type PaymentMethod = 'Cash' | 'Card' | 'QR Code';
+type OrderSource = 'Dine-in' | 'Takeaway' | 'Online';
+
+interface Transaction {
+  id: string;
+  orderId: string;
+  dateTime: string;
+  totalAmount: number;
+  paidAmount: number;
+  outstanding: number;
+  status: PaymentStatus;
+  method: PaymentMethod;
+  source: OrderSource;
+  payers: number;
+}
+
+const MOCK_TRANSACTIONS: Transaction[] = Array.from({ length: 30 }).map((_, i) => {
+  const status: PaymentStatus = i % 10 === 0 ? 'Voided' : (i % 3 === 0 ? 'Pending' : 'Paid');
+  const total = 450 + (i * 12);
+  const paid = status === 'Paid' ? total : (status === 'Pending' ? total * 0.5 : 0);
+  const outstanding = total - paid;
+  
+  return {
+    id: `tx-${i}`,
+    orderId: `#NDAGPJC${4820 + i}`,
+    dateTime: `2024-07-24, ${10 + (i % 12)}:${(i * 7) % 60 < 10 ? '0' : ''}${(i * 7) % 60} PM`,
+    totalAmount: total,
+    paidAmount: paid,
+    outstanding: outstanding,
+    status: status,
+    method: i % 2 === 0 ? 'QR Code' : (i % 3 === 0 ? 'Cash' : 'Card'),
+    source: i % 4 === 0 ? 'Takeaway' : 'Dine-in',
+    payers: (i % 3) + 1,
+  };
+});
 
 // --- Sub-components ---
 
@@ -137,9 +181,29 @@ export default function OrdersReportPage() {
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  const filteredTransactions = useMemo(() => {
+    return MOCK_TRANSACTIONS.filter(tx => {
+      const matchesSearch = tx.orderId.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || tx.status.toLowerCase() === statusFilter.toLowerCase();
+      return matchesSearch && matchesStatus;
+    });
+  }, [searchTerm, statusFilter]);
+
+  const kpis = useMemo(() => {
+    const total = MOCK_TRANSACTIONS.length;
+    const gross = MOCK_TRANSACTIONS.reduce((sum, tx) => sum + tx.totalAmount, 0);
+    const paid = MOCK_TRANSACTIONS.reduce((sum, tx) => sum + tx.paidAmount, 0);
+    const outstanding = MOCK_TRANSACTIONS.reduce((sum, tx) => sum + tx.outstanding, 0);
+    const voided = MOCK_TRANSACTIONS.filter(tx => tx.status === 'Voided').length;
+
+    return { total, gross, paid, outstanding, voided };
   }, []);
 
   if (!mounted) return null;
@@ -312,7 +376,7 @@ export default function OrdersReportPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               <KPICard 
                 title="TOTAL ORDERS" 
-                value="0" 
+                value={kpis.total.toString()} 
                 sub="Completed Transactions" 
                 icon={ShoppingCart} 
                 colorClass="bg-yellow-50 text-yellow-500" 
@@ -320,7 +384,7 @@ export default function OrdersReportPage() {
               />
               <KPICard 
                 title="GROSS SALES" 
-                value="฿ 0.00" 
+                value={`฿ ${kpis.gross.toLocaleString()}`} 
                 sub="Before Discounts" 
                 icon={DollarSign} 
                 colorClass="bg-green-50 text-green-500" 
@@ -328,7 +392,7 @@ export default function OrdersReportPage() {
               />
               <KPICard 
                 title="PAID AMOUNT" 
-                value="฿ 0.00" 
+                value={`฿ ${kpis.paid.toLocaleString()}`} 
                 sub="Collected Payments" 
                 icon={Wallet} 
                 colorClass="bg-slate-100 text-slate-500" 
@@ -336,7 +400,7 @@ export default function OrdersReportPage() {
               />
               <KPICard 
                 title="OUTSTANDING" 
-                value="฿ 0.00" 
+                value={`฿ ${kpis.outstanding.toLocaleString()}`} 
                 sub="Pending Collection" 
                 icon={AlertTriangle} 
                 colorClass="bg-red-50 text-red-500" 
@@ -344,7 +408,7 @@ export default function OrdersReportPage() {
               />
               <KPICard 
                 title="VOIDED ORDERS" 
-                value="0" 
+                value={kpis.voided.toString()} 
                 sub="Cancelled or Removed" 
                 icon={Ban} 
                 colorClass="bg-red-50 text-red-500" 
@@ -361,45 +425,94 @@ export default function OrdersReportPage() {
                   <Input 
                     placeholder="Search order number" 
                     className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <Select>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-[200px] h-10 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
                     <SelectValue placeholder="Select Payment Status" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
                     <SelectItem value="paid">Paid</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="void">Voided</SelectItem>
+                    <SelectItem value="voided">Voided</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Table Body */}
-              <div className="flex-1 overflow-x-auto">
+              <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[600px] no-scrollbar">
                 <table className="w-full">
-                  <thead className="bg-[#F8FAFC]">
+                  <thead className="bg-[#F8FAFC] sticky top-0 z-10">
                     <tr className="border-b border-slate-50">
-                      {['Order ID', 'Date & Time', 'Total Amount', 'Paid Amount', 'Outstanding', 'Payment Status', 'Method', 'Source', 'Payers'].map((head) => (
+                      {['Order ID', 'Date & Time', 'Total Amount', 'Paid Amount', 'Outstanding', 'Status', 'Method', 'Source', 'Payers'].map((head) => (
                         <th key={head} className="px-6 py-4 text-left">
                           <div className="flex items-center gap-1.5 cursor-pointer">
                             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{head}</span>
-                            <div className="flex flex-col">
-                              <ChevronDown className="w-2.5 h-2.5 text-slate-300" />
-                            </div>
+                            <ChevronDown className="w-2.5 h-2.5 text-slate-300" />
                           </div>
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td colSpan={9} className="py-24 text-center">
-                        <div className="flex flex-col items-center justify-center space-y-2">
-                          <p className="text-[14px] text-slate-900 font-bold">No transactions found for the selected filters.</p>
-                        </div>
-                      </td>
-                    </tr>
+                    {filteredTransactions.length > 0 ? (
+                      filteredTransactions.map((tx) => (
+                        <tr key={tx.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
+                          <td className="px-6 py-4">
+                            <span className="text-[13px] font-black text-slate-900">{tx.orderId}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-[12px] font-medium text-slate-400">{tx.dateTime}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-[13px] font-black text-slate-900">฿ {tx.totalAmount.toLocaleString()}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-[13px] font-black text-slate-900">฿ {tx.paidAmount.toLocaleString()}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-[13px] font-black text-red-500">฿ {tx.outstanding.toLocaleString()}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className={cn(
+                              "flex items-center gap-2 px-3 py-1 rounded-full w-fit",
+                              tx.status === 'Paid' ? "bg-emerald-50 text-emerald-600" : 
+                              tx.status === 'Pending' ? "bg-yellow-50 text-yellow-600" : "bg-red-50 text-red-600"
+                            )}>
+                              {tx.status === 'Paid' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                              {tx.status === 'Pending' && <Clock className="w-3.5 h-3.5" />}
+                              {tx.status === 'Voided' && <XCircle className="w-3.5 h-3.5" />}
+                              <span className="text-[10px] font-black uppercase tracking-tight">{tx.status}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 text-slate-500">
+                              {tx.method === 'Cash' && <Banknote className="w-3.5 h-3.5" />}
+                              {tx.method === 'Card' && <CreditCard className="w-3.5 h-3.5" />}
+                              {tx.method === 'QR Code' && <QrCode className="w-3.5 h-3.5" />}
+                              <span className="text-[12px] font-medium">{tx.method}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-[12px] font-medium text-slate-400">{tx.source}</span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span className="text-[13px] font-black text-slate-900">{tx.payers}</span>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={9} className="py-24 text-center">
+                          <div className="flex flex-col items-center justify-center space-y-2">
+                            <p className="text-[14px] text-slate-900 font-bold">No transactions found for the selected filters.</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -417,20 +530,22 @@ export default function OrdersReportPage() {
                       <SelectItem value="50">50</SelectItem>
                     </SelectContent>
                   </Select>
-                  <span className="text-[12px] text-slate-400 font-medium tracking-tight">per page <span className="text-slate-900 ml-3">0 of 0 results</span></span>
+                  <span className="text-[12px] text-slate-400 font-medium tracking-tight">
+                    per page <span className="text-slate-900 ml-3">1 - 10 of {filteredTransactions.length} results</span>
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm" disabled>
-                    <ChevronsLeft className="w-4 h-4 text-slate-300" />
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm">
+                    <ChevronsLeft className="w-4 h-4 text-slate-400" />
                   </Button>
-                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm" disabled>
-                    <ChevronLeft className="w-4 h-4 text-slate-300" />
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm">
+                    <ChevronLeft className="w-4 h-4 text-slate-400" />
                   </Button>
-                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm" disabled>
-                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm">
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
                   </Button>
-                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm" disabled>
-                    <ChevronsRight className="w-4 h-4 text-slate-300" />
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm">
+                    <ChevronsRight className="w-4 h-4 text-slate-400" />
                   </Button>
                 </div>
               </div>
