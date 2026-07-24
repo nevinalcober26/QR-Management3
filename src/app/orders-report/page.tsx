@@ -178,6 +178,10 @@ export default function OrdersReportPage() {
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     setMounted(true);
@@ -190,6 +194,13 @@ export default function OrdersReportPage() {
       return matchesSearch && matchesStatus;
     });
   }, [searchTerm, statusFilter]);
+
+  const paginatedTransactions = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredTransactions.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredTransactions, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
 
   const kpis = useMemo(() => {
     const total = MOCK_TRANSACTIONS.length;
@@ -406,18 +417,24 @@ export default function OrdersReportPage() {
             {/* Main Table Container */}
             <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
               {/* Table Filters */}
-              <div className="p-4 border-b border-slate-50 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 bg-[#F8FAFC] px-4 py-2 rounded-xl border border-slate-100 w-full max-w-xs">
+              <div className="p-6 border-b border-slate-50 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 w-full max-w-xs">
                   <Search className="w-4 h-4 text-slate-400" />
                   <Input 
                     placeholder="Search order number" 
                     className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setCurrentPage(1); // Reset to page 1 on search
+                    }}
                   />
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[200px] h-9 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
+                <Select value={statusFilter} onValueChange={(val) => {
+                  setStatusFilter(val);
+                  setCurrentPage(1); // Reset to page 1 on filter
+                }}>
+                  <SelectTrigger className="w-[200px] h-10 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
                     <SelectValue placeholder="Select Payment Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -435,7 +452,7 @@ export default function OrdersReportPage() {
                   <thead className="bg-[#F8FAFC] sticky top-0 z-10">
                     <tr className="border-b border-slate-50">
                       {['Order ID', 'Date & Time', 'Total Amount', 'Paid Amount', 'Outstanding', 'Status', 'Method', 'Source', 'Payers'].map((head) => (
-                        <th key={head} className="px-4 py-3 text-left">
+                        <th key={head} className="px-6 py-4 text-left">
                           <div className="flex items-center gap-1.5 cursor-pointer">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">{head}</span>
                             <ChevronDown className="w-2.5 h-2.5 text-slate-300" />
@@ -445,27 +462,27 @@ export default function OrdersReportPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredTransactions.length > 0 ? (
-                      filteredTransactions.map((tx) => (
+                    {paginatedTransactions.length > 0 ? (
+                      paginatedTransactions.map((tx) => (
                         <tr key={tx.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
-                          <td className="px-4 py-2">
+                          <td className="px-6 py-4">
                             <span className="text-[13px] font-black text-slate-900">{tx.orderId}</span>
                           </td>
-                          <td className="px-4 py-2">
+                          <td className="px-6 py-4">
                             <span className="text-[11px] font-medium text-slate-400 whitespace-nowrap">{tx.dateTime}</span>
                           </td>
-                          <td className="px-4 py-2">
+                          <td className="px-6 py-4">
                             <span className="text-[13px] font-black text-slate-900 whitespace-nowrap">฿ {tx.totalAmount.toLocaleString()}</span>
                           </td>
-                          <td className="px-4 py-2">
+                          <td className="px-6 py-4">
                             <span className="text-[13px] font-black text-slate-900 whitespace-nowrap">฿ {tx.paidAmount.toLocaleString()}</span>
                           </td>
-                          <td className="px-4 py-2">
+                          <td className="px-6 py-4">
                             <span className="text-[13px] font-black text-red-500 whitespace-nowrap">฿ {tx.outstanding.toLocaleString()}</span>
                           </td>
-                          <td className="px-4 py-2">
+                          <td className="px-6 py-4">
                             <div className={cn(
-                              "flex items-center gap-2 px-2.5 py-0.5 rounded-full w-fit",
+                              "flex items-center gap-2 px-2.5 py-1 rounded-full w-fit",
                               tx.status === 'Paid' ? "bg-emerald-50 text-emerald-600" : 
                               tx.status === 'Pending' ? "bg-yellow-50 text-yellow-600" : "bg-red-50 text-red-600"
                             )}>
@@ -475,10 +492,10 @@ export default function OrdersReportPage() {
                               <span className="text-[9px] font-black uppercase tracking-tight">{tx.status}</span>
                             </div>
                           </td>
-                          <td className="px-4 py-2">
+                          <td className="px-6 py-4">
                             <span className="text-[12px] font-medium text-slate-500 whitespace-nowrap">{tx.method}</span>
                           </td>
-                          <td className="px-4 py-2">
+                          <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
                               {tx.source === 'App to App' ? (
                                 <Smartphone className="w-4 h-4 text-emerald-500" />
@@ -488,14 +505,14 @@ export default function OrdersReportPage() {
                               <span className="text-[13px] font-bold text-slate-900 whitespace-nowrap">{tx.source}</span>
                             </div>
                           </td>
-                          <td className="px-4 py-2 text-center">
+                          <td className="px-6 py-4 text-center">
                             <span className="text-[13px] font-black text-slate-900">{tx.payers}</span>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={9} className="py-16 text-center">
+                        <td colSpan={9} className="py-24 text-center">
                           <p className="text-[14px] text-slate-900 font-bold">No transactions found.</p>
                         </td>
                       </tr>
@@ -505,10 +522,16 @@ export default function OrdersReportPage() {
               </div>
 
               {/* Table Footer / Pagination */}
-              <div className="p-4 border-t border-slate-50 bg-[#F8FAFC]/30 flex items-center justify-between">
+              <div className="p-6 border-t border-slate-50 bg-[#F8FAFC]/30 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Select defaultValue="10">
-                    <SelectTrigger className="w-16 h-8 border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-none bg-white">
+                  <Select 
+                    value={itemsPerPage.toString()} 
+                    onValueChange={(val) => {
+                      setItemsPerPage(parseInt(val));
+                      setCurrentPage(1); // Reset to page 1 on limit change
+                    }}
+                  >
+                    <SelectTrigger className="w-20 h-9 border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-none bg-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -518,21 +541,50 @@ export default function OrdersReportPage() {
                     </SelectContent>
                   </Select>
                   <span className="text-[11px] text-slate-400 font-medium tracking-tight">
-                    per page <span className="text-slate-900 ml-3">1 - 10 of {filteredTransactions.length} results</span>
+                    per page <span className="text-slate-900 ml-3">
+                      {filteredTransactions.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} - {Math.min(currentPage * itemsPerPage, filteredTransactions.length)} of {filteredTransactions.length} results
+                    </span>
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Button variant="outline" size="icon" className="w-8 h-8 rounded-lg border-slate-200 bg-white shadow-sm">
-                    <ChevronsLeft className="w-3.5 h-3.5 text-slate-400" />
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm disabled:opacity-30"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronsLeft className="w-4 h-4 text-slate-400" />
                   </Button>
-                  <Button variant="outline" size="icon" className="w-8 h-8 rounded-lg border-slate-200 bg-white shadow-sm">
-                    <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm disabled:opacity-30"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="w-4 h-4 text-slate-400" />
                   </Button>
-                  <Button variant="outline" size="icon" className="w-8 h-8 rounded-lg border-slate-200 bg-white shadow-sm">
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="px-4 text-[13px] font-bold text-slate-600">
+                    Page {currentPage} of {totalPages || 1}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm disabled:opacity-30"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                  >
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
                   </Button>
-                  <Button variant="outline" size="icon" className="w-8 h-8 rounded-lg border-slate-200 bg-white shadow-sm">
-                    <ChevronsRight className="w-3.5 h-3.5 text-slate-400" />
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm disabled:opacity-30"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                  >
+                    <ChevronsRight className="w-4 h-4 text-slate-400" />
                   </Button>
                 </div>
               </div>
