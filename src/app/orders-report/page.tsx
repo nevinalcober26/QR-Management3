@@ -28,13 +28,11 @@ import {
   Wallet,
   AlertTriangle,
   Ban,
-  Armchair,
   CheckCircle2,
   Clock,
   XCircle,
-  CreditCard,
-  Banknote,
-  QrCode
+  Smartphone,
+  Store
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,15 +50,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 
 // --- Types & Mock Data ---
 
 type PaymentStatus = 'Paid' | 'Pending' | 'Voided';
-type PaymentMethod = 'Cash' | 'Card' | 'QR Code';
-type OrderSource = 'Dine-in' | 'Takeaway' | 'Online';
+type PaymentMethod = 'Cash' | 'Credit Card' | '-';
+type OrderSource = 'App to App' | 'POS';
 
 interface Transaction {
   id: string;
@@ -89,8 +86,8 @@ const MOCK_TRANSACTIONS: Transaction[] = Array.from({ length: 30 }).map((_, i) =
     paidAmount: paid,
     outstanding: outstanding,
     status: status,
-    method: i % 2 === 0 ? 'QR Code' : (i % 3 === 0 ? 'Cash' : 'Card'),
-    source: i % 4 === 0 ? 'Takeaway' : 'Dine-in',
+    method: status === 'Voided' ? '-' : (i % 2 === 0 ? 'Cash' : 'Credit Card'),
+    source: i % 3 === 0 ? 'POS' : 'App to App',
     payers: (i % 3) + 1,
   };
 });
@@ -489,15 +486,17 @@ export default function OrdersReportPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-2 text-slate-500">
-                              {tx.method === 'Cash' && <Banknote className="w-3.5 h-3.5" />}
-                              {tx.method === 'Card' && <CreditCard className="w-3.5 h-3.5" />}
-                              {tx.method === 'QR Code' && <QrCode className="w-3.5 h-3.5" />}
-                              <span className="text-[12px] font-medium">{tx.method}</span>
-                            </div>
+                            <span className="text-[14px] font-medium text-slate-500">{tx.method}</span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-[12px] font-medium text-slate-400">{tx.source}</span>
+                            <div className="flex items-center gap-3">
+                              {tx.source === 'App to App' ? (
+                                <Smartphone className="w-5 h-5 text-emerald-500" />
+                              ) : (
+                                <Store className="w-5 h-5 text-blue-500" />
+                              )}
+                              <span className="text-[14px] font-bold text-slate-900">{tx.source}</span>
+                            </div>
                           </td>
                           <td className="px-6 py-4 text-center">
                             <span className="text-[13px] font-black text-slate-900">{tx.payers}</span>
