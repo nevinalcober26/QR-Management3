@@ -46,14 +46,27 @@ interface Order {
 }
 
 const MOCK_ORDERS: Order[] = [
-  { id: '1', orderId: '4825', refId: '#NDAGPJC4825...', status: 'LIVE', tableId: 'T-24', items: 3, time: '12:04' },
-  { id: '2', orderId: '4823', refId: '#NDAGPJC4823...', status: 'READY', tableId: 'T-18', items: 2, time: '08:15' },
-  { id: '3', orderId: '4822', refId: '#NDAGPJC4822...', status: 'LIVE', tableId: 'T-05', items: 5, time: '15:30' },
-  { id: '4', orderId: '4827', refId: '#NDAGPJC4827...', status: 'READY', tableId: 'F-12', items: 1, time: '05:45' },
-  { id: '5', orderId: '4838', refId: '#NDAGPJC4838...', status: 'PENDING', tableId: 'T-31', items: 4, time: '02:10' },
-  { id: '6', orderId: '4833', refId: '#NDAGPJC4833...', status: 'READY', tableId: 'T-22', items: 3, time: '06:20' },
-  { id: '7', orderId: '4820', refId: '#NDAGPJC4820...', status: 'LIVE', tableId: 'T-01', items: 2, time: '18:50' },
-  { id: '8', orderId: '6300', refId: '#NDAGPJC6300...', status: 'READY', tableId: 'F-03', items: 6, time: '10:00' },
+  { id: '1', orderId: '4836', refId: '#NDAGPJC4836', status: 'READY', tableId: 'T-24', items: 3, time: '12:04' },
+  { id: '2', orderId: '4833', refId: '#NDAGPJC4833', status: 'READY', tableId: 'T-18', items: 2, time: '08:15' },
+  { id: '3', orderId: '4831', refId: '#NDAGPJC4831', status: 'LIVE', tableId: 'T-05', items: 5, time: '15:30' },
+  { id: '4', orderId: '4827', refId: '#NDAGPJC4827', status: 'READY', tableId: 'F-12', items: 1, time: '05:45' },
+  { id: '5', orderId: '4826', refId: '#NDAGPJC4826', status: 'PENDING', tableId: 'T-31', items: 4, time: '02:10' },
+  { id: '6', orderId: '4834', refId: '#NDAGPJC4834', status: 'LIVE', tableId: 'T-22', items: 3, time: '06:20' },
+  { id: '7', orderId: '4838', refId: '#NDAGPJC4838', status: 'PENDING', tableId: 'T-01', items: 2, time: '18:50' },
+  { id: '8', orderId: '4839', refId: '#NDAGPJC4839', status: 'READY', tableId: 'F-03', items: 6, time: '10:00' },
+  { id: '9', orderId: '4832', refId: '#NDAGPJC4832', status: 'PENDING', tableId: 'T-09', items: 2, time: '14:20' },
+  { id: '10', orderId: '4823', refId: '#NDAGPJC4823', status: 'PENDING', tableId: 'T-11', items: 4, time: '11:10' },
+  { id: '11', orderId: '4828', refId: '#NDAGPJC4828', status: 'LIVE', tableId: 'T-15', items: 1, time: '09:45' },
+  { id: '12', orderId: '4829', refId: '#NDAGPJC4829', status: 'PENDING', tableId: 'T-19', items: 3, time: '08:50' },
+  { id: '13', orderId: '4822', refId: '#NDAGPJC4822', status: 'LIVE', tableId: 'T-20', items: 5, time: '07:30' },
+  { id: '14', orderId: '4837', refId: '#NDAGPJC4837', status: 'LIVE', tableId: 'T-21', items: 2, time: '13:15' },
+  { id: '15', orderId: '4835', refId: '#NDAGPJC4835', status: 'PENDING', tableId: 'T-02', items: 4, time: '16:40' },
+  { id: '16', orderId: '4820', refId: '#NDAGPJC4820', status: 'PENDING', tableId: 'T-03', items: 3, time: '17:20' },
+  { id: '17', orderId: '4821', refId: '#NDAGPJC4821', status: 'READY', tableId: 'T-04', items: 1, time: '18:10' },
+  { id: '18', orderId: '4825', refId: '#NDAGPJC4825', status: 'LIVE', tableId: 'T-06', items: 2, time: '19:00' },
+  { id: '19', orderId: '4830', refId: '#NDAGPJC4830', status: 'READY', tableId: 'T-07', items: 6, time: '20:15' },
+  { id: '20', orderId: '4824', refId: '#NDAGPJC4824', status: 'READY', tableId: 'T-08', items: 4, time: '21:30' },
+  { id: '21', orderId: '5508', refId: '#NDAGPJC5508', status: 'PENDING', tableId: 'T-10', items: 2, time: '22:45' },
 ];
 
 const FilterBadge = ({ label, count, colorClass, active = false }: { label: string, count: number, colorClass: string, active?: boolean }) => (
@@ -72,42 +85,29 @@ const FilterBadge = ({ label, count, colorClass, active = false }: { label: stri
 
 const OrderCard = ({ order }: { order: Order }) => {
   const statusColors = {
-    LIVE: 'bg-[#0CB5A8]',
-    PENDING: 'bg-[#FBBF24]',
-    READY: 'bg-[#6366f1]',
-    IN_PROGRESS: 'bg-[#FBBF24]',
-    PREPARED: 'bg-[#6366f1]'
+    LIVE: 'bg-gradient-to-br from-[#4FD1C5] to-[#26A69A]',
+    PENDING: 'bg-gradient-to-br from-[#FFCB52] to-[#FBBF24]',
+    READY: 'bg-gradient-to-br from-[#7C3AED] to-[#9333EA]',
+    IN_PROGRESS: 'bg-gradient-to-br from-[#FFCB52] to-[#FBBF24]',
+    PREPARED: 'bg-gradient-to-br from-[#7C3AED] to-[#9333EA]'
   };
 
   return (
     <div className={cn(
-      "aspect-[2/1] rounded-[10px] p-4 flex flex-col justify-between shadow-sm hover:brightness-95 transition-all cursor-pointer relative overflow-hidden",
+      "aspect-square rounded-[12px] p-3 flex flex-col items-center justify-center shadow-sm hover:brightness-95 transition-all cursor-pointer overflow-hidden",
       statusColors[order.status]
     )}>
-      <div className="flex justify-between items-start z-10">
-        <div className="flex flex-col">
-          <span className="text-2xl font-black text-white leading-none tracking-tight">{order.tableId}</span>
-          <span className="text-[11px] font-bold text-white/70 mt-1">Order {order.orderId}</span>
-        </div>
-        <div className="flex items-center gap-1.5 bg-white/20 px-2 py-1 rounded-lg">
-          <Clock className="w-3 h-3 text-white" />
-          <span className="text-[11px] font-black text-white">{order.time}</span>
-        </div>
-      </div>
-      
-      <div className="flex justify-between items-end z-10">
-        <span className="text-[10px] font-black text-white/50 uppercase tracking-tighter truncate max-w-[100px]">
-          {order.refId}
+      <div className="flex flex-col items-center text-center">
+        <span className="text-3xl font-extrabold text-white leading-none tracking-tight">
+          {order.orderId}
         </span>
-        <div className="flex items-center gap-1">
-          <span className="text-[10px] font-black text-white uppercase">{order.items} ITEMS</span>
-        </div>
+        <span className="text-[10px] font-medium text-white/80 uppercase tracking-widest mt-1.5">
+          #NDAGPJC
+        </span>
+        <span className="text-[10px] font-medium text-white/50 truncate w-full mt-0.5">
+          {order.orderId}...
+        </span>
       </div>
-
-      {/* Background Decorative ID */}
-      <span className="absolute -bottom-2 -right-2 text-6xl font-black text-white/5 select-none pointer-events-none">
-        {order.orderId.slice(-2)}
-      </span>
     </div>
   );
 };
@@ -122,17 +122,6 @@ export default function LiveOrderHubPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const smartSearchResults = useMemo(() => {
-    if (!headerSearchQuery) return [];
-    const query = headerSearchQuery.toLowerCase();
-    const mockData = [
-      { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
-      { type: 'Table', value: 'Table 24', sub: 'Dining area' },
-      { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
-    ];
-    return mockData.filter(item => item.value.toLowerCase().includes(query));
-  }, [headerSearchQuery]);
 
   if (!mounted) return null;
 
@@ -301,7 +290,7 @@ export default function LiveOrderHubPage() {
                   {Array.from({ length: 80 - MOCK_ORDERS.length }).map((_, i) => (
                     <div 
                       key={`placeholder-${i}`} 
-                      className="aspect-[2/1] rounded-[10px] bg-[#F8FAFC] border border-slate-50" 
+                      className="aspect-square rounded-[12px] bg-[#F8FAFC] border border-slate-50" 
                     />
                   ))}
                 </div>
