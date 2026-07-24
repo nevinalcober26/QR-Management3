@@ -90,7 +90,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/Popover";
+} from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/utils";
@@ -420,7 +420,7 @@ export default function QRCodesPage() {
               </Link>
             </Button>
             
-            <div className="flex items-center bg-white border border-white rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
+            <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
