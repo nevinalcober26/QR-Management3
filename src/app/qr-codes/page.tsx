@@ -34,7 +34,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -385,7 +385,7 @@ export default function QRCodesPage() {
               </Link>
             </Button>
             
-            <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
+            <div className="flex items-center bg-white border border-white rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
