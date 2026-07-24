@@ -14,17 +14,14 @@ import {
   BookOpen,
   History,
   FileDown,
-  ChevronRight,
-  ChevronLeft,
-  ChevronsLeft,
-  ChevronsRight,
   Grid3X3,
   Users,
   Settings,
-  Clock,
+  Wallet,
+  Coins,
   Percent,
-  Split,
-  FolderOpen
+  User,
+  ArrowDown
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,32 +41,6 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
-
-// --- Types & Mock Data ---
-
-type SplitMethod = 'Item-based' | 'Equal';
-
-interface SplitTransaction {
-  id: string;
-  orderId: string;
-  dateTime: string;
-  totalBill: number;
-  splits: number;
-  method: SplitMethod;
-  breakdown: number[];
-  settlementTime: string;
-}
-
-const MOCK_SPLITS: SplitTransaction[] = [
-  { id: '1', orderId: '#3213', dateTime: '2024-07-24, 10:15 PM', totalBill: 84.00, splits: 3, method: 'Item-based', breakdown: [28, 28], settlementTime: '8m 17s' },
-  { id: '2', orderId: '#3222', dateTime: '2024-07-24, 10:22 PM', totalBill: 62.00, splits: 3, method: 'Equal', breakdown: [21, 21], settlementTime: '10m 37s' },
-  { id: '3', orderId: '#3324', dateTime: '2024-07-24, 10:45 PM', totalBill: 46.00, splits: 3, method: 'Equal', breakdown: [16, 16], settlementTime: '19m 28s' },
-  { id: '4', orderId: '#3312', dateTime: '2024-07-24, 11:02 PM', totalBill: 8.00, splits: 2, method: 'Equal', breakdown: [4, 4], settlementTime: '11m 41s' },
-  { id: '5', orderId: '#3333', dateTime: '2024-07-24, 11:15 PM', totalBill: 12.00, splits: 3, method: 'Item-based', breakdown: [4, 4], settlementTime: '6m 11s' },
-  { id: '6', orderId: '#3249', dateTime: '2024-07-24, 11:30 PM', totalBill: 127.00, splits: 2, method: 'Item-based', breakdown: [64, 64], settlementTime: '9m 1s' },
-  { id: '7', orderId: '#3231', dateTime: '2024-07-24, 11:42 PM', totalBill: 81.00, splits: 3, method: 'Item-based', breakdown: [27, 27], settlementTime: '15m 27s' },
-  { id: '8', orderId: '#3297', dateTime: '2024-07-24, 11:55 PM', totalBill: 9.00, splits: 2, method: 'Equal', breakdown: [5, 5], settlementTime: '14m 22s' },
-];
 
 // --- Sub-components ---
 
@@ -152,23 +123,15 @@ const KPICard = ({ title, value, sub, icon: Icon, colorClass, borderClass }: { t
   </div>
 );
 
-export default function SplitBillReportPage() {
+export default function TipsReportPage() {
   const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const filteredSplits = useMemo(() => {
-    return MOCK_SPLITS.filter(item => 
-      item.orderId.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
 
   if (!mounted) return null;
 
@@ -184,7 +147,7 @@ export default function SplitBillReportPage() {
             <rect y="23.6289" width="5.51067" height="4.95961" fill="#0CB5A8"/>
             <rect y="12.0547" width="5.51067" height="4.95961" fill="#0CB5A8"/>
             <rect y="0.482422" width="5.51067" height="4.95961" fill="#0CB5A8"/>
-            <path d="M47.5498 21.11168C47.5498 21.526 47.5243 21.9523 47.4731 22.3956H37.5756C37.6438 23.2822 37.9251 23.9642 38.4196 24.4416C38.9311 24.9019 39.5534 25.1321 40.2865 25.1321C41.3777 25.1321 42.1365 24.6717 42.5627 23.751H47.2174C46.9787 24.6888 46.5439 25.5328 45.913 26.283C45.2992 27.0332 44.5235 27.6214 43.5857 28.0476C42.648 28.4739 41.5994 28.687 40.44 28.687C39.0419 28.687 37.7972 28.3886 36.706 27.7919C35.6148 27.1951 34.7623 26.3426 34.1485 25.2344C33.5347 24.1261 33.2278 22.8303 33.2278 21.347C33.2278 19.8636 33.5262 18.5678 34.1229 17.4596C33.5347 16.3513 35.5892 15.4988 36.6805 14.9021C37.7717 14.3053 39.0248 14.0069 40.44 14.0069C41.821 14.0069 43.0486 14.2968 44.1228 14.8765C45.1969 15.4562 46.0324 16.2831 46.6291 17.3573C47.2429 18.4314 47.5498 19.6846 47.5498 21.11168ZM43.0742 19.9659C43.0742 19.2157 42.8185 18.619 42.307 18.1757C41.7955 17.7324 41.1561 17.5107 40.3888 17.5107C39.6557 17.5107 39.0334 17.7239 38.5219 18.1501C38.0274 18.5764 37.7205 19.1816 37.6012 19.9659H43.0742ZM70.1891 10.5287V28.4824H65.8158V17.7153L61.8005 28.4824H58.2712L54.2303 17.6898V28.4824H49.857V10.5287H55.0231L60.0614 22.9582L65.0486 10.5287H70.1891ZM86.7865 21.11168C86.7865 21.526 86.761 21.9523 86.7098 22.3956H76.8123C76.8805 23.2822 77.1618 23.9642 77.6563 24.4416C78.1678 24.9019 78.7901 25.1321 79.5232 25.1321C80.6144 25.1321 81.3732 24.6717 81.7994 23.751H86.4541C86.2154 24.6888 85.7806 25.5328 85.1497 26.283C84.5359 27.0332 83.7602 27.6214 82.8224 28.0476C81.8847 28.4739 80.8361 28.687 79.6767 28.687C78.2786 28.687 77.0339 28.3886 75.9427 27.7919C74.8515 27.1951 73.999 26.3426 73.3852 25.2344C72.7714 24.1261 72.4645 22.8303 72.4645 21.347C72.4645 19.8636 72.7629 18.5678 73.3597 17.4596C73.9735 16.3513 74.826 15.4988 75.9172 14.9021C77.0084 14.3053 78.2615 14.0069 79.6767 14.0069C81.0577 14.0069 82.2853 14.2968 83.3595 14.8765C84.4336 15.4562 85.2691 16.2831 85.8658 17.3573C86.4796 18.4314 86.7865 19.6846 86.7865 21.11168ZM82.3109 19.9659C82.3109 19.2157 82.0552 18.619 81.5437 18.1757C81.0322 17.7324 80.3928 17.5107 79.6255 17.5107C78.8924 17.5107 78.2701 17.7239 77.7586 18.1501C77.2641 18.5764 77.2641 18.5764 76.8379 19.9659H82.3109ZM97.7892 14.0581C99.4601 14.0581 100.79 14.6037 101.779 15.6949C102.785 16.7691 103.288 18.2524 103.288 20.145V28.4824H98.9401V20.7332C98.9401 19.7784 98.6929 19.0367 98.1984 18.5082C97.704 17.9796 97.039 17.7153 96.2036 17.7153C95.3681 17.7153 94.5071 14.9788 95.2573 14.6207C96.0075 14.2456 96.8515 14.0581 97.7892 14.0581ZM120.419 14.2115V28.4824H116.045V26.5387C115.602 27.1696 114.997 27.6811 114.23 28.0732C113.479 28.4483 112.644 28.6359 111.723 28.6359C110.632 28.6359 109.669 28.3972 108.833 27.9198C107.998 27.4253 107.35 26.7177 106.89 25.797C106.429 24.8763 106.199 23.7937 106.199 22.549V14.2115H110.547V21.9608C110.547 22.9156 110.794 23.6573 111.288 24.1858C111.783 24.7144 112.448 24.9786 113.283 24.9786C114.136 24.9786 114.809 24.7144 115.304 24.1858C115.798 23.6573 116.045 22.9156 116.045 21.9608V14.2115H120.419Z" fill="#111E3C"/>
+            <path d="M47.5498 21.11168C47.5498 21.526 47.5243 21.9523 47.4731 22.3956H37.5756C37.6438 23.2822 37.9251 23.9642 38.4196 24.4416C38.9311 24.9019 39.5534 25.1321 40.2865 25.1321C41.3777 25.1321 42.1365 24.6717 42.5627 23.751H47.2174C46.9787 24.6888 46.5439 25.5328 45.913 26.283C45.2992 27.0332 44.5235 27.6214 43.5857 28.0476C42.648 28.4739 41.5994 28.687 40.44 28.687C39.0419 28.687 37.7972 28.3886 36.706 27.7919C35.6148 27.1951 34.7623 26.3426 34.1485 25.2344C33.5347 24.1261 33.2278 22.8303 33.2278 21.347C33.2278 19.8636 33.5262 18.5678 34.1229 17.4596C34.7367 16.3513 35.5892 15.4988 36.6805 14.9021C37.7717 14.3053 39.0248 14.0069 40.44 14.0069C41.821 14.0069 43.0486 14.2968 44.1228 14.8765C45.1969 15.4562 46.0324 16.2831 46.6291 17.3573C47.2429 18.4314 47.5498 19.6846 47.5498 21.11168ZM43.0742 19.9659C43.0742 19.2157 42.8185 18.619 42.307 18.1757C41.7955 17.7324 41.1561 17.5107 40.3888 17.5107C39.6557 17.5107 39.0334 17.7239 38.5219 18.1501C38.0274 18.5764 37.7205 19.1816 37.6012 19.9659H43.0742ZM70.1891 10.5287V28.4824H65.8158V17.7153L61.8005 28.4824H58.2712L54.2303 17.6898V28.4824H49.857V10.5287H55.0231L60.0614 22.9582L65.0486 10.5287H70.1891ZM86.7865 21.11168C86.7865 21.526 86.761 21.9523 86.7098 22.3956H76.8123C76.8805 23.2822 77.1618 23.9642 77.6563 24.4416C78.1678 24.9019 78.7901 25.1321 79.5232 25.1321C80.6144 25.1321 81.3732 24.6717 81.7994 23.751H86.4541C86.2154 24.6888 85.7806 25.5328 85.1497 26.283C84.5359 27.0332 83.7602 27.6214 82.8224 28.0476C81.8847 28.4739 80.8361 28.687 79.6767 28.687C78.2786 28.687 77.0339 28.3886 75.9427 27.7919C74.8515 27.1951 73.999 26.3426 73.3852 25.2344C72.7714 24.1261 72.4645 22.8303 72.4645 21.347C72.4645 19.8636 72.7629 18.5678 73.3597 17.4596C73.9735 16.3513 74.826 15.4988 75.9172 14.9021C77.0084 14.3053 78.2615 14.0069 79.6767 14.0069C81.0577 14.0069 82.2853 14.2968 83.3595 14.8765C84.4336 15.4562 85.2691 16.2831 85.8658 17.3573C86.4796 18.4314 86.7865 19.6846 86.7865 21.11168ZM82.3109 19.9659C82.3109 19.2157 82.0552 18.619 81.5437 18.1757C81.0322 17.7324 80.3928 17.5107 79.6255 17.5107C78.8924 17.5107 78.2701 17.7239 77.7586 18.1501C77.2641 18.5764 77.2641 18.5764 76.8379 19.9659H82.3109ZM97.7892 14.0581C99.4601 14.0581 100.79 14.6037 101.779 15.6949C102.785 16.7691 103.288 18.2524 103.288 20.145V28.4824H98.9401V20.7332C98.9401 19.7784 98.6929 19.0367 98.1984 18.5082C97.704 17.9796 97.039 17.7153 96.2036 17.7153C95.3681 17.7153 94.5071 14.9788 95.2573 14.6207C96.0075 14.2456 96.8515 14.0581 97.7892 14.0581ZM120.419 14.2115V28.4824H116.045V26.5387C115.602 27.1696 114.997 27.6811 114.23 28.0732C113.479 28.4483 112.644 28.6359 111.723 28.6359C110.632 28.6359 109.669 28.3972 108.833 27.9198C107.998 27.4253 107.35 26.7177 106.89 25.797C106.429 24.8763 106.199 23.7937 106.199 22.549V14.2115H110.547V21.9608C110.547 22.9156 110.794 23.6573 111.288 24.1858C111.783 24.7144 112.448 24.9786 113.283 24.9786C114.136 24.9786 114.809 24.7144 115.304 24.1858C115.798 23.6573 116.045 22.9156 116.045 21.9608V14.2115H120.419Z" fill="#111E3C"/>
           </svg>
         </div>
 
@@ -196,8 +159,8 @@ export default function SplitBillReportPage() {
           <SidebarItem icon={BarChart3} label="Live Order Hub" href="/live-order-hub" />
           <SidebarItem icon={History} label="Reports" active subItems={[
             { label: 'Order Report', href: '/orders-report' },
-            { label: 'Split Bill Report', href: '/split-bill-report', active: true },
-            { label: 'Tips Report', href: '/tips-report' },
+            { label: 'Split Bill Report', href: '/split-bill-report' },
+            { label: 'Tips Report', href: '/tips-report', active: true },
           ]} />
 
           <SidebarDivider />
@@ -319,8 +282,8 @@ export default function SplitBillReportPage() {
             {/* Report Header */}
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Split Bill Report</h1>
-                <p className="text-[13px] text-slate-400 font-medium">Audit trail for shared payments, division methods, and group behavior.</p>
+                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Tips & Gratuity Report</h1>
+                <p className="text-[13px] text-slate-400 font-medium">Analyze gratuity patterns, staff performance, and net earnings.</p>
               </div>
               <Button className="bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold rounded-xl h-10 px-6 shadow-lg shadow-[#0CB5A8]/20 flex items-center gap-2 text-xs">
                 <FileDown className="w-4 h-4" />
@@ -331,7 +294,7 @@ export default function SplitBillReportPage() {
             {/* Date Range Picker (Styled Card) */}
             <div className="bg-white p-4 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-100">
                <div className="inline-flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 text-[13px] font-medium text-slate-600 cursor-pointer">
-                  <span>2024-07-24 - 2024-07-24</span>
+                  <span>2026-07-24 - 2026-07-24</span>
                   <Calendar className="w-4 h-4 text-slate-400" />
                </div>
             </div>
@@ -339,158 +302,45 @@ export default function SplitBillReportPage() {
             {/* KPI Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <KPICard 
-                title="SPLIT ORDERS" 
-                value={MOCK_SPLITS.length.toString()} 
-                sub="Settled split bill records" 
-                icon={Split} 
+                title="TOTAL TIPS" 
+                value="฿ 0.00" 
+                sub="Across all paid orders" 
+                icon={Wallet} 
                 colorClass="bg-green-50 text-green-500" 
                 borderClass="border-r-emerald-500"
               />
               <KPICard 
-                title="AVG. PAYERS" 
-                value="2.6" 
-                sub="Average number of splitters" 
-                icon={Users} 
-                colorClass="bg-yellow-50 text-yellow-500" 
-                borderClass="border-r-yellow-400"
+                title="AVG. TIP" 
+                value="฿ 0.00" 
+                sub="Per tip transaction" 
+                icon={Coins} 
+                colorClass="bg-teal-50 text-teal-500" 
+                borderClass="border-r-[#0CB5A8]"
               />
               <KPICard 
-                title="COMPLETION RATE" 
-                value="100%" 
-                sub="Completed settlement share" 
+                title="TIP CAPTURE RATE" 
+                value="0%" 
+                sub="Tips vs order value" 
                 icon={Percent} 
-                colorClass="bg-slate-50 text-slate-400" 
-                borderClass="border-r-slate-200"
+                colorClass="bg-red-50 text-red-500" 
+                borderClass="border-r-red-400"
               />
               <KPICard 
-                title="AVG. SETTLEMENT" 
-                value="12 minutes" 
-                sub="Average settlement duration" 
-                icon={Clock} 
+                title="ACTIVE STAFF" 
+                value="0" 
+                sub="Staff receiving tips" 
+                icon={User} 
                 colorClass="bg-yellow-50 text-yellow-500" 
                 borderClass="border-r-yellow-500"
               />
             </div>
 
-            {/* Main Table Container */}
-            <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
-              {/* Table Filters */}
-              <div className="p-6 border-b border-slate-50 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 w-full max-w-xs">
-                  <Search className="w-4 h-4 text-slate-400" />
-                  <Input 
-                    placeholder="Search order number" 
-                    className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+            {/* Main Table Container (Empty State) */}
+            <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col min-h-[400px] items-center justify-center text-center">
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-slate-900">No tip transactions found</h3>
+                  <p className="text-sm text-slate-400 font-medium">Try adjusting your search, date, or staff filters.</p>
                 </div>
-              </div>
-
-              {/* Table Body */}
-              <div className="flex-1 overflow-x-auto min-h-[300px]">
-                <table className="w-full">
-                  <thead className="bg-[#F8FAFC] border-b border-slate-50">
-                    <tr>
-                      {['Order ID', 'Date & Time', 'Total Bill', 'Splits', 'Split Method', 'Payer Breakdown', 'Settlement Time'].map((head) => (
-                        <th key={head} className="px-6 py-4 text-left">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">{head}</span>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredSplits.length > 0 ? (
-                      filteredSplits.map((tx) => (
-                        <tr key={tx.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                          <td className="px-6 py-4">
-                            <span className="text-[14px] font-black text-slate-900">{tx.orderId}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[11px] font-medium text-slate-400 whitespace-nowrap">{tx.dateTime}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[14px] font-black text-slate-900">AED {tx.totalBill.toFixed(2)}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="bg-slate-50 border border-slate-100 px-3 py-1 rounded-lg w-fit">
-                                <span className="text-[11px] font-bold text-slate-600">{tx.splits} Ways</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                                <FolderOpen className="w-4 h-4 text-emerald-500" />
-                                <span className="text-[13px] font-medium text-slate-600">{tx.method}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                                {tx.breakdown.map((amount, idx) => (
-                                    <div key={idx} className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg text-[11px] font-bold">
-                                        AED {amount}
-                                    </div>
-                                ))}
-                                {tx.splits > tx.breakdown.length && (
-                                    <span className="text-[11px] font-bold text-slate-400 ml-1">+ {tx.splits - tx.breakdown.length} More</span>
-                                )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                                <span className="text-[14px] font-black text-slate-900 leading-none">{tx.settlementTime}</span>
-                                <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-0.5">SETTLED</span>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={7} className="py-24 text-center">
-                          <p className="text-[14px] text-slate-400 font-medium">No split settlements found for the selected filters.</p>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Table Footer / Pagination */}
-              <div className="p-6 border-t border-slate-50 bg-[#F8FAFC]/30 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Select value={itemsPerPage.toString()} onValueChange={(val) => setItemsPerPage(parseInt(val))}>
-                    <SelectTrigger className="w-20 h-9 border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-none bg-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="10">10</SelectItem>
-                      <SelectItem value="25">25</SelectItem>
-                      <SelectItem value="50">50</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <span className="text-[11px] text-slate-400 font-medium tracking-tight">
-                    per page <span className="text-slate-900 ml-3">
-                      1 - {filteredSplits.length} of {filteredSplits.length} results
-                    </span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
-                    <ChevronsLeft className="w-4 h-4 text-slate-400" />
-                  </Button>
-                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
-                    <ChevronLeft className="w-4 h-4 text-slate-400" />
-                  </Button>
-                  <div className="px-4 text-[13px] font-bold text-slate-600">
-                    Page 1 of 1
-                  </div>
-                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </Button>
-                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
-                    <ChevronsRight className="w-4 h-4 text-slate-400" />
-                  </Button>
-                </div>
-              </div>
             </div>
           </div>
         </div>

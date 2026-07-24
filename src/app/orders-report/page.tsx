@@ -239,7 +239,7 @@ export default function OrdersReportPage() {
           <SidebarItem icon={History} label="Reports" active subItems={[
             { label: 'Order Report', href: '/orders-report', active: true },
             { label: 'Split Bill Report', href: '/split-bill-report' },
-            { label: 'Tips Report', href: '#' },
+            { label: 'Tips Report', href: '/tips-report' },
           ]} />
 
           <SidebarDivider />

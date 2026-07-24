@@ -20,7 +20,6 @@ import {
   HelpCircle,
   X,
   Trash2,
-  Upload,
   FileDown,
   FileImage,
   Info,
@@ -57,15 +56,11 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetFooter,
-  SheetClose,
 } from "@/components/ui/sheet";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -235,17 +230,6 @@ export default function QRCodesPage() {
     return filtered;
   }, [items, selectedFloor, mainSearchTerm]);
 
-  const smartSearchResults = useMemo(() => {
-    if (!headerSearchQuery) return [];
-    const query = headerSearchQuery.toLowerCase();
-    const mockData = [
-      { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
-      { type: 'Table', value: 'Table 24', sub: 'Dining area' },
-      { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
-    ];
-    return mockData.filter(item => item.value.toLowerCase().includes(query));
-  }, [headerSearchQuery]);
-
   const toggleSelectAll = () => {
     if (selectedIds.length === filteredItems.length) {
       setSelectedIds([]);
@@ -362,7 +346,7 @@ export default function QRCodesPage() {
           <SidebarItem icon={History} label="Reports" subItems={[
             { label: 'Order Report', href: '/orders-report' },
             { label: 'Split Bill Report', href: '/split-bill-report' },
-            { label: 'Tips Report', href: '#' },
+            { label: 'Tips Report', href: '/tips-report' },
           ]} />
 
           <SidebarDivider />
