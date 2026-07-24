@@ -37,7 +37,8 @@ import {
   Info,
   Maximize,
   Minimize,
-  ArrowDown
+  ArrowDown,
+  Armchair
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -287,7 +288,7 @@ export default function DashboardPage() {
                           <div key={idx} className="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors cursor-default rounded-none group">
                             <div className="w-8 h-8 rounded-none bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all">
                               {result.type === 'Order' && <ClipboardList className="w-4 h-4 text-slate-400" />}
-                              {result.type === 'Table' && <Grid3X3 className="w-4 h-4 text-slate-400" />}
+                              {result.type === 'Table' && <Armchair className="w-4 h-4 text-slate-400" />}
                               {result.type === 'Customer' && <Users className="w-4 h-4 text-slate-400" />}
                             </div>
                             <div className="flex flex-col">
@@ -458,7 +459,7 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-[0_8px_30_rgb(0,0,0,0.04)] rounded-[24px]">
+              <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[24px]">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold">Popular Items</CardTitle>
                   <CardDescription>Highest volume sellers this period.</CardDescription>
@@ -592,3 +593,23 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+function ArrowDown(props: React.SVGProps<SVGSVGElement>) {
+    return (
+      <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 5v14" />
+        <path d="m19 12-7 7-7-12" />
+      </svg>
+    )
+  }
