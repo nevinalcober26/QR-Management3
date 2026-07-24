@@ -4,6 +4,10 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { 
   LayoutGrid, 
   BarChart3, 
+  Plus, 
+  Grid3X3, 
+  Users, 
+  Settings, 
   Search, 
   Calendar, 
   RefreshCcw, 
@@ -13,66 +17,37 @@ import {
   Plug,
   BookOpen,
   History,
-  FileDown,
-  Grid3X3,
-  Users,
-  Settings,
-  Wallet,
-  Coins,
-  Percent,
-  User,
-  ArrowDown,
+  MapPin,
+  MoreHorizontal,
+  Edit3,
   MinusSquare
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import MenuBuilder from "@/components/menu-builder";
 
 // --- Types & Mock Data ---
 
-type TipType = 'PRESET' | 'CUSTOM';
-
-interface TipTransaction {
+interface Outlet {
   id: string;
-  orderId: string;
-  date: string;
-  staffName: string;
-  staffInitial: string;
-  avatarColor: string;
-  method: string;
-  tipType: TipType;
-  orderTotal: number;
-  tipAmount: number;
-  tipPercent: number;
+  name: string;
+  cuisine: string;
+  city: string;
+  locationDetail: string;
+  image: string;
 }
 
-const MOCK_TIPS: TipTransaction[] = [
-  { id: '1', orderId: '#3325', date: 'Mar 2, 2026, 09:15 AM', staffName: 'Sarah Chen', staffInitial: 'S', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Credit Card', tipType: 'CUSTOM', orderTotal: 122.00, tipAmount: 6.54, tipPercent: 5.4 },
-  { id: '2', orderId: '#3255', date: 'Mar 2, 2026, 09:11 AM', staffName: 'Lisa Wang', staffInitial: 'L', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Cash', tipType: 'PRESET', orderTotal: 15.00, tipAmount: 0.73, tipPercent: 4.9 },
-  { id: '3', orderId: '#3315', date: 'Mar 2, 2026, 08:42 AM', staffName: 'Sam Taylor', staffInitial: 'S', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Cash', tipType: 'PRESET', orderTotal: 82.00, tipAmount: 1.69, tipPercent: 2.1 },
-  { id: '4', orderId: '#3240', date: 'Mar 2, 2026, 08:34 AM', staffName: 'Chloe Bennett', staffInitial: 'C', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Cash', tipType: 'PRESET', orderTotal: 92.00, tipAmount: 5.30, tipPercent: 5.8 },
-  { id: '5', orderId: '#3275', date: 'Mar 2, 2026, 07:56 AM', staffName: 'Sophie Turner', staffInitial: 'S', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Credit Card', tipType: 'PRESET', orderTotal: 68.00, tipAmount: 2.71, tipPercent: 4.0 },
-  { id: '6', orderId: '#3260', date: 'Mar 2, 2026, 07:00 AM', staffName: 'Chloe Bennett', staffInitial: 'C', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Credit Card', tipType: 'PRESET', orderTotal: 46.00, tipAmount: 1.64, tipPercent: 3.6 },
-  { id: '7', orderId: '#3295', date: 'Mar 2, 2026, 06:49 AM', staffName: 'Elena Rodriguez', staffInitial: 'E', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Credit Card', tipType: 'CUSTOM', orderTotal: 63.00, tipAmount: 2.73, tipPercent: 4.3 },
-  { id: '8', orderId: '#3280', date: 'Mar 2, 2026, 06:43 AM', staffName: 'Lisa Wang', staffInitial: 'L', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Cash', tipType: 'PRESET', orderTotal: 78.00, tipAmount: 3.12, tipPercent: 4.0 },
-  { id: '9', orderId: '#3210', date: 'Mar 2, 2026, 06:01 AM', staffName: 'Sam Taylor', staffInitial: 'S', avatarColor: 'bg-emerald-100 text-emerald-600', method: 'Credit Card', tipType: 'PRESET', orderTotal: 55.00, tipAmount: 2.75, tipPercent: 5.0 },
+const MOCK_OUTLETS: Outlet[] = [
+  { id: '1', name: "Bloomsbury's", cuisine: 'Bakery', city: 'Ras Al Khaimah', locationDetail: 'Ras Al Khaimah', image: 'https://picsum.photos/seed/bloom/400/250' },
+  { id: '2', name: 'The Cheesecake Factory', cuisine: 'International', city: 'Dubai', locationDetail: 'Dubai Mall', image: 'https://picsum.photos/seed/cheesecake/400/250' },
+  { id: '3', name: "P.F. Chang's", cuisine: 'Asian', city: 'Abu Dhabi', locationDetail: 'Abu Dhabi', image: 'https://picsum.photos/seed/pfchangs/400/250' },
+  { id: '4', name: 'Zuma', cuisine: 'Japanese', city: 'Dubai', locationDetail: 'Dubai', image: 'https://picsum.photos/seed/zuma/400/250' },
+  { id: '5', name: 'Al Fanar Seafood Market', cuisine: 'Seafood', city: 'Dubai', locationDetail: 'Dubai', image: 'https://picsum.photos/seed/seafood/400/250' },
+  { id: '6', name: 'Vapiano', cuisine: 'Italian', city: 'Dubai', locationDetail: 'Dubai', image: 'https://picsum.photos/seed/vapiano/400/250' },
 ];
 
 // --- Sub-components ---
@@ -152,50 +127,51 @@ const SidebarDivider = () => (
   </div>
 );
 
-const KPICard = ({ title, value, sub, icon: Icon, colorClass, borderClass }: { title: string, value: string, sub: string, icon: any, colorClass: string, borderClass: string }) => (
-  <div className={cn("bg-white p-6 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-r-4 relative overflow-hidden", borderClass)}>
-    <div className="flex justify-between items-start">
-      <div className="space-y-4">
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
+const OutletCard = ({ outlet }: { outlet: Outlet }) => (
+  <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col group transition-all hover:shadow-md">
+    <div className="aspect-[16/10] bg-slate-50 relative overflow-hidden">
+      <img src={outlet.image} alt={outlet.name} className="w-full h-full object-cover" />
+      <button className="absolute top-4 left-4 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 transition-colors">
+        <MoreHorizontal className="w-4 h-4" />
+      </button>
+    </div>
+    <div className="p-5 flex-1 flex flex-col justify-between">
+      <div className="space-y-4 mb-6">
         <div className="space-y-1">
-          <h3 className="text-2xl font-black text-slate-900 tracking-tight">{value}</h3>
-          <p className="text-[11px] text-slate-400 font-medium">{sub}</p>
+          <h3 className="text-[15px] font-black text-slate-900 tracking-tight leading-tight">{outlet.name}</h3>
+          <p className="text-[12px] text-slate-400 font-medium">{outlet.cuisine} • {outlet.city}</p>
+        </div>
+        <div className="flex items-center gap-2 text-slate-400">
+          <MapPin className="w-3.5 h-3.5" />
+          <span className="text-[12px] font-medium">{outlet.locationDetail}</span>
         </div>
       </div>
-      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", colorClass)}>
-        <Icon className="w-5 h-5" />
-      </div>
+      <Button className="w-full bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold rounded-xl h-11 flex items-center justify-center gap-2 shadow-sm shadow-[#0CB5A8]/20">
+        <Edit3 className="w-4 h-4" />
+        Edit Outlet
+      </Button>
     </div>
   </div>
 );
 
-export default function TipsReportPage() {
+export default function ManageOutletsPage() {
   const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
-  const [searchTerm, setSearchTerm] = useState('');
   const [isMenuBuilderOpen, setIsMenuBuilderOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const filteredTips = useMemo(() => {
-    return MOCK_TIPS.filter(item => 
-      item.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.staffName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOutlets = useMemo(() => {
+    return MOCK_OUTLETS.filter(outlet => 
+      outlet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      outlet.city.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
-
-  const kpis = useMemo(() => {
-    const total = filteredTips.reduce((sum, t) => sum + t.tipAmount, 0);
-    const avg = total / (filteredTips.length || 1);
-    const staff = new Set(filteredTips.map(t => t.staffName)).size;
-    const captureRate = 4.5; // Mock fixed rate based on average trends
-
-    return { total, avg, staff, captureRate };
-  }, [filteredTips]);
 
   if (!mounted) return null;
 
@@ -221,10 +197,10 @@ export default function TipsReportPage() {
           <SidebarSectionLabel label="OVERVIEW" />
           <SidebarItem icon={LayoutGrid} label="Dashboard" href="/dashboard" />
           <SidebarItem icon={BarChart3} label="Live Order Hub" href="/live-order-hub" />
-          <SidebarItem icon={History} label="Reports" active subItems={[
+          <SidebarItem icon={History} label="Reports" subItems={[
             { label: 'Order Report', href: '/orders-report' },
             { label: 'Split Bill Report', href: '/split-bill-report' },
-            { label: 'Tips Report', href: '/tips-report', active: true },
+            { label: 'Tips Report', href: '/tips-report' },
           ]} />
 
           <SidebarDivider />
@@ -239,7 +215,7 @@ export default function TipsReportPage() {
 
           <SidebarSectionLabel label="CONFIGURATION" />
           <SidebarItem icon={Settings} label="Settings" subItems={[
-            { label: 'Manage Outlets', href: '/manage-outlets' },
+            { label: 'Manage Outlets', href: '/manage-outlets', active: true },
             { label: 'Manage Users', href: '#' },
           ]} />
 
@@ -343,145 +319,48 @@ export default function TipsReportPage() {
           </div>
         </header>
 
-        {/* Scrollable Report Content */}
+        {/* Scrollable Manage Outlets Content */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
-          <div className="p-8 max-w-[1600px] mx-auto space-y-8">
-            {/* Report Header */}
+          <div className="p-8 max-w-[1400px] mx-auto space-y-8">
+            {/* Page Header */}
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Tips & Gratuity Report</h1>
-                <p className="text-[13px] text-slate-400 font-medium">Analyze gratuity patterns, staff performance, and net earnings.</p>
+                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Manage Outlets</h1>
+                <p className="text-[15px] text-slate-400 font-medium">Manage all your outlets in one place.</p>
               </div>
               <Button className="bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold rounded-xl h-10 px-6 shadow-lg shadow-[#0CB5A8]/20 flex items-center gap-2 text-xs">
-                <FileDown className="w-4 h-4" />
-                Export
+                <Plus className="w-4 h-4" />
+                New Outlet
               </Button>
             </div>
 
-            {/* Date Range Picker */}
-            <div className="bg-white p-4 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-100">
-               <div className="inline-flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 text-[13px] font-medium text-slate-600 cursor-pointer">
-                  <span>2026-03-02 - 2026-03-02</span>
-                  <Calendar className="w-4 h-4 text-slate-400" />
-               </div>
+            {/* Search Bar */}
+            <div className="bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
+              <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-slate-200 w-full transition-colors focus-within:border-[#0CB5A8]/50">
+                <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                <Input 
+                  placeholder="Search restaurant name" 
+                  className="border-none shadow-none bg-transparent h-7 text-[14px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
 
-            {/* KPI Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <KPICard 
-                title="TOTAL TIPS" 
-                value={`AED ${kpis.total.toFixed(2)}`} 
-                sub="Across all paid orders" 
-                icon={Wallet} 
-                colorClass="bg-green-50 text-green-500" 
-                borderClass="border-r-emerald-500"
-              />
-              <KPICard 
-                title="AVG. TIP" 
-                value={`AED ${kpis.avg.toFixed(2)}`} 
-                sub="Per tip transaction" 
-                icon={Coins} 
-                colorClass="bg-teal-50 text-teal-500" 
-                borderClass="border-r-[#0CB5A8]"
-              />
-              <KPICard 
-                title="TIP CAPTURE RATE" 
-                value={`${kpis.captureRate}%`} 
-                sub="Tips vs order value" 
-                icon={Percent} 
-                colorClass="bg-red-50 text-red-500" 
-                borderClass="border-r-red-400"
-              />
-              <KPICard 
-                title="ACTIVE STAFF" 
-                value={kpis.staff.toString()} 
-                sub="Staff receiving tips" 
-                icon={User} 
-                colorClass="bg-yellow-50 text-yellow-500" 
-                borderClass="border-r-yellow-500"
-              />
-            </div>
-
-            {/* Main Table Container */}
-            <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
-              {/* Table Filters */}
-              <div className="p-6 border-b border-slate-50 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 w-full max-w-xs">
-                  <Search className="w-4 h-4 text-slate-400" />
-                  <Input 
-                    placeholder="Search order or staff..." 
-                    className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+            {/* Outlet Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 pb-20">
+              {filteredOutlets.length > 0 ? (
+                filteredOutlets.map((outlet) => (
+                  <OutletCard key={outlet.id} outlet={outlet} />
+                ))
+              ) : (
+                <div className="col-span-full py-32 flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center">
+                    <Search className="w-8 h-8 text-slate-200" />
+                  </div>
+                  <p className="text-[15px] text-slate-900 font-bold">No outlets found matching "{searchTerm}"</p>
                 </div>
-              </div>
-
-              {/* Table Body */}
-              <div className="flex-1 overflow-x-auto min-h-[400px]">
-                <table className="w-full">
-                  <thead className="bg-[#F8FAFC] border-b border-slate-50">
-                    <tr>
-                      {['Order ID', 'Date', 'Staff Member', 'Method', 'Tip Type', 'Order Total', 'Tip Amount', 'Tip %'].map((head) => (
-                        <th key={head} className={cn("px-6 py-4 text-left", (head === 'Tip Amount' || head === 'Tip %') && "text-right")}>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">{head}</span>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTips.length > 0 ? (
-                      filteredTips.map((tx) => (
-                        <tr key={tx.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                          <td className="px-6 py-4">
-                            <span className="text-[14px] font-black text-slate-900">{tx.orderId}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[11px] font-medium text-slate-400 whitespace-nowrap">{tx.date}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className={cn("w-8 h-8 rounded-full flex items-center justify-center font-bold text-[11px]", tx.avatarColor)}>
-                                {tx.staffInitial}
-                              </div>
-                              <span className="text-[13px] font-black text-slate-900">{tx.staffName}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[13px] font-medium text-slate-400">{tx.method}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <Badge 
-                              variant="outline" 
-                              className={cn(
-                                "rounded-md px-2 py-0.5 text-[9px] font-black tracking-tight",
-                                tx.tipType === 'CUSTOM' ? "bg-blue-50 text-blue-600 border-blue-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"
-                              )}
-                            >
-                              {tx.tipType}
-                            </Badge>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[13px] font-medium text-slate-400 whitespace-nowrap">AED {tx.orderTotal.toFixed(2)}</span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <span className="text-[14px] font-black text-slate-900 whitespace-nowrap">AED {tx.tipAmount.toFixed(2)}</span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <span className="text-[14px] font-black text-emerald-500">{tx.tipPercent.toFixed(1)}%</span>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={8} className="py-24 text-center">
-                          <p className="text-[14px] text-slate-400 font-medium">No tip transactions found for the selected filters.</p>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              )}
             </div>
           </div>
         </div>

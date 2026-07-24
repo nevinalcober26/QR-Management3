@@ -377,7 +377,7 @@ export default function QRCodesPage() {
 
           <SidebarSectionLabel label="CONFIGURATION" />
           <SidebarItem icon={Settings} label="Settings" subItems={[
-            { label: 'Manage Outlets', href: '#', active: true },
+            { label: 'Manage Outlets', href: '/manage-outlets' },
             { label: 'Manage Users', href: '#' },
           ]} />
 
@@ -679,274 +679,274 @@ export default function QRCodesPage() {
                       <RefreshCcw className="w-4 h-4" /> {hasSelectionWithoutQR ? 'Generate' : 'Regenerate'} All
                     </Button>
                     <Button 
-                      variant="ghost" 
-                      className="text-white hover:bg-white/10 hover:text-white font-bold text-[13px] gap-2 h-9 rounded-xl disabled:opacity-30"
-                      disabled={isDownloadDeleteDisabled}
-                      onClick={() => toast({ title: "Bulk Download", description: `Downloading ${selectedIds.length} QR codes.`})}
-                    >
-                      <Download className="w-4 h-4" /> Download Selected
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      className="text-red-400 hover:bg-red-500/10 hover:text-red-400 font-bold text-[13px] gap-2 h-9 rounded-xl"
-                      onClick={() => {
-                        setItems(prev => prev.filter(item => !selectedIds.includes(item.id)));
-                        setSelectedIds([]);
-                        toast({ variant: "destructive", title: "Bulk Delete", description: "Selected tables have been removed."});
-                      }}
-                    >
-                      <Trash2 className="w-4 h-4" /> Delete Selected
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      className="text-slate-500 hover:bg-white/5 hover:text-white font-bold text-[13px] h-9 rounded-xl ml-4"
-                      onClick={() => setSelectedIds([])}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Generate Drawer */}
-        <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-          <SheetContent className="w-[500px] sm:max-w-[500px] border-none shadow-2xl p-0">
-            <div className="h-full flex flex-col bg-white">
-              <SheetHeader className="p-8 bg-[#F8FAFC] border-b border-slate-100">
-                <SheetTitle className="text-2xl font-black text-slate-900 tracking-tight">Create QR Codes</SheetTitle>
-                <SheetDescription className="text-slate-400 font-medium">Configure and generate QR codes for your restaurant tables.</SheetDescription>
-              </SheetHeader>
-              
-              <ScrollArea className="flex-1 px-8 py-6">
-                <div className="space-y-8">
-                  {/* Step 1: Select Tables */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#0CB5A8] text-white flex items-center justify-center text-[11px] font-black">1</div>
-                        <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight">Select Tables</h4>
-                      </div>
-                      <Badge variant="outline" className="rounded-full border-[#0CB5A8]/20 bg-[#0CB5A8]/5 text-[#0CB5A8] text-[10px] font-bold">
-                        {filteredDrawerTables.length} AVAILABLE
-                      </Badge>
-                    </div>
-
-                    <Popover open={isTableSelectorOpen} onOpenChange={setIsTableSelectorOpen}>
-                      <PopoverTrigger asChild>
-                        <div className="w-full p-4 rounded-2xl border border-slate-200 cursor-pointer hover:border-[#0CB5A8] transition-colors flex items-center justify-between bg-white shadow-sm group">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#0CB5A8]/10 group-hover:text-[#0CB5A8] transition-colors">
-                              <Grid3X3 className="w-5 h-5" />
-                            </div>
-                            <div>
-                              <p className="text-[14px] font-bold text-slate-900">
-                                {selectedTableInDrawer ? `Table ${selectedTableInDrawer.id}` : 'Choose a table...'}
-                              </p>
-                              <p className="text-[11px] text-slate-400 font-medium">
-                                {selectedTableInDrawer ? getFloorName(selectedTableInDrawer.floor) : 'Pick from available inventory'}
-                              </p>
-                            </div>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-[#0CB5A8] transition-colors" />
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[436px] p-0 border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
-                        <div className="p-4 bg-slate-50 border-b border-slate-100">
-                          <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 focus-within:border-[#0CB5A8] transition-colors">
-                            <Search className="w-4 h-4 text-slate-400" />
-                            <Input 
-                              placeholder="Find available tables..." 
-                              className="border-none shadow-none h-6 text-[13px] p-0 focus-visible:ring-0"
-                              value={tableSearchTerm}
-                              onChange={(e) => setTableSearchTerm(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <ScrollArea className="h-[240px]">
-                          {filteredDrawerTables.length > 0 ? (
-                            <div className="p-2 space-y-1">
-                              {filteredDrawerTables.map(table => (
-                                <div 
-                                  key={table.id}
-                                  className="flex items-center justify-between p-3 rounded-xl hover:bg-[#0CB5A8]/5 cursor-pointer group transition-colors"
-                                  onClick={() => {
-                                    setSelectedTableInDrawer(table);
-                                    setIsTableSelectorOpen(false);
-                                  }}
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-[11px] group-hover:bg-white group-hover:text-[#0CB5A8] transition-all">
-                                      {table.id}
-                                    </div>
-                                    <span className="text-[13px] font-bold text-slate-700">{getFloorName(table.floor)}</span>
-                                  </div>
-                                  <Badge className="bg-slate-100 text-slate-400 font-bold text-[9px] border-none group-hover:bg-[#0CB5A8] group-hover:text-white transition-colors">AVAILABLE</Badge>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="p-12 text-center">
-                              <p className="text-[13px] text-slate-400 font-medium">No available tables found.</p>
-                            </div>
-                          )}
-                        </ScrollArea>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {/* Step 2: Customization */}
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#0CB5A8] text-white flex items-center justify-center text-[11px] font-black">2</div>
-                      <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight">QR Design Customization</h4>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label className="text-[12px] font-bold text-slate-500 uppercase tracking-tight">QR Color</Label>
-                        <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200">
-                          <input 
-                            type="color" 
-                            className="w-10 h-10 rounded-lg border-none cursor-pointer" 
-                            value={qrColor} 
-                            onChange={(e) => setQrColor(e.target.value)}
-                          />
-                          <span className="text-[13px] font-mono font-bold text-slate-400 uppercase">{qrColor}</span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[12px] font-bold text-slate-500 uppercase tracking-tight">Background Color</Label>
-                        <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200">
-                          <input 
-                            type="color" 
-                            className="w-10 h-10 rounded-lg border-none cursor-pointer" 
-                            value={qrBgColor} 
-                            onChange={(e) => setQrBgColor(e.target.value)}
-                          />
-                          <span className="text-[13px] font-mono font-bold text-slate-400 uppercase">{qrBgColor}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-6 rounded-[28px] border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center space-y-4">
-                      <div className="w-32 h-32 bg-white rounded-2xl p-4 shadow-xl flex items-center justify-center">
-                        <img 
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PREVIEW&color=${qrColor.substring(1)}&bgcolor=${qrBgColor.substring(1)}`} 
-                          alt="Preview" 
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                      <span className="text-[11px] font-black text-[#0CB5A8] uppercase tracking-[0.1em]">Instant Design Preview</span>
-                    </div>
-                  </div>
-                </div>
-              </ScrollArea>
-
-              <div className="p-8 bg-white border-t border-slate-100 flex items-center gap-3">
-                <Button 
-                  variant="outline" 
-                  className="flex-1 h-12 rounded-2xl border-slate-200 text-slate-500 font-bold"
-                  onClick={() => setIsDrawerOpen(false)}
-                >
-                  Discard Changes
-                </Button>
-                <Button 
-                  className="flex-[2] h-12 rounded-2xl bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-black text-[15px] shadow-lg shadow-[#0CB5A8]/20 disabled:opacity-50"
-                  disabled={!selectedTableInDrawer}
-                  onClick={() => {
-                    if (selectedTableInDrawer) {
-                      performGeneration([selectedTableInDrawer.id]);
-                      setIsDrawerOpen(false);
-                      setSelectedTableInDrawer(null);
-                    }
-                  }}
-                >
-                  Generate QR Code
-                </Button>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-
-        {/* Preview Dialog */}
-        <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-          <DialogContent className="max-w-[400px] p-0 overflow-hidden border-none rounded-[32px] shadow-2xl">
-            <VisuallyHidden>
-              <DialogTitle>QR Code Preview</DialogTitle>
-            </VisuallyHidden>
-            {previewTableId && (
-              <div className="bg-white p-10 flex flex-col items-center space-y-8">
-                <div className="w-full flex justify-between items-center">
-                  <div className="space-y-0.5">
-                    <h4 className="text-xl font-black text-slate-900 tracking-tight">Table {previewTableId}</h4>
-                    <p className="text-[11px] text-slate-400 font-medium uppercase tracking-widest">{getFloorName(items.find(i => i.id === previewTableId)?.floor || 'floor1')}</p>
-                  </div>
-                  <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full" onClick={() => setIsPreviewOpen(false)}>
-                    <X className="w-4 h-4 text-slate-400" />
-                  </Button>
-                </div>
-                
-                <div className="w-64 h-64 p-8 bg-slate-50 rounded-[40px] flex items-center justify-center border border-slate-100">
-                  <div className="w-full h-full bg-white rounded-2xl p-4 shadow-xl flex items-center justify-center">
-                    <img src={items.find(i => i.id === previewTableId)?.qr || ''} alt="QR" className="w-full h-full object-contain" />
-                  </div>
-                </div>
-
-                <div className="w-full grid grid-cols-2 gap-3 pt-4">
-                  <Button 
-                    variant="outline" 
-                    className="h-12 rounded-2xl border-slate-200 text-slate-600 font-bold text-[13px] gap-2"
-                    onClick={() => handleDownload(previewTableId)}
+                    variant="ghost" 
+                    className="text-white hover:bg-white/10 hover:text-white font-bold text-[13px] gap-2 h-9 rounded-xl disabled:opacity-30"
+                    disabled={isDownloadDeleteDisabled}
+                    onClick={() => toast({ title: "Bulk Download", description: `Downloading ${selectedIds.length} QR codes.`})}
                   >
-                    <FileImage className="w-4 h-4 text-slate-400" /> JPEG
+                    <Download className="w-4 h-4" /> Download Selected
                   </Button>
                   <Button 
-                    variant="outline" 
-                    className="h-12 rounded-2xl border-slate-200 text-slate-600 font-bold text-[13px] gap-2"
-                    onClick={() => handleDownload(previewTableId)}
+                    variant="ghost" 
+                    className="text-red-400 hover:bg-red-500/10 hover:text-red-400 font-bold text-[13px] gap-2 h-9 rounded-xl"
+                    onClick={() => {
+                      setItems(prev => prev.filter(item => !selectedIds.includes(item.id)));
+                      setSelectedIds([]);
+                      toast({ variant: "destructive", title: "Bulk Delete", description: "Selected tables have been removed."});
+                    }}
                   >
-                    <FileDown className="w-4 h-4 text-slate-400" /> PDF
+                    <Trash2 className="w-4 h-4" /> Delete Selected
                   </Button>
-                </div>
-
-                <div className="flex items-center gap-2.5 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                  <Sparkles className="w-3.5 h-3.5" /> High Resolution QR Generated
+                  <Button 
+                    variant="ghost" 
+                    className="text-slate-500 hover:bg-white/5 hover:text-white font-bold text-[13px] h-9 rounded-xl ml-4"
+                    onClick={() => setSelectedIds([])}
+                  >
+                    Cancel
+                  </Button>
                 </div>
               </div>
             )}
-          </DialogContent>
-        </Dialog>
+          </div>
+        </div>
+      </div>
 
-        {/* Regenerate Confirmation */}
-        <AlertDialog open={isRegenerateConfirmOpen} onOpenChange={setIsRegenerateConfirmOpen}>
-          <AlertDialogContent className="rounded-[32px] p-8 border-none shadow-2xl">
-            <AlertDialogHeader className="space-y-4">
-              <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center">
-                <RefreshCcw className="w-7 h-7 text-orange-400" />
+      {/* Generate Drawer */}
+      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <SheetContent className="w-[500px] sm:max-w-[500px] border-none shadow-2xl p-0">
+          <div className="h-full flex flex-col bg-white">
+            <SheetHeader className="p-8 bg-[#F8FAFC] border-b border-slate-100">
+              <SheetTitle className="text-2xl font-black text-slate-900 tracking-tight">Create QR Codes</SheetTitle>
+              <SheetDescription className="text-slate-400 font-medium">Configure and generate QR codes for your restaurant tables.</SheetDescription>
+            </SheetHeader>
+            
+            <ScrollArea className="flex-1 px-8 py-6">
+              <div className="space-y-8">
+                {/* Step 1: Select Tables */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-[#0CB5A8] text-white flex items-center justify-center text-[11px] font-black">1</div>
+                      <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight">Select Tables</h4>
+                    </div>
+                    <Badge variant="outline" className="rounded-full border-[#0CB5A8]/20 bg-[#0CB5A8]/5 text-[#0CB5A8] text-[10px] font-bold">
+                      {filteredDrawerTables.length} AVAILABLE
+                    </Badge>
+                  </div>
+
+                  <Popover open={isTableSelectorOpen} onOpenChange={setIsTableSelectorOpen}>
+                    <PopoverTrigger asChild>
+                      <div className="w-full p-4 rounded-2xl border border-slate-200 cursor-pointer hover:border-[#0CB5A8] transition-colors flex items-center justify-between bg-white shadow-sm group">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#0CB5A8]/10 group-hover:text-[#0CB5A8] transition-colors">
+                            <Grid3X3 className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <p className="text-[14px] font-bold text-slate-900">
+                              {selectedTableInDrawer ? `Table ${selectedTableInDrawer.id}` : 'Choose a table...'}
+                            </p>
+                            <p className="text-[11px] text-slate-400 font-medium">
+                              {selectedTableInDrawer ? getFloorName(selectedTableInDrawer.floor) : 'Pick from available inventory'}
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-[#0CB5A8] transition-colors" />
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[436px] p-0 border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
+                      <div className="p-4 bg-slate-50 border-b border-slate-100">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 focus-within:border-[#0CB5A8] transition-colors">
+                          <Search className="w-4 h-4 text-slate-400" />
+                          <Input 
+                            placeholder="Find available tables..." 
+                            className="border-none shadow-none h-6 text-[13px] p-0 focus-visible:ring-0"
+                            value={tableSearchTerm}
+                            onChange={(e) => setTableSearchTerm(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <ScrollArea className="h-[240px]">
+                        {filteredDrawerTables.length > 0 ? (
+                          <div className="p-2 space-y-1">
+                            {filteredDrawerTables.map(table => (
+                              <div 
+                                key={table.id}
+                                className="flex items-center justify-between p-3 rounded-xl hover:bg-[#0CB5A8]/5 cursor-pointer group transition-colors"
+                                onClick={() => {
+                                  setSelectedTableInDrawer(table);
+                                  setIsTableSelectorOpen(false);
+                                }}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-[11px] group-hover:bg-white group-hover:text-[#0CB5A8] transition-all">
+                                    {table.id}
+                                  </div>
+                                  <span className="text-[13px] font-bold text-slate-700">{getFloorName(table.floor)}</span>
+                                </div>
+                                <Badge className="bg-slate-100 text-slate-400 font-bold text-[9px] border-none group-hover:bg-[#0CB5A8] group-hover:text-white transition-colors">AVAILABLE</Badge>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-12 text-center">
+                            <p className="text-[13px] text-slate-400 font-medium">No available tables found.</p>
+                          </div>
+                        )}
+                      </ScrollArea>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {/* Step 2: Customization */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-[#0CB5A8] text-white flex items-center justify-center text-[11px] font-black">2</div>
+                    <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight">QR Design Customization</h4>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-[12px] font-bold text-slate-500 uppercase tracking-tight">QR Color</Label>
+                      <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200">
+                        <input 
+                          type="color" 
+                          className="w-10 h-10 rounded-lg border-none cursor-pointer" 
+                          value={qrColor} 
+                          onChange={(e) => setQrColor(e.target.value)}
+                        />
+                        <span className="text-[13px] font-mono font-bold text-slate-400 uppercase">{qrColor}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[12px] font-bold text-slate-500 uppercase tracking-tight">Background Color</Label>
+                      <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200">
+                        <input 
+                          type="color" 
+                          className="w-10 h-10 rounded-lg border-none cursor-pointer" 
+                          value={qrBgColor} 
+                          onChange={(e) => setQrBgColor(e.target.value)}
+                        />
+                        <span className="text-[13px] font-mono font-bold text-slate-400 uppercase">{qrBgColor}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 rounded-[28px] border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center space-y-4">
+                    <div className="w-32 h-32 bg-white rounded-2xl p-4 shadow-xl flex items-center justify-center">
+                      <img 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PREVIEW&color=${qrColor.substring(1)}&bgcolor=${qrBgColor.substring(1)}`} 
+                        alt="Preview" 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <span className="text-[11px] font-black text-[#0CB5A8] uppercase tracking-[0.1em]">Instant Design Preview</span>
+                  </div>
+                </div>
               </div>
-              <AlertDialogTitle className="text-2xl font-black text-slate-900 tracking-tight">Overwrite existing QR Codes?</AlertDialogTitle>
-              <AlertDialogDescription className="text-[15px] font-medium text-slate-500 leading-relaxed">
-                One or more of the selected tables already have active QR codes. Generating new ones will replace the current images. This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="mt-8 gap-3">
-              <AlertDialogCancel className="h-12 flex-1 rounded-2xl border-slate-200 text-slate-500 font-bold">Cancel</AlertDialogCancel>
-              <AlertDialogAction 
-                className="h-12 flex-1 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-black"
-                onClick={() => performGeneration(idsToGenerate)}
+            </ScrollArea>
+
+            <div className="p-8 bg-white border-t border-slate-100 flex items-center gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1 h-12 rounded-2xl border-slate-200 text-slate-500 font-bold"
+                onClick={() => setIsDrawerOpen(false)}
               >
-                Yes, Regenerate
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                Discard Changes
+              </Button>
+              <Button 
+                className="flex-[2] h-12 rounded-2xl bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-black text-[15px] shadow-lg shadow-[#0CB5A8]/20 disabled:opacity-50"
+                disabled={!selectedTableInDrawer}
+                onClick={() => {
+                  if (selectedTableInDrawer) {
+                    performGeneration([selectedTableInDrawer.id]);
+                    setIsDrawerOpen(false);
+                    setSelectedTableInDrawer(null);
+                  }
+                }}
+              >
+                Generate QR Code
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-      </main>
+      {/* Preview Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-[400px] p-0 overflow-hidden border-none rounded-[32px] shadow-2xl">
+          <VisuallyHidden>
+            <DialogTitle>QR Code Preview</DialogTitle>
+          </VisuallyHidden>
+          {previewTableId && (
+            <div className="bg-white p-10 flex flex-col items-center space-y-8">
+              <div className="w-full flex justify-between items-center">
+                <div className="space-y-0.5">
+                  <h4 className="text-xl font-black text-slate-900 tracking-tight">Table {previewTableId}</h4>
+                  <p className="text-[11px] text-slate-400 font-medium uppercase tracking-widest">{getFloorName(items.find(i => i.id === previewTableId)?.floor || 'floor1')}</p>
+                </div>
+                <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full" onClick={() => setIsPreviewOpen(false)}>
+                  <X className="w-4 h-4 text-slate-400" />
+                </Button>
+              </div>
+              
+              <div className="w-64 h-64 p-8 bg-slate-50 rounded-[40px] flex items-center justify-center border border-slate-100">
+                <div className="w-full h-full bg-white rounded-2xl p-4 shadow-xl flex items-center justify-center">
+                  <img src={items.find(i => i.id === previewTableId)?.qr || ''} alt="QR" className="w-full h-full object-contain" />
+                </div>
+              </div>
 
-      <MenuBuilder open={isMenuBuilderOpen} onOpenChange={setIsMenuBuilderOpen} />
-    </div>
-  );
+              <div className="w-full grid grid-cols-2 gap-3 pt-4">
+                <Button 
+                  variant="outline" 
+                  className="h-12 rounded-2xl border-slate-200 text-slate-600 font-bold text-[13px] gap-2"
+                  onClick={() => handleDownload(previewTableId)}
+                >
+                  <FileImage className="w-4 h-4 text-slate-400" /> JPEG
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-12 rounded-2xl border-slate-200 text-slate-600 font-bold text-[13px] gap-2"
+                  onClick={() => handleDownload(previewTableId)}
+                >
+                  <FileDown className="w-4 h-4 text-slate-400" /> PDF
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-2.5 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+                <Sparkles className="w-3.5 h-3.5" /> High Resolution QR Generated
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Regenerate Confirmation */}
+      <AlertDialog open={isRegenerateConfirmOpen} onOpenChange={setIsRegenerateConfirmOpen}>
+        <AlertDialogContent className="rounded-[32px] p-8 border-none shadow-2xl">
+          <AlertDialogHeader className="space-y-4">
+            <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center">
+              <RefreshCcw className="w-7 h-7 text-orange-400" />
+            </div>
+            <AlertDialogTitle className="text-2xl font-black text-slate-900 tracking-tight">Overwrite existing QR Codes?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[15px] font-medium text-slate-500 leading-relaxed">
+              One or more of the selected tables already have active QR codes. Generating new ones will replace the current images. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-8 gap-3">
+            <AlertDialogCancel className="h-12 flex-1 rounded-2xl border-slate-200 text-slate-500 font-bold">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="h-12 flex-1 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-black"
+              onClick={() => performGeneration(idsToGenerate)}
+            >
+              Yes, Regenerate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+    </main>
+
+    <MenuBuilder open={isMenuBuilderOpen} onOpenChange={setIsMenuBuilderOpen} />
+  </div>
+);
 }

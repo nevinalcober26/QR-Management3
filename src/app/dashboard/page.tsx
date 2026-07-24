@@ -277,7 +277,7 @@ export default function DashboardPage() {
 
           <SidebarSectionLabel label="CONFIGURATION" />
           <SidebarItem icon={Settings} label="Settings" subItems={[
-            { label: 'Manage Outlets', href: '#', active: true },
+            { label: 'Manage Outlets', href: '/manage-outlets' },
             { label: 'Manage Users', href: '#' },
           ]} />
 
