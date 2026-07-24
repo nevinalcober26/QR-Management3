@@ -10,7 +10,7 @@ import {
   ChevronDown,
   HelpCircle,
   ClipboardList,
-  Plug,
+  Plug, 
   BookOpen,
   History,
   Grid3X3,
@@ -20,7 +20,8 @@ import {
   ChevronRight,
   CheckCircle2,
   MinusCircle,
-  HelpCircleIcon
+  HelpCircleIcon,
+  MinusSquare
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,14 +75,16 @@ const SidebarItem = ({
     <div className="px-4 py-0.5 block">
       <div className={cn(
         "group flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all rounded-xl",
-        active ? "bg-[#0CB5A8]/10 text-[#0CB5A8]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+        active ? "bg-[#0CB5A8]/10 text-[#0CB5A8]" : (isOpen && subItems) ? "bg-[#F0FDFB] text-[#0CB5A8]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
       )} onClick={handleClick}>
         <Link href={href} className="flex items-center gap-3 flex-1" onClick={(e) => { if(onClick || subItems) e.preventDefault(); }}>
-          <Icon className={cn("w-[18px] h-[18px]", active ? "text-[#0CB5A8]" : "text-slate-400 group-hover:text-slate-600")} />
+          <Icon className={cn("w-[18px] h-[18px]", (active || (isOpen && subItems)) ? "text-[#0CB5A8]" : "text-slate-400 group-hover:text-slate-600")} />
           <span className={cn("text-[13px] font-semibold tracking-tight")}>{label}</span>
         </Link>
         {subItems && (
-          <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isOpen ? "rotate-180" : "")} />
+          <div className="flex items-center justify-center">
+            {isOpen ? <MinusSquare className="w-4 h-4 text-[#0CB5A8]/40" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-300" />}
+          </div>
         )}
       </div>
       {isOpen && subItems && (
@@ -93,7 +96,7 @@ const SidebarItem = ({
               )}
               <span className={cn(
                 "text-[13px] transition-colors",
-                sub.active ? "font-bold text-[#065F46]" : "font-medium text-slate-500 hover:text-slate-900"
+                sub.active ? "font-bold text-[#0CB5A8]" : "font-medium text-slate-500 hover:text-slate-900"
               )}>
                 {sub.label}
               </span>
@@ -186,7 +189,10 @@ export default function OrderListPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONFIGURATION" />
-          <SidebarItem icon={Settings} label="Settings" />
+          <SidebarItem icon={Settings} label="Settings" subItems={[
+            { label: 'Manage Outlets', href: '#', active: true },
+            { label: 'Manage Users', href: '#' },
+          ]} />
 
           <SidebarDivider />
 
