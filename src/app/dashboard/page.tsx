@@ -64,6 +64,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+import MenuBuilder from "@/components/menu-builder";
 
 // --- Mock Data ---
 
@@ -105,23 +106,34 @@ const SidebarItem = ({
   label, 
   active = false, 
   href = "#",
-  subItems 
+  subItems,
+  onClick
 }: { 
   icon: any, 
   label: string, 
   active?: boolean, 
   href?: string,
-  subItems?: { label: string, href: string, active?: boolean }[]
+  subItems?: { label: string, href: string, active?: boolean }[],
+  onClick?: () => void
 }) => {
   const [isOpen, setIsOpen] = useState(active || subItems?.some(s => s.active));
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    } else if (subItems) {
+      setIsOpen(!isOpen);
+    }
+  };
 
   return (
     <div className="px-4 py-0.5 block">
       <div className={cn(
         "group flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all rounded-xl",
         active ? "bg-[#0CB5A8]/10 text-[#0CB5A8]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-      )}>
-        <Link href={href} className="flex items-center gap-3 flex-1" onClick={() => subItems && setIsOpen(!isOpen)}>
+      )} onClick={handleClick}>
+        <Link href={href} className="flex items-center gap-3 flex-1" onClick={(e) => { if(onClick || subItems) e.preventDefault(); }}>
           <Icon className={cn("w-[18px] h-[18px]", active ? "text-[#0CB5A8]" : "text-slate-400 group-hover:text-slate-600")} />
           <span className={cn("text-[13px] font-semibold tracking-tight")}>{label}</span>
         </Link>
@@ -203,6 +215,7 @@ export default function DashboardPage() {
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
+  const [isMenuBuilderOpen, setIsMenuBuilderOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -253,7 +266,7 @@ export default function DashboardPage() {
 
           <SidebarSectionLabel label="MANAGEMENT" />
           <SidebarItem icon={ClipboardList} label="Order List" href="/orders" />
-          <SidebarItem icon={BookOpen} label="Menu Builder" />
+          <SidebarItem icon={BookOpen} label="Menu Builder" onClick={() => setIsMenuBuilderOpen(true)} />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
           <SidebarItem icon={Users} label="Guest Directory" />
 
@@ -393,7 +406,7 @@ export default function DashboardPage() {
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
           <div className="p-8 max-w-7xl mx-auto space-y-8">
             
-            {/* Top Stat Cards - Redesigned to match image 1000% */}
+            {/* Top Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatCard 
                 title="Total Categories" 
@@ -618,6 +631,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      <MenuBuilder open={isMenuBuilderOpen} onOpenChange={setIsMenuBuilderOpen} />
     </div>
   );
 }

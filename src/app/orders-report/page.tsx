@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+import MenuBuilder from "@/components/menu-builder";
 
 // --- Types & Mock Data ---
 
@@ -97,23 +98,34 @@ const SidebarItem = ({
   label, 
   active = false, 
   href = "#",
-  subItems 
+  subItems,
+  onClick
 }: { 
   icon: any, 
   label: string, 
   active?: boolean, 
   href?: string,
-  subItems?: { label: string, href: string, active?: boolean }[]
+  subItems?: { label: string, href: string, active?: boolean }[],
+  onClick?: () => void
 }) => {
   const [isOpen, setIsOpen] = useState(active || subItems?.some(s => s.active));
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    } else if (subItems) {
+      setIsOpen(!isOpen);
+    }
+  };
 
   return (
     <div className="px-4 py-0.5 block">
       <div className={cn(
         "group flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all rounded-xl",
         active ? "bg-[#0CB5A8]/10 text-[#0CB5A8]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-      )}>
-        <Link href={href} className="flex items-center gap-3 flex-1" onClick={() => subItems && setIsOpen(!isOpen)}>
+      )} onClick={handleClick}>
+        <Link href={href} className="flex items-center gap-3 flex-1" onClick={(e) => { if(onClick || subItems) e.preventDefault(); }}>
           <Icon className={cn("w-[18px] h-[18px]", active ? "text-[#0CB5A8]" : "text-slate-400 group-hover:text-slate-600")} />
           <span className={cn("text-[13px] font-semibold tracking-tight")}>{label}</span>
         </Link>
@@ -178,6 +190,7 @@ export default function OrdersReportPage() {
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isMenuBuilderOpen, setIsMenuBuilderOpen] = useState(false);
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -246,7 +259,7 @@ export default function OrdersReportPage() {
 
           <SidebarSectionLabel label="MANAGEMENT" />
           <SidebarItem icon={ClipboardList} label="Order List" href="/orders" />
-          <SidebarItem icon={BookOpen} label="Menu Builder" />
+          <SidebarItem icon={BookOpen} label="Menu Builder" onClick={() => setIsMenuBuilderOpen(true)} />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
           <SidebarItem icon={Users} label="Guest Directory" />
 
@@ -592,6 +605,8 @@ export default function OrdersReportPage() {
           </div>
         </div>
       </main>
+
+      <MenuBuilder open={isMenuBuilderOpen} onOpenChange={setIsMenuBuilderOpen} />
     </div>
   );
 }
