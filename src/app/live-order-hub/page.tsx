@@ -281,7 +281,7 @@ export default function LiveOrderHubPage() {
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
           <div className="max-w-[1600px] mx-auto">
             
-            {/* STICKY HEADER SECTION (Matches Uploaded Design Exactly) */}
+            {/* STICKY HEADER SECTION */}
             <div className="sticky top-0 bg-white border-b border-slate-100 px-8 py-5 z-10">
               <div className="flex items-center">
                 <div className="flex items-center">
@@ -330,15 +330,27 @@ export default function LiveOrderHubPage() {
               </div>
             </div>
 
-            {/* Filter Bar (Matches Uploaded Pill Image) */}
+            {/* Filter Bar and Zoom Controls */}
             <div className="p-8 pb-4">
-              <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit">
-                <div className="flex items-center">
-                  <FilterBadge label="LIVE" count={0} colorClass="bg-[#0CB5A8]" active />
-                  <FilterBadge label="PENDING" count={0} colorClass="bg-[#FBBF24]" />
-                  <FilterBadge label="READY" count={0} colorClass="bg-[#3B82F6]" />
-                  <FilterBadge label="IN PROGRESS" count={0} colorClass="bg-[#EF4444]" />
-                  <FilterBadge label="PREPARED" count={0} colorClass="bg-[#8B5CF6]" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit">
+                  <div className="flex items-center">
+                    <FilterBadge label="LIVE" count={0} colorClass="bg-[#0CB5A8]" active />
+                    <FilterBadge label="PENDING" count={0} colorClass="bg-[#FBBF24]" />
+                    <FilterBadge label="READY" count={0} colorClass="bg-[#3B82F6]" />
+                    <FilterBadge label="IN PROGRESS" count={0} colorClass="bg-[#EF4444]" />
+                    <FilterBadge label="PREPARED" count={0} colorClass="bg-[#8B5CF6]" />
+                  </div>
+                </div>
+
+                <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit gap-2 px-4">
+                  <button className="p-1 hover:bg-slate-50 rounded-full transition-colors">
+                    <ZoomOut className="w-4 h-4 text-slate-400" />
+                  </button>
+                  <Separator orientation="vertical" className="h-4 bg-slate-200" />
+                  <button className="p-1 hover:bg-slate-50 rounded-full transition-colors">
+                    <ZoomIn className="w-4 h-4 text-slate-400" />
+                  </button>
                 </div>
               </div>
             </div>
