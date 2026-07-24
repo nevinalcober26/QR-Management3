@@ -23,7 +23,8 @@ import {
   Settings,
   Clock,
   Percent,
-  Split
+  Split,
+  FolderOpen
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,31 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+
+// --- Types & Mock Data ---
+
+type SplitMethod = 'Item-based' | 'Equal';
+
+interface SplitTransaction {
+  id: string;
+  orderId: string;
+  totalBill: number;
+  splits: number;
+  method: SplitMethod;
+  breakdown: number[];
+  settlementTime: string;
+}
+
+const MOCK_SPLITS: SplitTransaction[] = [
+  { id: '1', orderId: '#3213', totalBill: 84.00, splits: 3, method: 'Item-based', breakdown: [28, 28], settlementTime: '8m 17s' },
+  { id: '2', orderId: '#3222', totalBill: 62.00, splits: 3, method: 'Equal', breakdown: [21, 21], settlementTime: '10m 37s' },
+  { id: '3', orderId: '#3324', totalBill: 46.00, splits: 3, method: 'Equal', breakdown: [16, 16], settlementTime: '19m 28s' },
+  { id: '4', orderId: '#3312', totalBill: 8.00, splits: 2, method: 'Equal', breakdown: [4, 4], settlementTime: '11m 41s' },
+  { id: '5', orderId: '#3333', totalBill: 12.00, splits: 3, method: 'Item-based', breakdown: [4, 4], settlementTime: '6m 11s' },
+  { id: '6', orderId: '#3249', totalBill: 127.00, splits: 2, method: 'Item-based', breakdown: [64, 64], settlementTime: '9m 1s' },
+  { id: '7', orderId: '#3231', totalBill: 81.00, splits: 3, method: 'Item-based', breakdown: [27, 27], settlementTime: '15m 27s' },
+  { id: '8', orderId: '#3297', totalBill: 9.00, splits: 2, method: 'Equal', breakdown: [5, 5], settlementTime: '14m 22s' },
+];
 
 // --- Sub-components ---
 
@@ -130,10 +156,18 @@ export default function SplitBillReportPage() {
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const filteredSplits = useMemo(() => {
+    return MOCK_SPLITS.filter(item => 
+      item.orderId.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
 
   if (!mounted) return null;
 
@@ -296,7 +330,7 @@ export default function SplitBillReportPage() {
             {/* Date Range Picker (Styled Card) */}
             <div className="bg-white p-4 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-100">
                <div className="inline-flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 text-[13px] font-medium text-slate-600 cursor-pointer">
-                  <span>2026-07-24 - 2026-07-24</span>
+                  <span>2024-07-24 - 2024-07-24</span>
                   <Calendar className="w-4 h-4 text-slate-400" />
                </div>
             </div>
@@ -305,7 +339,7 @@ export default function SplitBillReportPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <KPICard 
                 title="SPLIT ORDERS" 
-                value="0" 
+                value={MOCK_SPLITS.length.toString()} 
                 sub="Settled split bill records" 
                 icon={Split} 
                 colorClass="bg-green-50 text-green-500" 
@@ -313,7 +347,7 @@ export default function SplitBillReportPage() {
               />
               <KPICard 
                 title="AVG. PAYERS" 
-                value="0" 
+                value="2.6" 
                 sub="Average number of splitters" 
                 icon={Users} 
                 colorClass="bg-yellow-50 text-yellow-500" 
@@ -321,7 +355,7 @@ export default function SplitBillReportPage() {
               />
               <KPICard 
                 title="COMPLETION RATE" 
-                value="0" 
+                value="100%" 
                 sub="Completed settlement share" 
                 icon={Percent} 
                 colorClass="bg-slate-50 text-slate-400" 
@@ -329,7 +363,7 @@ export default function SplitBillReportPage() {
               />
               <KPICard 
                 title="AVG. SETTLEMENT" 
-                value="0 minutes" 
+                value="12 minutes" 
                 sub="Average settlement duration" 
                 icon={Clock} 
                 colorClass="bg-yellow-50 text-yellow-500" 
@@ -346,31 +380,72 @@ export default function SplitBillReportPage() {
                   <Input 
                     placeholder="Search order number" 
                     className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
               </div>
 
-              {/* Table Body (Empty State) */}
-              <div className="flex-1 overflow-x-auto min-h-[300px] flex flex-col">
+              {/* Table Body */}
+              <div className="flex-1 overflow-x-auto min-h-[300px]">
                 <table className="w-full">
-                  <thead className="bg-[#F8FAFC]">
-                    <tr className="border-b border-slate-50">
-                      {['Order ID', 'Date & Time', 'Total Bill', 'Splits', 'Payer Breakdown', 'Settlement Time'].map((head) => (
+                  <thead className="bg-[#F8FAFC] border-b border-slate-50">
+                    <tr>
+                      {['Order ID', 'Total Bill', 'Splits', 'Split Method', 'Payer Breakdown', 'Settlement Time'].map((head) => (
                         <th key={head} className="px-6 py-4 text-left">
-                          <div className="flex items-center gap-1.5 cursor-pointer">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">{head}</span>
-                            <ChevronDown className="w-2.5 h-2.5 text-slate-300" />
-                          </div>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">{head}</span>
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    {filteredSplits.length > 0 ? (
+                      filteredSplits.map((tx) => (
+                        <tr key={tx.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                          <td className="px-6 py-4">
+                            <span className="text-[14px] font-black text-slate-900">{tx.orderId}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-[14px] font-black text-slate-900">AED {tx.totalBill.toFixed(2)}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="bg-slate-50 border border-slate-100 px-3 py-1 rounded-lg w-fit">
+                                <span className="text-[11px] font-bold text-slate-600">{tx.splits} Ways</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                                <FolderOpen className="w-4 h-4 text-emerald-500" />
+                                <span className="text-[13px] font-medium text-slate-600">{tx.method}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                                {tx.breakdown.map((amount, idx) => (
+                                    <div key={idx} className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg text-[11px] font-bold">
+                                        AED {amount}
+                                    </div>
+                                ))}
+                                {tx.splits > tx.breakdown.length && (
+                                    <span className="text-[11px] font-bold text-slate-400 ml-1">+ {tx.splits - tx.breakdown.length} More</span>
+                                )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-col">
+                                <span className="text-[14px] font-black text-slate-900 leading-none">{tx.settlementTime}</span>
+                                <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-0.5">SETTLED</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
                         <td colSpan={6} className="py-24 text-center">
                           <p className="text-[14px] text-slate-400 font-medium">No split settlements found for the selected filters.</p>
                         </td>
                       </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -378,7 +453,7 @@ export default function SplitBillReportPage() {
               {/* Table Footer / Pagination */}
               <div className="p-6 border-t border-slate-50 bg-[#F8FAFC]/30 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Select defaultValue="10">
+                  <Select value={itemsPerPage.toString()} onValueChange={(val) => setItemsPerPage(parseInt(val))}>
                     <SelectTrigger className="w-20 h-9 border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-none bg-white">
                       <SelectValue />
                     </SelectTrigger>
@@ -390,7 +465,7 @@ export default function SplitBillReportPage() {
                   </Select>
                   <span className="text-[11px] text-slate-400 font-medium tracking-tight">
                     per page <span className="text-slate-900 ml-3">
-                      0 of 0 results
+                      1 - {filteredSplits.length} of {filteredSplits.length} results
                     </span>
                   </span>
                 </div>
@@ -400,6 +475,15 @@ export default function SplitBillReportPage() {
                   </Button>
                   <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
                     <ChevronLeft className="w-4 h-4 text-slate-400" />
+                  </Button>
+                  <div className="px-4 text-[13px] font-bold text-slate-600">
+                    Page 1 of 1
+                  </div>
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
+                    <ChevronsRight className="w-4 h-4 text-slate-400" />
                   </Button>
                 </div>
               </div>
