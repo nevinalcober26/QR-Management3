@@ -52,6 +52,7 @@ type SplitMethod = 'Item-based' | 'Equal';
 interface SplitTransaction {
   id: string;
   orderId: string;
+  dateTime: string;
   totalBill: number;
   splits: number;
   method: SplitMethod;
@@ -60,14 +61,14 @@ interface SplitTransaction {
 }
 
 const MOCK_SPLITS: SplitTransaction[] = [
-  { id: '1', orderId: '#3213', totalBill: 84.00, splits: 3, method: 'Item-based', breakdown: [28, 28], settlementTime: '8m 17s' },
-  { id: '2', orderId: '#3222', totalBill: 62.00, splits: 3, method: 'Equal', breakdown: [21, 21], settlementTime: '10m 37s' },
-  { id: '3', orderId: '#3324', totalBill: 46.00, splits: 3, method: 'Equal', breakdown: [16, 16], settlementTime: '19m 28s' },
-  { id: '4', orderId: '#3312', totalBill: 8.00, splits: 2, method: 'Equal', breakdown: [4, 4], settlementTime: '11m 41s' },
-  { id: '5', orderId: '#3333', totalBill: 12.00, splits: 3, method: 'Item-based', breakdown: [4, 4], settlementTime: '6m 11s' },
-  { id: '6', orderId: '#3249', totalBill: 127.00, splits: 2, method: 'Item-based', breakdown: [64, 64], settlementTime: '9m 1s' },
-  { id: '7', orderId: '#3231', totalBill: 81.00, splits: 3, method: 'Item-based', breakdown: [27, 27], settlementTime: '15m 27s' },
-  { id: '8', orderId: '#3297', totalBill: 9.00, splits: 2, method: 'Equal', breakdown: [5, 5], settlementTime: '14m 22s' },
+  { id: '1', orderId: '#3213', dateTime: '2024-07-24, 10:15 PM', totalBill: 84.00, splits: 3, method: 'Item-based', breakdown: [28, 28], settlementTime: '8m 17s' },
+  { id: '2', orderId: '#3222', dateTime: '2024-07-24, 10:22 PM', totalBill: 62.00, splits: 3, method: 'Equal', breakdown: [21, 21], settlementTime: '10m 37s' },
+  { id: '3', orderId: '#3324', dateTime: '2024-07-24, 10:45 PM', totalBill: 46.00, splits: 3, method: 'Equal', breakdown: [16, 16], settlementTime: '19m 28s' },
+  { id: '4', orderId: '#3312', dateTime: '2024-07-24, 11:02 PM', totalBill: 8.00, splits: 2, method: 'Equal', breakdown: [4, 4], settlementTime: '11m 41s' },
+  { id: '5', orderId: '#3333', dateTime: '2024-07-24, 11:15 PM', totalBill: 12.00, splits: 3, method: 'Item-based', breakdown: [4, 4], settlementTime: '6m 11s' },
+  { id: '6', orderId: '#3249', dateTime: '2024-07-24, 11:30 PM', totalBill: 127.00, splits: 2, method: 'Item-based', breakdown: [64, 64], settlementTime: '9m 1s' },
+  { id: '7', orderId: '#3231', dateTime: '2024-07-24, 11:42 PM', totalBill: 81.00, splits: 3, method: 'Item-based', breakdown: [27, 27], settlementTime: '15m 27s' },
+  { id: '8', orderId: '#3297', dateTime: '2024-07-24, 11:55 PM', totalBill: 9.00, splits: 2, method: 'Equal', breakdown: [5, 5], settlementTime: '14m 22s' },
 ];
 
 // --- Sub-components ---
@@ -391,7 +392,7 @@ export default function SplitBillReportPage() {
                 <table className="w-full">
                   <thead className="bg-[#F8FAFC] border-b border-slate-50">
                     <tr>
-                      {['Order ID', 'Total Bill', 'Splits', 'Split Method', 'Payer Breakdown', 'Settlement Time'].map((head) => (
+                      {['Order ID', 'Date & Time', 'Total Bill', 'Splits', 'Split Method', 'Payer Breakdown', 'Settlement Time'].map((head) => (
                         <th key={head} className="px-6 py-4 text-left">
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">{head}</span>
                         </th>
@@ -404,6 +405,9 @@ export default function SplitBillReportPage() {
                         <tr key={tx.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                           <td className="px-6 py-4">
                             <span className="text-[14px] font-black text-slate-900">{tx.orderId}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-[11px] font-medium text-slate-400 whitespace-nowrap">{tx.dateTime}</span>
                           </td>
                           <td className="px-6 py-4">
                             <span className="text-[14px] font-black text-slate-900">AED {tx.totalBill.toFixed(2)}</span>
@@ -441,7 +445,7 @@ export default function SplitBillReportPage() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={6} className="py-24 text-center">
+                        <td colSpan={7} className="py-24 text-center">
                           <p className="text-[14px] text-slate-400 font-medium">No split settlements found for the selected filters.</p>
                         </td>
                       </tr>
