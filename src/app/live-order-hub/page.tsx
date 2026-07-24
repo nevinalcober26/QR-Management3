@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -235,7 +234,7 @@ export default function LiveOrderHubPage() {
           <SidebarItem icon={BarChart3} label="Live Order Hub" active href="/live-order-hub" />
           <SidebarItem icon={History} label="Reports" subItems={[
             { label: 'Order Report', href: '/orders-report' },
-            { label: 'Split Bill Report', href: '#' },
+            { label: 'Split Bill Report', href: '/split-bill-report' },
             { label: 'Tips Report', href: '#' },
           ]} />
 

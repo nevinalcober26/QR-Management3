@@ -18,19 +18,12 @@ import {
   ChevronLeft,
   ChevronsLeft,
   ChevronsRight,
-  ShoppingCart,
-  DollarSign,
-  Wallet,
-  AlertTriangle,
-  Ban,
-  CheckCircle2,
-  Clock,
-  XCircle,
-  Smartphone,
-  Store,
   Grid3X3,
   Users,
-  Settings
+  Settings,
+  Clock,
+  Percent,
+  Split
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,45 +43,6 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
-
-// --- Types & Mock Data ---
-
-type PaymentStatus = 'Paid' | 'Pending' | 'Voided';
-type PaymentMethod = 'Cash' | 'Credit Card' | '-';
-type OrderSource = 'App to App' | 'POS';
-
-interface Transaction {
-  id: string;
-  orderId: string;
-  dateTime: string;
-  totalAmount: number;
-  paidAmount: number;
-  outstanding: number;
-  status: PaymentStatus;
-  method: PaymentMethod;
-  source: OrderSource;
-  payers: number;
-}
-
-const MOCK_TRANSACTIONS: Transaction[] = Array.from({ length: 30 }).map((_, i) => {
-  const status: PaymentStatus = i % 10 === 0 ? 'Voided' : (i % 3 === 0 ? 'Pending' : 'Paid');
-  const total = 450 + (i * 12);
-  const paid = status === 'Paid' ? total : (status === 'Pending' ? total * 0.5 : 0);
-  const outstanding = total - paid;
-  
-  return {
-    id: `tx-${i}`,
-    orderId: `#NDAGPJC${4820 + i}`,
-    dateTime: `2024-07-24, ${10 + (i % 12)}:${(i * 7) % 60 < 10 ? '0' : ''}${(i * 7) % 60} PM`,
-    totalAmount: total,
-    paidAmount: paid,
-    outstanding: outstanding,
-    status: status,
-    method: status === 'Voided' ? '-' : (i % 2 === 0 ? 'Cash' : 'Credit Card'),
-    source: i % 3 === 0 ? 'POS' : 'App to App',
-    payers: (i % 3) + 1,
-  };
-});
 
 // --- Sub-components ---
 
@@ -171,45 +125,14 @@ const KPICard = ({ title, value, sub, icon: Icon, colorClass, borderClass }: { t
   </div>
 );
 
-export default function OrdersReportPage() {
+export default function SplitBillReportPage() {
   const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
   
-  // Pagination State
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  const filteredTransactions = useMemo(() => {
-    return MOCK_TRANSACTIONS.filter(tx => {
-      const matchesSearch = tx.orderId.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || tx.status.toLowerCase() === statusFilter.toLowerCase();
-      return matchesSearch && matchesStatus;
-    });
-  }, [searchTerm, statusFilter]);
-
-  const paginatedTransactions = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredTransactions.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredTransactions, currentPage, itemsPerPage]);
-
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-
-  const kpis = useMemo(() => {
-    const total = MOCK_TRANSACTIONS.length;
-    const gross = MOCK_TRANSACTIONS.reduce((sum, tx) => sum + tx.totalAmount, 0);
-    const paid = MOCK_TRANSACTIONS.reduce((sum, tx) => sum + tx.paidAmount, 0);
-    const outstanding = MOCK_TRANSACTIONS.reduce((sum, tx) => sum + tx.outstanding, 0);
-    const voided = MOCK_TRANSACTIONS.filter(tx => tx.status === 'Voided').length;
-
-    return { total, gross, paid, outstanding, voided };
   }, []);
 
   if (!mounted) return null;
@@ -237,8 +160,8 @@ export default function OrdersReportPage() {
           <SidebarItem icon={LayoutGrid} label="Dashboard" href="/dashboard" />
           <SidebarItem icon={BarChart3} label="Live Order Hub" href="/live-order-hub" />
           <SidebarItem icon={History} label="Reports" active subItems={[
-            { label: 'Order Report', href: '/orders-report', active: true },
-            { label: 'Split Bill Report', href: '/split-bill-report' },
+            { label: 'Order Report', href: '/orders-report' },
+            { label: 'Split Bill Report', href: '/split-bill-report', active: true },
             { label: 'Tips Report', href: '#' },
           ]} />
 
@@ -361,8 +284,8 @@ export default function OrdersReportPage() {
             {/* Report Header */}
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Order & Transaction Summary</h1>
-                <p className="text-[13px] text-slate-400 font-medium">Detailed financial truth source for every order and payment.</p>
+                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Split Bill Report</h1>
+                <p className="text-[13px] text-slate-400 font-medium">Audit trail for shared payments, division methods, and group behavior.</p>
               </div>
               <Button className="bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold rounded-xl h-10 px-6 shadow-lg shadow-[#0CB5A8]/20 flex items-center gap-2 text-xs">
                 <FileDown className="w-4 h-4" />
@@ -370,47 +293,47 @@ export default function OrdersReportPage() {
               </Button>
             </div>
 
+            {/* Date Range Picker (Styled Card) */}
+            <div className="bg-white p-4 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-100">
+               <div className="inline-flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 text-[13px] font-medium text-slate-600 cursor-pointer">
+                  <span>2026-07-24 - 2026-07-24</span>
+                  <Calendar className="w-4 h-4 text-slate-400" />
+               </div>
+            </div>
+
             {/* KPI Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <KPICard 
-                title="TOTAL ORDERS" 
-                value={kpis.total.toString()} 
-                sub="Completed Transactions" 
-                icon={ShoppingCart} 
-                colorClass="bg-yellow-50 text-yellow-500" 
-                borderClass="border-r-yellow-400"
-              />
-              <KPICard 
-                title="GROSS SALES" 
-                value={`฿ ${kpis.gross.toLocaleString()}`} 
-                sub="Before Discounts" 
-                icon={DollarSign} 
+                title="SPLIT ORDERS" 
+                value="0" 
+                sub="Settled split bill records" 
+                icon={Split} 
                 colorClass="bg-green-50 text-green-500" 
                 borderClass="border-r-emerald-500"
               />
               <KPICard 
-                title="PAID AMOUNT" 
-                value={`฿ ${kpis.paid.toLocaleString()}`} 
-                sub="Collected Payments" 
-                icon={Wallet} 
-                colorClass="bg-slate-100 text-slate-500" 
-                borderClass="border-r-slate-300"
+                title="AVG. PAYERS" 
+                value="0" 
+                sub="Average number of splitters" 
+                icon={Users} 
+                colorClass="bg-yellow-50 text-yellow-500" 
+                borderClass="border-r-yellow-400"
               />
               <KPICard 
-                title="OUTSTANDING" 
-                value={`฿ ${kpis.outstanding.toLocaleString()}`} 
-                sub="Pending Collection" 
-                icon={AlertTriangle} 
-                colorClass="bg-red-50 text-red-500" 
-                borderClass="border-r-red-400"
+                title="COMPLETION RATE" 
+                value="0" 
+                sub="Completed settlement share" 
+                icon={Percent} 
+                colorClass="bg-slate-50 text-slate-400" 
+                borderClass="border-r-slate-200"
               />
               <KPICard 
-                title="VOIDED ORDERS" 
-                value={kpis.voided.toString()} 
-                sub="Cancelled or Removed" 
-                icon={Ban} 
-                colorClass="bg-red-50 text-red-500" 
-                borderClass="border-r-red-500"
+                title="AVG. SETTLEMENT" 
+                value="0 minutes" 
+                sub="Average settlement duration" 
+                icon={Clock} 
+                colorClass="bg-yellow-50 text-yellow-500" 
+                borderClass="border-r-yellow-500"
               />
             </div>
 
@@ -423,35 +346,16 @@ export default function OrdersReportPage() {
                   <Input 
                     placeholder="Search order number" 
                     className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setCurrentPage(1); // Reset to page 1 on search
-                    }}
                   />
                 </div>
-                <Select value={statusFilter} onValueChange={(val) => {
-                  setStatusFilter(val);
-                  setCurrentPage(1); // Reset to page 1 on filter
-                }}>
-                  <SelectTrigger className="w-[200px] h-10 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
-                    <SelectValue placeholder="Select Payment Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="voided">Voided</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
 
-              {/* Table Body */}
-              <div className="flex-1 overflow-x-auto overflow-y-auto max-h-[600px] no-scrollbar">
+              {/* Table Body (Empty State) */}
+              <div className="flex-1 overflow-x-auto min-h-[300px] flex flex-col">
                 <table className="w-full">
-                  <thead className="bg-[#F8FAFC] sticky top-0 z-10">
+                  <thead className="bg-[#F8FAFC]">
                     <tr className="border-b border-slate-50">
-                      {['Order ID', 'Date & Time', 'Total Amount', 'Paid Amount', 'Outstanding', 'Status', 'Method', 'Source', 'Payers'].map((head) => (
+                      {['Order ID', 'Date & Time', 'Total Bill', 'Splits', 'Payer Breakdown', 'Settlement Time'].map((head) => (
                         <th key={head} className="px-6 py-4 text-left">
                           <div className="flex items-center gap-1.5 cursor-pointer">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">{head}</span>
@@ -462,61 +366,11 @@ export default function OrdersReportPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedTransactions.length > 0 ? (
-                      paginatedTransactions.map((tx) => (
-                        <tr key={tx.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
-                          <td className="px-6 py-4">
-                            <span className="text-[13px] font-black text-slate-900">{tx.orderId}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[11px] font-medium text-slate-400 whitespace-nowrap">{tx.dateTime}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[13px] font-black text-slate-900 whitespace-nowrap">฿ {tx.totalAmount.toLocaleString()}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[13px] font-black text-slate-900 whitespace-nowrap">฿ {tx.paidAmount.toLocaleString()}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[13px] font-black text-red-500 whitespace-nowrap">฿ {tx.outstanding.toLocaleString()}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className={cn(
-                              "flex items-center gap-2 px-2.5 py-1 rounded-full w-fit",
-                              tx.status === 'Paid' ? "bg-emerald-50 text-emerald-600" : 
-                              tx.status === 'Pending' ? "bg-yellow-50 text-yellow-600" : "bg-red-50 text-red-600"
-                            )}>
-                              {tx.status === 'Paid' && <CheckCircle2 className="w-3 h-3" />}
-                              {tx.status === 'Pending' && <Clock className="w-3 h-3" />}
-                              {tx.status === 'Voided' && <XCircle className="w-3 h-3" />}
-                              <span className="text-[9px] font-black uppercase tracking-tight">{tx.status}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-[12px] font-medium text-slate-500 whitespace-nowrap">{tx.method}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              {tx.source === 'App to App' ? (
-                                <Smartphone className="w-4 h-4 text-emerald-500" />
-                              ) : (
-                                <Store className="w-4 h-4 text-blue-500" />
-                              )}
-                              <span className="text-[13px] font-bold text-slate-900 whitespace-nowrap">{tx.source}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <span className="text-[13px] font-black text-slate-900">{tx.payers}</span>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={9} className="py-24 text-center">
-                          <p className="text-[14px] text-slate-900 font-bold">No transactions found.</p>
+                    <tr>
+                        <td colSpan={6} className="py-24 text-center">
+                          <p className="text-[14px] text-slate-400 font-medium">No split settlements found for the selected filters.</p>
                         </td>
                       </tr>
-                    )}
                   </tbody>
                 </table>
               </div>
@@ -524,13 +378,7 @@ export default function OrdersReportPage() {
               {/* Table Footer / Pagination */}
               <div className="p-6 border-t border-slate-50 bg-[#F8FAFC]/30 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Select 
-                    value={itemsPerPage.toString()} 
-                    onValueChange={(val) => {
-                      setItemsPerPage(parseInt(val));
-                      setCurrentPage(1); // Reset to page 1 on limit change
-                    }}
-                  >
+                  <Select defaultValue="10">
                     <SelectTrigger className="w-20 h-9 border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-none bg-white">
                       <SelectValue />
                     </SelectTrigger>
@@ -542,49 +390,16 @@ export default function OrdersReportPage() {
                   </Select>
                   <span className="text-[11px] text-slate-400 font-medium tracking-tight">
                     per page <span className="text-slate-900 ml-3">
-                      {filteredTransactions.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} - {Math.min(currentPage * itemsPerPage, filteredTransactions.length)} of {filteredTransactions.length} results
+                      0 of 0 results
                     </span>
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm disabled:opacity-30"
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                  >
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
                     <ChevronsLeft className="w-4 h-4 text-slate-400" />
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm disabled:opacity-30"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                  >
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm opacity-30" disabled>
                     <ChevronLeft className="w-4 h-4 text-slate-400" />
-                  </Button>
-                  <div className="px-4 text-[13px] font-bold text-slate-600">
-                    Page {currentPage} of {totalPages || 1}
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm disabled:opacity-30"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages || totalPages === 0}
-                  >
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm disabled:opacity-30"
-                    onClick={() => setCurrentPage(totalPages)}
-                    disabled={currentPage === totalPages || totalPages === 0}
-                  >
-                    <ChevronsRight className="w-4 h-4 text-slate-400" />
                   </Button>
                 </div>
               </div>

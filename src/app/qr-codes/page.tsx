@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -362,7 +361,7 @@ export default function QRCodesPage() {
           <SidebarItem icon={BarChart3} label="Live Order Hub" href="/live-order-hub" />
           <SidebarItem icon={History} label="Reports" subItems={[
             { label: 'Order Report', href: '/orders-report' },
-            { label: 'Split Bill Report', href: '#' },
+            { label: 'Split Bill Report', href: '/split-bill-report' },
             { label: 'Tips Report', href: '#' },
           ]} />
 
@@ -517,7 +516,7 @@ export default function QRCodesPage() {
             {/* Table Container */}
             <div className="bg-white rounded-[20px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
               <div className="p-6 border-b border-slate-50 flex items-center justify-between">
-                <div className="flex items-center gap-3 bg-[#F8FAFC] px-3.5 py-1.5 rounded-xl border border-slate-100 w-full max-w-md">
+                <div className="flex items-center gap-3 bg-[#F8FAFC] px-3.5 py-1.5 rounded-xl border border-slate-100 w-full max-md">
                   <Search className="w-4 h-4 text-slate-400" />
                   <Input 
                     placeholder="Search by table ID, floor name..." 
