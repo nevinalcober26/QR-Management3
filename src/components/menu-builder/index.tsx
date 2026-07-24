@@ -28,7 +28,7 @@ interface MenuBuilderProps {
 export default function MenuBuilder({ open, onOpenChange }: MenuBuilderProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 gap-0 border-0 flex flex-col w-screen h-screen max-w-full max-h-full rounded-none overflow-hidden">
+      <DialogContent className="p-0 gap-0 border-0 flex flex-col w-screen h-screen max-w-full max-h-full rounded-none sm:rounded-none overflow-hidden">
         <VisuallyHidden>
           <DialogTitle>Menu Builder</DialogTitle>
         </VisuallyHidden>
