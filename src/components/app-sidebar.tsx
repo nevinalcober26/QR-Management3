@@ -108,10 +108,11 @@ const SidebarDivider = () => (
 );
 
 const MOCK_OUTLETS = [
-  { id: '1', name: 'santossssssssssssss', slug: 'santossssssssssssss' },
-  { id: '2', name: 'santosssss', slug: 'santosssss' },
-  { id: '3', name: 'santos', slug: 'santos' },
-  { id: '4', name: 'los-santos-nights', slug: 'los santos nights' },
+  { id: '1', name: "Bloomsbury's", slug: 'ras-al-khaimah' },
+  { id: '2', name: "Bloomsbury's", slug: 'al-wahda-mall' },
+  { id: '3', name: "Bloomsbury's", slug: 'dalma-mall' },
+  { id: '4', name: "Bloomsbury's", slug: 'mushrif-mall' },
+  { id: '5', name: "Bloomsbury's", slug: 'dubai-silicon-oasis' },
 ];
 
 export default function AppSidebar({ currentPath, onMenuBuilderOpen }: { currentPath: string, onMenuBuilderOpen: () => void }) {
@@ -189,52 +190,54 @@ export default function AppSidebar({ currentPath, onMenuBuilderOpen }: { current
             </div>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-[240px] p-0 rounded-[20px] border-slate-100 shadow-2xl overflow-hidden bg-white mb-2" 
+            className="w-[280px] p-0 rounded-[24px] border-slate-100 shadow-2xl overflow-hidden bg-white mb-2" 
             align="end" 
             side="top"
             sideOffset={12}
           >
-            <div className="p-4 border-b border-slate-50 flex items-center justify-between">
+            <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-white">
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">SELECT AN OUTLET</span>
               <Search className="w-3.5 h-3.5 text-slate-300" />
             </div>
-            <div className="p-2">
-              <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg mb-2 border border-slate-100/50">
+            <div className="p-2 bg-white">
+              <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl mb-2 border border-slate-100/50">
                  <Search className="w-3.5 h-3.5 text-slate-400" />
                  <Input 
-                  placeholder="Search outlet..." 
-                  className="border-none shadow-none h-4 text-[12px] p-0 focus-visible:ring-0 placeholder:text-slate-400" 
+                  placeholder="Search branch..." 
+                  className="border-none shadow-none h-4 text-[12px] p-0 focus-visible:ring-0 placeholder:text-slate-400 bg-transparent" 
                  />
               </div>
-              <div className="space-y-1 max-h-[200px] overflow-y-auto no-scrollbar">
+              <div className="space-y-1.5 max-h-[280px] overflow-y-auto no-scrollbar">
                 {MOCK_OUTLETS.map((outlet) => (
                   <div 
                     key={outlet.id}
                     onClick={() => setActiveOutlet(outlet)}
                     className={cn(
-                      "flex flex-col px-3 py-2.5 rounded-xl cursor-pointer transition-all relative group",
+                      "flex items-center justify-between px-4 py-3 rounded-[18px] cursor-pointer transition-all relative group",
                       activeOutlet.id === outlet.id ? "bg-[#F0FDFB]" : "hover:bg-slate-50"
                     )}
                   >
-                    <span className={cn(
-                      "text-[10px] font-medium leading-none mb-1",
-                      activeOutlet.id === outlet.id ? "text-slate-400" : "text-slate-400"
-                    )}>{outlet.slug}</span>
-                    <span className={cn(
-                      "text-[13px] font-black leading-none",
-                      activeOutlet.id === outlet.id ? "text-[#0CB5A8]" : "text-slate-600"
-                    )}>{outlet.name}</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className={cn(
+                        "text-[10px] font-medium leading-none mb-1",
+                        activeOutlet.id === outlet.id ? "text-slate-400" : "text-slate-400"
+                      )}>{outlet.slug}</span>
+                      <span className={cn(
+                        "text-[13px] font-black leading-none",
+                        activeOutlet.id === outlet.id ? "text-[#0CB5A8]" : "text-slate-700"
+                      )}>{outlet.name}</span>
+                    </div>
                     {activeOutlet.id === outlet.id && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#0CB5A8]" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#0CB5A8] shadow-[0_0_8px_rgba(12,181,168,0.4)]" />
                     )}
                   </div>
                 ))}
               </div>
             </div>
-            <div className="p-3 border-t border-slate-50">
-               <button className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-[#0CB5A8] hover:bg-[#F0FDFB] transition-colors text-[13px] font-black group">
-                  <div className="w-5 h-5 rounded-full border border-[#0CB5A8]/30 flex items-center justify-center group-hover:border-[#0CB5A8] transition-colors">
-                    <Plus className="w-3 h-3" />
+            <div className="p-3 border-t border-slate-50 bg-white">
+               <button className="flex items-center gap-2 w-full px-4 py-3 rounded-[18px] text-[#0CB5A8] hover:bg-[#F0FDFB] transition-all text-[13px] font-black group">
+                  <div className="w-6 h-6 rounded-full border border-[#0CB5A8]/30 flex items-center justify-center group-hover:border-[#0CB5A8] transition-colors">
+                    <Plus className="w-3.5 h-3.5" />
                   </div>
                   Add New Outlet
                </button>
