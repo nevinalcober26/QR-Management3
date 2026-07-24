@@ -16,11 +16,9 @@ import {
   Grid3X3,
   Users,
   Settings,
-  ChevronLeft,
-  ChevronRight,
-  CheckCircle2,
-  MinusCircle,
-  HelpCircleIcon
+  ChevronsLeft,
+  ChevronsRight,
+  ArrowUpDown
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -117,24 +115,7 @@ const SidebarDivider = () => (
   </div>
 );
 
-const OrderStatCard = ({ title, value, icon: Icon, iconColorClass, barColorClass }: { title: string, value: string, icon: any, iconColorClass: string, barColorClass: string }) => (
-  <div className={cn("bg-white p-6 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-r-4 relative flex flex-col justify-between h-[160px]", barColorClass)}>
-    <div className="flex justify-between items-start">
-      <div className="flex items-center gap-1.5">
-        <span className="text-[13px] font-semibold text-slate-400 tracking-tight">{title}</span>
-        <HelpCircle className="w-3.5 h-3.5 text-slate-300 cursor-pointer" />
-      </div>
-      <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", iconColorClass)}>
-        <Icon className="w-4 h-4" />
-      </div>
-    </div>
-    <div className="mt-auto">
-      <h3 className="text-4xl font-black text-slate-900">{value}</h3>
-    </div>
-  </div>
-);
-
-export default function OrderListPage() {
+export default function GuestDirectoryPage() {
   const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
@@ -178,10 +159,10 @@ export default function OrderListPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="MANAGEMENT" />
-          <SidebarItem icon={ClipboardList} label="Order List" active href="/orders" />
+          <SidebarItem icon={ClipboardList} label="Order List" href="/orders" />
           <SidebarItem icon={BookOpen} label="Menu Builder" onClick={() => setIsMenuBuilderOpen(true)} />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
-          <SidebarItem icon={Users} label="Guest Directory" href="/guest-directory" />
+          <SidebarItem icon={Users} label="Guest Directory" active href="/guest-directory" />
 
           <SidebarDivider />
 
@@ -288,108 +269,76 @@ export default function OrderListPage() {
           </div>
         </header>
 
-        {/* Scrollable Order List Content */}
+        {/* Scrollable Guest Content */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
           <div className="p-8 max-w-[1600px] mx-auto space-y-8">
-            
-            {/* Header Title & Date Picker Row */}
-            <div className="space-y-6">
-              <div className="space-y-1">
-                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Daily Orders</h1>
-                <p className="text-[15px] text-slate-400 font-medium">View and manage all recent orders from this outlet.</p>
-              </div>
-
-              {/* Date Navigation Bar */}
-              <div className="bg-white p-4 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-100 flex items-center gap-3">
-                <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 text-slate-400 hover:bg-slate-50">
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 text-[14px] font-medium text-slate-600 min-w-[280px] justify-between group cursor-pointer hover:border-[#0CB5A8]/50 transition-colors">
-                  <span>24/07/2026</span>
-                  <Calendar className="w-4 h-4 text-slate-400 group-hover:text-[#0CB5A8]" />
-                </div>
-                <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 text-slate-400 hover:bg-slate-50">
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
+            {/* Page Header */}
+            <div className="space-y-1">
+              <h1 className="text-4xl font-black text-slate-900 tracking-tight">Guest</h1>
+              <p className="text-[15px] text-slate-400 font-medium">Track guest orders and spending</p>
             </div>
 
-            {/* KPI Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <OrderStatCard 
-                title="Total Orders" 
-                value="0" 
-                icon={Calendar} 
-                iconColorClass="bg-emerald-100 text-emerald-600" 
-                barColorClass="border-r-emerald-500"
-              />
-              <OrderStatCard 
-                title="Paid Orders" 
-                value="0" 
-                icon={CheckCircle2} 
-                iconColorClass="bg-emerald-100 text-emerald-600" 
-                barColorClass="border-r-emerald-500"
-              />
-              <OrderStatCard 
-                title="Unpaid Orders" 
-                value="0" 
-                icon={MinusCircle} 
-                iconColorClass="bg-yellow-50 text-yellow-500" 
-                barColorClass="border-r-yellow-400"
-              />
-            </div>
-
-            {/* Filter Bar */}
-            <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
-              <div className="p-6 border-b border-slate-50 flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 w-full max-w-sm">
-                  <Search className="w-4 h-4 text-slate-400" />
+            {/* Main Content Container */}
+            <div className="bg-white rounded-[20px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
+              {/* Search Bar */}
+              <div className="p-6 border-b border-slate-50">
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 w-full transition-colors focus-within:border-[#0CB5A8]/50">
+                  <Search className="w-4 h-4 text-slate-400 shrink-0" />
                   <Input 
-                    placeholder="Search order number, customer name" 
-                    className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
+                    placeholder="Search by name, email or phone..." 
+                    className="border-none shadow-none bg-transparent h-7 text-[14px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
                   />
                 </div>
-                <Select>
-                  <SelectTrigger className="w-[200px] h-11 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
-                    <SelectValue placeholder="Select Order Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="preparing">Preparing</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select>
-                  <SelectTrigger className="w-[180px] h-11 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
-                    <SelectValue placeholder="Select Employee" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Employees</SelectItem>
-                    <SelectItem value="sarah">Sarah Chen</SelectItem>
-                    <SelectItem value="sam">Sam Taylor</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select>
-                  <SelectTrigger className="w-[180px] h-11 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
-                    <SelectValue placeholder="Payment Source" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Sources</SelectItem>
-                    <SelectItem value="app">App to App</SelectItem>
-                    <SelectItem value="pos">POS</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
 
-              {/* Main Table Content - Empty State Fidelity */}
-              <div className="p-32 flex flex-col items-center justify-center text-center space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">No orders found</h3>
-                  <p className="text-sm text-slate-400 font-medium">Try adjusting your search, date, or status filters.</p>
+              {/* Table Headers */}
+              <div className="bg-[#F8FAFC] border-b border-slate-50 grid grid-cols-5 px-6">
+                {[
+                  { label: 'Customer', sort: true },
+                  { label: 'Last Order', sort: true },
+                  { label: 'Total Orders', sort: true },
+                  { label: 'Total Spent', sort: true },
+                  { label: 'Avg. Bill Value', sort: true }
+                ].map((head, i) => (
+                  <div key={i} className="py-4 flex items-center gap-2">
+                    <span className="text-[12px] font-bold text-slate-400 tracking-tight">{head.label}</span>
+                    {head.sort && <ArrowUpDown className="w-3 h-3 text-slate-300" />}
+                  </div>
+                ))}
+              </div>
+
+              {/* Table Body - Empty State */}
+              <div className="py-32 flex items-center justify-center text-center">
+                <p className="text-[15px] text-slate-900 font-bold">No customers with selected filters</p>
+              </div>
+
+              {/* Table Footer / Pagination */}
+              <div className="p-6 border-t border-slate-50 bg-white flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Select defaultValue="10">
+                    <SelectTrigger className="w-20 h-10 border-slate-200 rounded-xl text-[13px] font-bold text-slate-600 shadow-none bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="25">25</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className="text-[13px] text-slate-400 font-medium">
+                    per page <span className="text-slate-400 ml-4">0 of 0 results</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-slate-100 bg-[#F8FAFC] text-slate-300 cursor-not-allowed" disabled>
+                    <ChevronsLeft className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-slate-100 bg-[#F8FAFC] text-slate-300 cursor-not-allowed" disabled>
+                    <ChevronsRight className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </main>

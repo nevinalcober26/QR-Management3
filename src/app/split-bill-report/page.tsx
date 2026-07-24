@@ -219,7 +219,7 @@ export default function SplitBillReportPage() {
           <SidebarItem icon={ClipboardList} label="Order List" href="/orders" />
           <SidebarItem icon={BookOpen} label="Menu Builder" onClick={() => setIsMenuBuilderOpen(true)} />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
-          <SidebarItem icon={Users} label="Guest Directory" />
+          <SidebarItem icon={Users} label="Guest Directory" href="/guest-directory" />
 
           <SidebarDivider />
 
