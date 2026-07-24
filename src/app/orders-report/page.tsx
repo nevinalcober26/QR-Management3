@@ -18,11 +18,19 @@ import {
   Plug,
   BookOpen,
   History,
-  ZoomIn,
-  ZoomOut,
-  Armchair,
-  Clock,
-  Layers
+  Download,
+  FileDown,
+  ChevronRight,
+  ChevronLeft,
+  ChevronsLeft,
+  ChevronsRight,
+  ShoppingCart,
+  DollarSign,
+  Wallet,
+  AlertTriangle,
+  Ban,
+  ArrowUpRight,
+  Armchair
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,40 +57,7 @@ import {
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 
-// --- Types & Mock Data ---
-
-type OrderStatus = 'LIVE' | 'PENDING' | 'READY' | 'IN_PROGRESS' | 'PREPARED';
-
-interface Order {
-  id: string;
-  orderId: string;
-  refId: string;
-  status: OrderStatus;
-}
-
-const MOCK_ORDERS: Order[] = [
-  { id: '1', orderId: '4825', refId: '#NDAGPJC4825...', status: 'LIVE' },
-  { id: '2', orderId: '4823', refId: '#NDAGPJC4823...', status: 'READY' },
-  { id: '3', orderId: '4822', refId: '#NDAGPJC4822...', status: 'LIVE' },
-  { id: '4', orderId: '4827', refId: '#NDAGPJC4827...', status: 'READY' },
-  { id: '5', orderId: '4838', refId: '#NDAGPJC4838...', status: 'PENDING' },
-  { id: '6', orderId: '4833', refId: '#NDAGPJC4833...', status: 'READY' },
-  { id: '7', orderId: '4820', refId: '#NDAGPJC4820...', status: 'LIVE' },
-  { id: '8', orderId: '4829', refId: '#NDAGPJC4829...', status: 'PENDING' },
-  { id: '9', orderId: '4831', refId: '#NDAGPJC4831...', status: 'LIVE' },
-  { id: '10', orderId: '4837', refId: '#NDAGPJC4837...', status: 'LIVE' },
-  { id: '11', orderId: '4826', refId: '#NDAGPJC4826...', status: 'PENDING' },
-  { id: '12', orderId: '4832', refId: '#NDAGPJC4832...', status: 'PENDING' },
-  { id: '13', orderId: '4821', refId: '#NDAGPJC4821...', status: 'READY' },
-  { id: '14', orderId: '4830', refId: '#NDAGPJC4830...', status: 'READY' },
-  { id: '15', orderId: '4839', refId: '#NDAGPJC4839...', status: 'READY' },
-  { id: '16', orderId: '4834', refId: '#NDAGPJC4834...', status: 'LIVE' },
-  { id: '17', orderId: '4835', refId: '#NDAGPJC4835...', status: 'PENDING' },
-  { id: '18', orderId: '4824', refId: '#NDAGPJC4824...', status: 'READY' },
-  { id: '19', orderId: '6300', refId: '#NDAGPJC6300...', status: 'READY' },
-];
-
-// --- Components ---
+// --- Sub-components ---
 
 const SidebarItem = ({ icon: Icon, label, active = false, hasAdd = false, href = "#" }: { icon: any, label: string, active?: boolean, hasAdd?: boolean, href?: string }) => (
   <div className="px-4 py-0.5 block">
@@ -124,43 +99,24 @@ const SidebarDivider = () => (
   </div>
 );
 
-const FilterBadge = ({ label, count, colorClass, active = false }: { label: string, count: number, colorClass: string, active?: boolean }) => (
-  <div className={cn(
-    "flex items-center gap-2.5 px-4 py-2 cursor-pointer transition-all rounded-full",
-    active ? "bg-[#F0FDFB] border border-[#0CB5A8]/20" : "hover:bg-slate-50"
-  )}>
-    <div className={cn("w-2 h-2 rounded-full", colorClass)} />
-    <span className={cn(
-      "text-[10px] font-black uppercase tracking-[0.05em]",
-      active ? "text-[#0CB5A8]" : "text-slate-400"
-    )}>{label}</span>
-    <span className="text-[10px] font-black text-slate-900 ml-1">{count}</span>
+const KPICard = ({ title, value, sub, icon: Icon, colorClass, borderClass }: { title: string, value: string, sub: string, icon: any, colorClass: string, borderClass: string }) => (
+  <div className={cn("bg-white p-6 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-r-4 relative overflow-hidden", borderClass)}>
+    <div className="flex justify-between items-start">
+      <div className="space-y-4">
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
+        <div className="space-y-1">
+          <h3 className="text-2xl font-black text-slate-900 tracking-tight">{value}</h3>
+          <p className="text-[11px] text-slate-400 font-medium">{sub}</p>
+        </div>
+      </div>
+      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", colorClass)}>
+        <Icon className="w-5 h-5" />
+      </div>
+    </div>
   </div>
 );
 
-const OrderCard = ({ order }: { order: Order }) => {
-  const statusColors = {
-    LIVE: 'bg-[#0CB5A8]',
-    PENDING: 'bg-[#FBBF24]',
-    READY: 'bg-[#6366f1]',
-    IN_PROGRESS: 'bg-[#FBBF24]',
-    PREPARED: 'bg-[#6366f1]'
-  };
-
-  return (
-    <div className={cn(
-      "aspect-[2/1] rounded-[10px] p-3 flex flex-col justify-between shadow-sm hover:brightness-95 transition-all cursor-pointer",
-      statusColors[order.status]
-    )}>
-      <span className="text-xl font-black text-white leading-none">{order.orderId}</span>
-      <span className="text-[9px] font-bold text-white/80 uppercase tracking-tighter truncate">
-        {order.refId}
-      </span>
-    </div>
-  );
-};
-
-export default function LiveOrderHubPage() {
+export default function OrdersReportPage() {
   const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
@@ -169,17 +125,6 @@ export default function LiveOrderHubPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const smartSearchResults = useMemo(() => {
-    if (!headerSearchQuery) return [];
-    const query = headerSearchQuery.toLowerCase();
-    const mockData = [
-      { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
-      { type: 'Table', value: 'Table 24', sub: 'Dining area' },
-      { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
-    ];
-    return mockData.filter(item => item.value.toLowerCase().includes(query));
-  }, [headerSearchQuery]);
 
   if (!mounted) return null;
 
@@ -204,26 +149,26 @@ export default function LiveOrderHubPage() {
         <div className="flex-1 overflow-y-auto pt-4 pb-8 no-scrollbar">
           <SidebarSectionLabel label="OVERVIEW" />
           <SidebarItem icon={LayoutGrid} label="Dashboard" href="/dashboard" />
-          <SidebarItem icon={BarChart3} label="Live Order Hub" active href="/live-order-hub" />
-          <SidebarItem icon={History} label="Reports" hasAdd />
+          <SidebarItem icon={BarChart3} label="Live Order Hub" href="/live-order-hub" />
+          <SidebarItem icon={History} label="Reports" hasAdd active href="/orders-report" />
 
           <SidebarDivider />
 
           <SidebarSectionLabel label="MANAGEMENT" />
-          <SidebarItem icon={ClipboardList} label="Order List" />
-          <SidebarItem icon={BookOpen} label="Menu Builder" />
+          <SidebarItem icon={ClipboardList} label="Order List" href="#" />
+          <SidebarItem icon={BookOpen} label="Menu Builder" href="#" />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
-          <SidebarItem icon={Users} label="Guest Directory" />
+          <SidebarItem icon={Users} label="Guest Directory" href="#" />
 
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONFIGURATION" />
-          <SidebarItem icon={Settings} label="Settings" hasAdd />
+          <SidebarItem icon={Settings} label="Settings" hasAdd href="#" />
 
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={Plug} label="Integration" hasAdd />
+          <SidebarItem icon={Plug} label="Integration" hasAdd href="#" />
         </div>
 
         {/* Sidebar Footer */}
@@ -320,100 +265,153 @@ export default function LiveOrderHubPage() {
           </div>
         </header>
 
-        {/* Scrollable Hub Content Container */}
+        {/* Scrollable Report Content */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
-          <div className="max-w-[1600px] mx-auto">
-            
-            {/* STICKY HEADER SECTION */}
-            <div className="sticky top-0 bg-white border-b border-slate-100 px-8 py-5 z-10">
-              <div className="flex items-center">
-                <div className="flex items-center">
-                  <h1 className="text-2xl font-black text-slate-900 tracking-tight mr-6">ORDER HUB</h1>
-                  
-                  <Separator orientation="vertical" className="h-8 bg-slate-100 mr-6" />
+          <div className="p-8 max-w-[1600px] mx-auto space-y-8">
+            {/* Report Header */}
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Order & Transaction Summary</h1>
+                <p className="text-[13px] text-slate-400 font-medium">Detailed financial truth source for every order and payment.</p>
+              </div>
+              <Button className="bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold rounded-xl h-10 px-6 shadow-lg shadow-[#0CB5A8]/20 flex items-center gap-2 text-xs">
+                <FileDown className="w-4 h-4" />
+                Export
+              </Button>
+            </div>
 
-                  <div className="flex items-center gap-2 bg-[#E2F5F3] border border-[#0CB5A8]/30 px-3.5 py-1.5 rounded-full mr-6">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#0CB5A8] animate-pulse" />
-                    <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-[0.05em]">REAL TIME SYNC</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 mr-6">
-                    <span className="text-3xl font-black text-slate-900 leading-none">{MOCK_ORDERS.length}</span>
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight leading-[1.1]">ACTIVE<br/>ORDERS</span>
-                  </div>
-
-                  <Separator orientation="vertical" className="h-8 bg-slate-100 mr-6" />
-
-                  <div className="flex items-center gap-3 bg-[#F0FDFB] border border-[#0CB5A8]/10 px-4 py-2 rounded-2xl">
-                    <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-widest">FILTER BY</span>
-                    <Separator orientation="vertical" className="h-4 bg-[#0CB5A8]/20 mx-1" />
-                    <div className="flex items-center gap-3">
-                      <Select defaultValue="days">
-                        <SelectTrigger className="w-[90px] h-9 bg-white border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-sm focus:ring-0">
-                          <SelectValue placeholder="Days" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="days">Days</SelectItem>
-                          <SelectItem value="hours">Hours</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Select defaultValue="2">
-                        <SelectTrigger className="w-[100px] h-9 bg-white border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-sm focus:ring-0">
-                          <SelectValue placeholder="2 Days" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">1 Day</SelectItem>
-                          <SelectItem value="2">2 Days</SelectItem>
-                          <SelectItem value="7">7 Days</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
+            {/* Date Picker Section */}
+            <div className="bg-white p-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.01)] border border-slate-50">
+              <div className="flex items-center gap-3 bg-white border border-slate-100 w-fit px-4 py-2.5 rounded-xl">
+                <span className="text-[13px] font-bold text-slate-900 tracking-tight">2026-07-24 - 2026-07-24</span>
+                <Calendar className="w-4 h-4 text-slate-400" />
               </div>
             </div>
 
-            {/* Filter Bar and Zoom Controls */}
-            <div className="p-8 pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit">
-                  <div className="flex items-center">
-                    <FilterBadge label="LIVE" count={MOCK_ORDERS.filter(o => o.status === 'LIVE').length} colorClass="bg-[#0CB5A8]" active />
-                    <FilterBadge label="PENDING" count={MOCK_ORDERS.filter(o => o.status === 'PENDING').length} colorClass="bg-[#FBBF24]" />
-                    <FilterBadge label="READY" count={MOCK_ORDERS.filter(o => o.status === 'READY').length} colorClass="bg-[#6366f1]" />
-                    <FilterBadge label="IN PROGRESS" count={MOCK_ORDERS.filter(o => o.status === 'IN_PROGRESS').length} colorClass="bg-[#FBBF24]" />
-                    <FilterBadge label="PREPARED" count={MOCK_ORDERS.filter(o => o.status === 'PREPARED').length} colorClass="bg-[#6366f1]" />
-                  </div>
-                </div>
-
-                <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit gap-2 px-4">
-                  <button className="p-1 hover:bg-slate-50 rounded-full transition-colors">
-                    <ZoomOut className="w-4 h-4 text-slate-400" />
-                  </button>
-                  <Separator orientation="vertical" className="h-4 bg-slate-200" />
-                  <button className="p-1 hover:bg-slate-50 rounded-full transition-colors">
-                    <ZoomIn className="w-4 h-4 text-slate-400" />
-                  </button>
-                </div>
-              </div>
+            {/* KPI Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              <KPICard 
+                title="TOTAL ORDERS" 
+                value="0" 
+                sub="Completed Transactions" 
+                icon={ShoppingCart} 
+                colorClass="bg-yellow-50 text-yellow-500" 
+                borderClass="border-r-yellow-400"
+              />
+              <KPICard 
+                title="GROSS SALES" 
+                value="฿ 0.00" 
+                sub="Before Discounts" 
+                icon={DollarSign} 
+                colorClass="bg-green-50 text-green-500" 
+                borderClass="border-r-emerald-500"
+              />
+              <KPICard 
+                title="PAID AMOUNT" 
+                value="฿ 0.00" 
+                sub="Collected Payments" 
+                icon={Wallet} 
+                colorClass="bg-slate-100 text-slate-500" 
+                borderClass="border-r-slate-300"
+              />
+              <KPICard 
+                title="OUTSTANDING" 
+                value="฿ 0.00" 
+                sub="Pending Collection" 
+                icon={AlertTriangle} 
+                colorClass="bg-red-50 text-red-500" 
+                borderClass="border-r-red-400"
+              />
+              <KPICard 
+                title="VOIDED ORDERS" 
+                value="0" 
+                sub="Cancelled or Removed" 
+                icon={Ban} 
+                colorClass="bg-red-50 text-red-500" 
+                borderClass="border-r-red-500"
+              />
             </div>
 
-            {/* Main Order Grid Container */}
-            <div className="px-8 pb-10">
-              <div className="bg-white border border-slate-100 rounded-[32px] p-8 min-h-[800px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
-                  {/* Render Mock Orders */}
-                  {MOCK_ORDERS.map((order) => (
-                    <OrderCard key={order.id} order={order} />
-                  ))}
-                  
-                  {/* Render Remaining Placeholders to maintain 100% structural fidelity */}
-                  {Array.from({ length: 80 - MOCK_ORDERS.length }).map((_, i) => (
-                    <div 
-                      key={`placeholder-${i}`} 
-                      className="aspect-[2/1] rounded-[10px] bg-[#F8FAFC] border border-slate-50" 
-                    />
-                  ))}
+            {/* Main Table Container */}
+            <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
+              {/* Table Filters */}
+              <div className="p-6 border-b border-slate-50 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 bg-[#F8FAFC] px-4 py-2 rounded-xl border border-slate-100 w-full max-w-xs">
+                  <Search className="w-4 h-4 text-slate-400" />
+                  <Input 
+                    placeholder="Search order number" 
+                    className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
+                  />
+                </div>
+                <Select>
+                  <SelectTrigger className="w-[200px] h-10 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
+                    <SelectValue placeholder="Select Payment Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="void">Voided</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Table Body */}
+              <div className="flex-1 overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-[#F8FAFC]">
+                    <tr className="border-b border-slate-50">
+                      {['Order ID', 'Date & Time', 'Total Amount', 'Paid Amount', 'Outstanding', 'Payment Status', 'Method', 'Source', 'Payers'].map((head) => (
+                        <th key={head} className="px-6 py-4 text-left">
+                          <div className="flex items-center gap-1.5 cursor-pointer">
+                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{head}</span>
+                            <div className="flex flex-col">
+                              <ChevronDown className="w-2.5 h-2.5 text-slate-300" />
+                            </div>
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colSpan={9} className="py-24 text-center">
+                        <div className="flex flex-col items-center justify-center space-y-2">
+                          <p className="text-[14px] text-slate-900 font-bold">No transactions found for the selected filters.</p>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Table Footer / Pagination */}
+              <div className="p-5 border-t border-slate-50 bg-[#F8FAFC]/30 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Select defaultValue="10">
+                    <SelectTrigger className="w-16 h-10 border-slate-200 rounded-xl text-[13px] font-bold text-slate-600 shadow-none bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="25">25</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className="text-[12px] text-slate-400 font-medium tracking-tight">per page <span className="text-slate-900 ml-3">0 of 0 results</span></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm" disabled>
+                    <ChevronsLeft className="w-4 h-4 text-slate-300" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm" disabled>
+                    <ChevronLeft className="w-4 h-4 text-slate-300" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm" disabled>
+                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 bg-white shadow-sm" disabled>
+                    <ChevronsRight className="w-4 h-4 text-slate-300" />
+                  </Button>
                 </div>
               </div>
             </div>
