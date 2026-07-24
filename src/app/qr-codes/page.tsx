@@ -34,7 +34,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -67,7 +67,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -93,6 +92,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
@@ -865,6 +865,9 @@ export default function QRCodesPage() {
         {/* Preview Dialog */}
         <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
           <DialogContent className="max-w-[400px] p-0 overflow-hidden border-none rounded-[32px] shadow-2xl">
+            <VisuallyHidden>
+              <DialogTitle>QR Code Preview</DialogTitle>
+            </VisuallyHidden>
             {previewTableId && (
               <div className="bg-white p-10 flex flex-col items-center space-y-8">
                 <div className="w-full flex justify-between items-center">
