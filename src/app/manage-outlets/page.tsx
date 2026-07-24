@@ -20,12 +20,25 @@ import {
   MapPin,
   MoreHorizontal,
   Edit3,
-  MinusSquare
+  MinusSquare,
+  Armchair
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import MenuBuilder from "@/components/menu-builder";
@@ -173,6 +186,17 @@ export default function ManageOutletsPage() {
     );
   }, [searchTerm]);
 
+  const smartSearchResults = useMemo(() => {
+    if (!headerSearchQuery) return [];
+    const query = headerSearchQuery.toLowerCase();
+    const mockData = [
+      { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
+      { type: 'Table', value: 'Table 24', sub: 'Dining area' },
+      { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
+    ];
+    return mockData.filter(item => item.value.toLowerCase().includes(query));
+  }, [headerSearchQuery]);
+
   if (!mounted) return null;
 
   return (
@@ -265,6 +289,34 @@ export default function ManageOutletsPage() {
                   onFocus={() => setIsHeaderSearchFocused(true)}
                   onBlur={() => setTimeout(() => setIsHeaderSearchFocused(false), 200)}
                 />
+                
+                {/* Smart Search Results Dropdown */}
+                {isHeaderSearchFocused && headerSearchQuery && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-none shadow-2xl z-50 overflow-hidden">
+                    <div className="p-2 max-h-[300px] overflow-y-auto no-scrollbar">
+                      <div className="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Search Results</div>
+                      {smartSearchResults.length > 0 ? (
+                        smartSearchResults.map((result, idx) => (
+                          <div key={idx} className="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors cursor-default rounded-none group">
+                            <div className="w-8 h-8 rounded-none bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all">
+                              {result.type === 'Order' && <ClipboardList className="w-4 h-4 text-slate-400" />}
+                              {result.type === 'Table' && <Armchair className="w-4 h-4 text-slate-400" />}
+                              {result.type === 'Customer' && <Users className="w-4 h-4 text-slate-400" />}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[13px] font-bold text-slate-900 leading-tight">{result.value}</span>
+                              <span className="text-[11px] text-slate-400 font-medium">{result.sub}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-8 text-center">
+                          <p className="text-[13px] text-slate-400 font-medium italic">No matches found for "{headerSearchQuery}"</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="w-[1px] h-6 bg-slate-200 shrink-0" />
               <Popover>
