@@ -180,9 +180,14 @@ const StatCard = ({ title, value, change, changeType, icon: Icon, iconColor, bor
 );
 
 export default function DashboardPage() {
+  const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const smartSearchResults = useMemo(() => {
     if (!headerSearchQuery) return [];
@@ -194,6 +199,8 @@ export default function DashboardPage() {
     ];
     return mockData.filter(item => item.value.toLowerCase().includes(query));
   }, [headerSearchQuery]);
+
+  if (!mounted) return null;
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">

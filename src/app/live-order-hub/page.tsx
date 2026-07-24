@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   LayoutGrid, 
   BarChart3, 
@@ -84,9 +84,14 @@ const FilterBadge = ({ label, count, colorClass }: { label: string, count: numbe
 );
 
 export default function LiveOrderHubPage() {
+  const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const smartSearchResults = useMemo(() => {
     if (!headerSearchQuery) return [];
@@ -98,6 +103,8 @@ export default function LiveOrderHubPage() {
     ];
     return mockData.filter(item => item.value.toLowerCase().includes(query));
   }, [headerSearchQuery]);
+
+  if (!mounted) return null;
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
