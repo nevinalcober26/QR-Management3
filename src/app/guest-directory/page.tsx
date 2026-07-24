@@ -40,6 +40,32 @@ import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import MenuBuilder from "@/components/menu-builder";
 
+// --- Types & Mock Data ---
+
+interface Guest {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  lastOrder: string;
+  totalOrders: number;
+  totalSpent: number;
+  avgBill: number;
+}
+
+const MOCK_GUESTS: Guest[] = [
+  { id: '1', name: 'John Smith', email: 'john.smith@gmail.com', phone: '+971 50 123 4567', lastOrder: 'Jul 24, 2024', totalOrders: 12, totalSpent: 2450.50, avgBill: 204.20 },
+  { id: '2', name: 'Sarah Ahmed', email: 'sarah.a@outlook.com', phone: '+971 55 987 6543', lastOrder: 'Jul 22, 2024', totalOrders: 8, totalSpent: 1890.00, avgBill: 236.25 },
+  { id: '3', name: 'Michael Chen', email: 'm.chen@techcorp.com', phone: '+971 52 444 5555', lastOrder: 'Jul 20, 2024', totalOrders: 15, totalSpent: 3200.75, avgBill: 213.38 },
+  { id: '4', name: 'Elena Rodriguez', email: 'elena.rod@gmail.com', phone: '+971 58 333 2222', lastOrder: 'Jul 18, 2024', totalOrders: 5, totalSpent: 850.00, avgBill: 170.00 },
+  { id: '5', name: 'David Wilson', email: 'dave.w@freemail.com', phone: '+971 50 555 0199', lastOrder: 'Jul 15, 2024', totalOrders: 22, totalSpent: 5600.25, avgBill: 254.55 },
+  { id: '6', name: 'Layla Mansour', email: 'l.mansour@dubai.ae', phone: '+971 56 111 2233', lastOrder: 'Jul 12, 2024', totalOrders: 3, totalSpent: 420.00, avgBill: 140.00 },
+  { id: '7', name: 'Robert Taylor', email: 'robert.t@yahoo.com', phone: '+971 54 888 7766', lastOrder: 'Jul 10, 2024', totalOrders: 9, totalSpent: 1560.50, avgBill: 173.39 },
+  { id: '8', name: 'Fatima Al-Sayed', email: 'fatima.as@gmail.com', phone: '+971 55 222 3344', lastOrder: 'Jul 08, 2024', totalOrders: 18, totalSpent: 4100.00, avgBill: 227.77 },
+  { id: '9', name: 'William Brown', email: 'will.b@icloud.com', phone: '+971 52 666 9988', lastOrder: 'Jul 05, 2024', totalOrders: 1, totalSpent: 125.00, avgBill: 125.00 },
+  { id: '10', name: 'Sophie Martin', email: 's.martin@design.fr', phone: '+971 58 555 4433', lastOrder: 'Jul 01, 2024', totalOrders: 7, totalSpent: 1440.25, avgBill: 205.75 },
+];
+
 // --- Sub-components ---
 
 const SidebarItem = ({ 
@@ -121,10 +147,19 @@ export default function GuestDirectoryPage() {
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
   const [isMenuBuilderOpen, setIsMenuBuilderOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const filteredGuests = useMemo(() => {
+    return MOCK_GUESTS.filter(guest => 
+      guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guest.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guest.phone.includes(searchTerm)
+    );
+  }, [searchTerm]);
 
   if (!mounted) return null;
 
@@ -287,6 +322,8 @@ export default function GuestDirectoryPage() {
                   <Input 
                     placeholder="Search by name, email or phone..." 
                     className="border-none shadow-none bg-transparent h-7 text-[14px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
               </div>
@@ -307,9 +344,46 @@ export default function GuestDirectoryPage() {
                 ))}
               </div>
 
-              {/* Table Body - Empty State */}
-              <div className="py-32 flex items-center justify-center text-center">
-                <p className="text-[15px] text-slate-900 font-bold">No customers with selected filters</p>
+              {/* Table Body */}
+              <div className="divide-y divide-slate-50">
+                {filteredGuests.length > 0 ? (
+                  filteredGuests.map((guest) => (
+                    <div key={guest.id} className="grid grid-cols-5 px-6 py-5 hover:bg-slate-50/50 transition-colors">
+                      {/* Customer Info */}
+                      <div className="flex flex-col justify-center space-y-0.5">
+                        <span className="text-[14px] font-black text-slate-900 tracking-tight">{guest.name}</span>
+                        <span className="text-[11px] text-slate-400 font-medium">{guest.email}</span>
+                        <span className="text-[11px] text-slate-400 font-medium">{guest.phone}</span>
+                      </div>
+                      
+                      {/* Last Order */}
+                      <div className="flex items-center">
+                        <span className="text-[13px] font-medium text-slate-500">{guest.lastOrder}</span>
+                      </div>
+
+                      {/* Total Orders */}
+                      <div className="flex items-center">
+                        <div className="bg-slate-50 border border-slate-100 px-3 py-1 rounded-lg">
+                          <span className="text-[13px] font-bold text-slate-900">{guest.totalOrders} Orders</span>
+                        </div>
+                      </div>
+
+                      {/* Total Spent */}
+                      <div className="flex items-center">
+                        <span className="text-[14px] font-black text-slate-900">AED {guest.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      </div>
+
+                      {/* Avg Bill Value */}
+                      <div className="flex items-center">
+                        <span className="text-[14px] font-black text-[#0CB5A8]">AED {guest.avgBill.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-32 flex items-center justify-center text-center">
+                    <p className="text-[15px] text-slate-900 font-bold">No customers with selected filters</p>
+                  </div>
+                )}
               </div>
 
               {/* Table Footer / Pagination */}
@@ -326,14 +400,26 @@ export default function GuestDirectoryPage() {
                     </SelectContent>
                   </Select>
                   <span className="text-[13px] text-slate-400 font-medium">
-                    per page <span className="text-slate-400 ml-4">0 of 0 results</span>
+                    per page <span className="text-slate-400 ml-4">
+                      {filteredGuests.length > 0 ? `1 - ${filteredGuests.length}` : '0'} of {filteredGuests.length} results
+                    </span>
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-slate-100 bg-[#F8FAFC] text-slate-300 cursor-not-allowed" disabled>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="w-10 h-10 rounded-xl border-slate-100 bg-[#F8FAFC] text-slate-300 cursor-not-allowed" 
+                    disabled
+                  >
                     <ChevronsLeft className="w-4 h-4" />
                   </Button>
-                  <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-slate-100 bg-[#F8FAFC] text-slate-300 cursor-not-allowed" disabled>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="w-10 h-10 rounded-xl border-slate-100 bg-[#F8FAFC] text-slate-300 cursor-not-allowed" 
+                    disabled
+                  >
                     <ChevronsRight className="w-4 h-4" />
                   </Button>
                 </div>
