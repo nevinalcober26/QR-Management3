@@ -15,15 +15,8 @@ import {
   ChevronDown,
   Download,
   MoreHorizontal,
-  Sparkles,
-  ChevronRight,
-  HelpCircle,
-  X,
   Trash2,
-  FileDown,
-  FileImage,
   Info,
-  Armchair,
   ClipboardList,
   Plug,
   BookOpen,
@@ -52,32 +45,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -86,12 +56,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from '@/components/ui/scroll-area';
 import MenuBuilder from "@/components/menu-builder";
 
 const SidebarItem = ({ 
@@ -207,25 +174,12 @@ export default function QRCodesPage() {
   const { toast } = useToast();
   const [items, setItems] = useState<TableDataItem[]>(INITIAL_MOCK_DATA);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
-  const [previewTableId, setPreviewTableId] = useState<string | null>(null);
+  const [isMenuBuilderOpen, setIsMenuBuilderOpen] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
   const [selectedFloor, setSelectedFloor] = useState('all');
   const [mainSearchTerm, setMainSearchTerm] = useState('');
-
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
-
-  const [qrColor, setQrColor] = useState('#000000');
-  const [qrBgColor, setQrBgColor] = useState('#FFFFFF');
-  const [idsToGenerate, setIdsToGenerate] = useState<string[]>([]);
-  const [isRegenerateConfirmOpen, setIsRegenerateConfirmOpen] = useState(false);
-  const [tableSearchTerm, setTableSearchTerm] = useState('');
-  const [isTableSelectorOpen, setIsTableSelectorOpen] = useState(false);
-  const [selectedTableInDrawer, setSelectedTableInDrawer] = useState<TableDataItem | null>(null);
-  const [isMenuBuilderOpen, setIsMenuBuilderOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -260,49 +214,6 @@ export default function QRCodesPage() {
     );
   };
 
-  const handleOpenPreview = (id: string) => {
-    setPreviewTableId(id);
-    setIsPreviewOpen(true);
-  };
-
-  const performGeneration = (targetIds: string[]) => {
-    const now = new Date();
-    const formattedDate = now.toLocaleString('en-US', { 
-      month: 'short', 
-      day: '2-digit', 
-      year: 'numeric', 
-      hour: 'numeric', 
-      minute: '2-digit', 
-      hour12: true 
-    }).replace(',', ' at');
-
-    setItems(prev => prev.map(item => 
-      targetIds.includes(item.id)
-        ? { ...item, qr: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.id}&color=${qrColor.substring(1)}&bgcolor=${qrBgColor.substring(1)}`, status: 'Active', date: formattedDate }
-        : item
-    ));
-
-    toast({
-      title: targetIds.length > 1 ? "QR Codes Generated" : "QR Code Generated",
-      description: targetIds.length > 1 
-        ? `${targetIds.length} QR codes have been updated successfully.`
-        : `QR code for table ${targetIds[0]} has been created successfully.`,
-    });
-    
-    setIdsToGenerate([]);
-    setIsRegenerateConfirmOpen(false);
-  };
-
-  const triggerGenerate = (targetIds: string[]) => {
-    const itemsWithExistingQR = items.filter(item => targetIds.includes(item.id) && item.qr);
-    if (itemsWithExistingQR.length > 0) {
-      setIdsToGenerate(targetIds);
-      setIsRegenerateConfirmOpen(true);
-    } else {
-      performGeneration(targetIds);
-    }
-  };
-
   const handleDelete = (id: string) => {
     setItems(prev => prev.filter(item => item.id !== id));
     setSelectedIds(prev => prev.filter(i => i !== id));
@@ -313,27 +224,7 @@ export default function QRCodesPage() {
     });
   };
 
-  const handleDownload = (id: string) => {
-    toast({
-      title: "Download Started",
-      description: `QR code for table ${id} is being downloaded.`,
-    });
-  };
-
   const isAllSelected = selectedIds.length === filteredItems.length && filteredItems.length > 0;
-  const selectedItems = useMemo(() => items.filter(item => selectedIds.includes(item.id)), [items, selectedIds]);
-  const hasSelectionWithoutQR = useMemo(() => selectedItems.some(item => !item.qr), [selectedItems]);
-  const isDownloadDeleteDisabled = useMemo(() => hasSelectionWithoutQR, [hasSelectionWithoutQR]);
-
-  const filteredDrawerTables = useMemo(() => {
-    const term = tableSearchTerm.toLowerCase();
-    return items.filter(item => 
-      !item.qr && (
-        item.id.toLowerCase().includes(term) || 
-        getFloorName(item.floor).toLowerCase().includes(term)
-      )
-    );
-  }, [items, tableSearchTerm]);
 
   if (!mounted) return null;
 
@@ -387,7 +278,6 @@ export default function QRCodesPage() {
           <SidebarItem icon={Plug} label="Integration" />
         </div>
 
-        {/* Sidebar Footer */}
         <div className="bg-[#111827] p-4 rounded-t-[28px] mt-auto">
           <div className="bg-[#1E293B] rounded-[20px] p-2.5 flex items-center justify-between group cursor-pointer transition-colors hover:bg-[#2D3748] shadow-lg">
             <div className="flex items-center gap-2.5">
@@ -413,7 +303,6 @@ export default function QRCodesPage() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
-        {/* Topbar */}
         <header className="fixed top-0 right-0 left-[280px] h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
           <div className="flex items-center gap-4 flex-1">
             <Button asChild variant="outline" size="icon" className="w-9 h-9 shrink-0 border-slate-200 hover:bg-slate-50 rounded-lg">
@@ -426,7 +315,7 @@ export default function QRCodesPage() {
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
-                  placeholder="Order #, table, customer name, email, phone..." 
+                  placeholder="Order #, table, customer name..." 
                   className="border-none shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-transparent"
                   value={headerSearchQuery}
                   onChange={(e) => setHeaderSearchQuery(e.target.value)}
@@ -434,9 +323,7 @@ export default function QRCodesPage() {
                   onBlur={() => setTimeout(() => setIsHeaderSearchFocused(false), 200)}
                 />
               </div>
-              
               <div className="w-[1px] h-6 bg-slate-200 shrink-0" />
-              
               <Popover>
                 <PopoverTrigger asChild>
                   <div className="flex items-center gap-2 px-4 h-full text-[13px] font-medium text-slate-600 shrink-0 cursor-pointer hover:bg-slate-50 transition-colors">
@@ -471,16 +358,11 @@ export default function QRCodesPage() {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2.5 text-[10px] font-bold bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-200 text-slate-400 hover:bg-[#0CB5A8]/5 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-all cursor-default group/pos">
+             <div className="flex items-center gap-2.5 text-[10px] font-bold bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-200 text-slate-400 hover:bg-[#0CB5A8]/5 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-all cursor-default group/pos">
               <RefreshCcw className="w-3 h-3 text-slate-400 group-hover/pos:text-[#0CB5A8] transition-colors" />
               <span className="uppercase tracking-tight">POS SYNCED</span>
-              <Separator orientation="vertical" className="h-2.5 bg-slate-200 group-hover/pos:bg-[#0CB5A8]/20 mx-1" />
-              <span className="text-slate-400 group-hover/pos:text-[#0CB5A8]/60 uppercase tracking-tight font-bold">JULY 02, 2:42 PM</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-9 h-9 flex items-center justify-center bg-slate-50 text-slate-400 rounded-lg border border-slate-200 cursor-pointer hover:bg-[#0CB5A8]/10 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-colors">
-                <LayoutGrid className="w-[18px] h-[18px]" />
-              </div>
               <Avatar className="w-9 h-9 border-2 border-slate-100 shadow-sm">
                 <AvatarImage src="https://picsum.photos/seed/restaurant/100/100" />
                 <AvatarFallback>JD</AvatarFallback>
@@ -489,7 +371,6 @@ export default function QRCodesPage() {
           </div>
         </header>
 
-        {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
           <div className="p-8 max-w-7xl mx-auto space-y-8">
             <div className="flex items-start justify-between">
@@ -501,14 +382,12 @@ export default function QRCodesPage() {
                 <Button 
                   variant="outline" 
                   className="text-[12px] font-bold gap-2 shadow-none border-slate-200 text-slate-600 h-9 px-5 hover:bg-[#0CB5A8]/10 hover:text-slate-600 rounded-lg group"
-                  onClick={() => setIsDownloadModalOpen(true)}
                 >
                   <Download className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600" />
                   Download All
                 </Button>
                 <Button 
                   className="text-[12px] font-bold gap-2 shadow-sm bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white h-9 px-5 rounded-lg border-none"
-                  onClick={() => setIsDrawerOpen(true)}
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Create QR Code
@@ -516,10 +395,9 @@ export default function QRCodesPage() {
               </div>
             </div>
 
-            {/* Table Container */}
             <div className="bg-white rounded-[20px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
               <div className="p-6 border-b border-slate-50 flex items-center justify-between">
-                <div className="flex items-center gap-3 bg-[#F8FAFC] px-3.5 py-1.5 rounded-xl border border-slate-100 w-full max-md">
+                <div className="flex items-center gap-3 bg-[#F8FAFC] px-3.5 py-1.5 rounded-xl border border-slate-100 w-full max-w-md">
                   <Search className="w-4 h-4 text-slate-400" />
                   <Input 
                     placeholder="Search by table ID, floor name..." 
@@ -574,10 +452,7 @@ export default function QRCodesPage() {
                       <TableCell className="font-bold text-[13px] text-slate-900">Table {item.id}</TableCell>
                       <TableCell>
                         {item.qr ? (
-                          <div 
-                            className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors overflow-hidden"
-                            onClick={() => handleOpenPreview(item.id)}
-                          >
+                          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors overflow-hidden">
                             <img src={item.qr} alt="QR" className="w-8 h-8 object-contain" />
                           </div>
                         ) : (
@@ -600,25 +475,6 @@ export default function QRCodesPage() {
                       <TableCell className="text-[12px] font-medium text-slate-400">{item.date}</TableCell>
                       <TableCell className="text-right pr-6">
                         <div className="flex items-center justify-end gap-1">
-                          {item.qr ? (
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="w-8 h-8 text-slate-400 hover:text-[#0CB5A8] hover:bg-[#0CB5A8]/5"
-                              onClick={() => handleDownload(item.id)}
-                            >
-                              <Download className="w-4 h-4" />
-                            </Button>
-                          ) : (
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="w-8 h-8 text-[#0CB5A8] hover:bg-[#0CB5A8]/10"
-                              onClick={() => triggerGenerate([item.id])}
-                            >
-                              <RefreshCcw className="w-4 h-4" />
-                            </Button>
-                          )}
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="icon" className="w-8 h-8 text-slate-400">
@@ -626,11 +482,8 @@ export default function QRCodesPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48 rounded-xl border-slate-100 shadow-xl">
-                              <DropdownMenuItem onClick={() => handleOpenPreview(item.id)} className="gap-2 text-[13px] font-medium">
+                              <DropdownMenuItem className="gap-2 text-[13px] font-medium">
                                 <Search className="w-4 h-4 text-slate-400" /> Preview QR
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => triggerGenerate([item.id])} className="gap-2 text-[13px] font-medium">
-                                <RefreshCcw className="w-4 h-4 text-slate-400" /> Regenerate
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 
@@ -647,306 +500,12 @@ export default function QRCodesPage() {
                   ))}
                 </TableBody>
               </Table>
-
-              {filteredItems.length === 0 && (
-                <div className="p-20 flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center">
-                    <Search className="w-8 h-8 text-slate-200" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-lg font-bold text-slate-900">No tables found</h3>
-                    <p className="text-sm text-slate-400">Try adjusting your filters or search terms.</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Selection Bar */}
-              {selectedIds.length > 0 && (
-                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#111827] text-white px-8 py-4 rounded-[28px] shadow-2xl flex items-center gap-12 z-50 animate-in slide-in-from-bottom-4 duration-300">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#0CB5A8] flex items-center justify-center text-[13px] font-black">
-                      {selectedIds.length}
-                    </div>
-                    <span className="text-[13px] font-bold text-slate-300">TABLES SELECTED</span>
-                  </div>
-                  <Separator orientation="vertical" className="h-6 bg-slate-700" />
-                  <div className="flex items-center gap-4">
-                    <Button 
-                      variant="ghost" 
-                      className="text-white hover:bg-white/10 hover:text-white font-bold text-[13px] gap-2 h-9 rounded-xl"
-                      onClick={() => triggerGenerate(selectedIds)}
-                    >
-                      <RefreshCcw className="w-4 h-4" /> {hasSelectionWithoutQR ? 'Generate' : 'Regenerate'} All
-                    </Button>
-                    <Button 
-                    variant="ghost" 
-                    className="text-white hover:bg-white/10 hover:text-white font-bold text-[13px] gap-2 h-9 rounded-xl disabled:opacity-30"
-                    disabled={isDownloadDeleteDisabled}
-                    onClick={() => toast({ title: "Bulk Download", description: `Downloading ${selectedIds.length} QR codes.`})}
-                  >
-                    <Download className="w-4 h-4" /> Download Selected
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="text-red-400 hover:bg-red-500/10 hover:text-red-400 font-bold text-[13px] gap-2 h-9 rounded-xl"
-                    onClick={() => {
-                      setItems(prev => prev.filter(item => !selectedIds.includes(item.id)));
-                      setSelectedIds([]);
-                      toast({ variant: "destructive", title: "Bulk Delete", description: "Selected tables have been removed."});
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4" /> Delete Selected
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="text-slate-500 hover:bg-white/5 hover:text-white font-bold text-[13px] h-9 rounded-xl ml-4"
-                    onClick={() => setSelectedIds([])}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Generate Drawer */}
-      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent className="w-[500px] sm:max-w-[500px] border-none shadow-2xl p-0">
-          <div className="h-full flex flex-col bg-white">
-            <SheetHeader className="p-8 bg-[#F8FAFC] border-b border-slate-100">
-              <SheetTitle className="text-2xl font-black text-slate-900 tracking-tight">Create QR Codes</SheetTitle>
-              <SheetDescription className="text-slate-400 font-medium">Configure and generate QR codes for your restaurant tables.</SheetDescription>
-            </SheetHeader>
-            
-            <ScrollArea className="flex-1 px-8 py-6">
-              <div className="space-y-8">
-                {/* Step 1: Select Tables */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#0CB5A8] text-white flex items-center justify-center text-[11px] font-black">1</div>
-                      <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight">Select Tables</h4>
-                    </div>
-                    <Badge variant="outline" className="rounded-full border-[#0CB5A8]/20 bg-[#0CB5A8]/5 text-[#0CB5A8] text-[10px] font-bold">
-                      {filteredDrawerTables.length} AVAILABLE
-                    </Badge>
-                  </div>
-
-                  <Popover open={isTableSelectorOpen} onOpenChange={setIsTableSelectorOpen}>
-                    <PopoverTrigger asChild>
-                      <div className="w-full p-4 rounded-2xl border border-slate-200 cursor-pointer hover:border-[#0CB5A8] transition-colors flex items-center justify-between bg-white shadow-sm group">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#0CB5A8]/10 group-hover:text-[#0CB5A8] transition-colors">
-                            <Grid3X3 className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <p className="text-[14px] font-bold text-slate-900">
-                              {selectedTableInDrawer ? `Table ${selectedTableInDrawer.id}` : 'Choose a table...'}
-                            </p>
-                            <p className="text-[11px] text-slate-400 font-medium">
-                              {selectedTableInDrawer ? getFloorName(selectedTableInDrawer.floor) : 'Pick from available inventory'}
-                            </p>
-                          </div>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-[#0CB5A8] transition-colors" />
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[436px] p-0 border-slate-100 shadow-2xl rounded-2xl overflow-hidden" align="start">
-                      <div className="p-4 bg-slate-50 border-b border-slate-100">
-                        <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-slate-200 focus-within:border-[#0CB5A8] transition-colors">
-                          <Search className="w-4 h-4 text-slate-400" />
-                          <Input 
-                            placeholder="Find available tables..." 
-                            className="border-none shadow-none h-6 text-[13px] p-0 focus-visible:ring-0"
-                            value={tableSearchTerm}
-                            onChange={(e) => setTableSearchTerm(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <ScrollArea className="h-[240px]">
-                        {filteredDrawerTables.length > 0 ? (
-                          <div className="p-2 space-y-1">
-                            {filteredDrawerTables.map(table => (
-                              <div 
-                                key={table.id}
-                                className="flex items-center justify-between p-3 rounded-xl hover:bg-[#0CB5A8]/5 cursor-pointer group transition-colors"
-                                onClick={() => {
-                                  setSelectedTableInDrawer(table);
-                                  setIsTableSelectorOpen(false);
-                                }}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-[11px] group-hover:bg-white group-hover:text-[#0CB5A8] transition-all">
-                                    {table.id}
-                                  </div>
-                                  <span className="text-[13px] font-bold text-slate-700">{getFloorName(table.floor)}</span>
-                                </div>
-                                <Badge className="bg-slate-100 text-slate-400 font-bold text-[9px] border-none group-hover:bg-[#0CB5A8] group-hover:text-white transition-colors">AVAILABLE</Badge>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="p-12 text-center">
-                            <p className="text-[13px] text-slate-400 font-medium">No available tables found.</p>
-                          </div>
-                        )}
-                      </ScrollArea>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                {/* Step 2: Customization */}
-                <div className="space-y-6">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-[#0CB5A8] text-white flex items-center justify-center text-[11px] font-black">2</div>
-                    <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight">QR Design Customization</h4>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label className="text-[12px] font-bold text-slate-500 uppercase tracking-tight">QR Color</Label>
-                      <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200">
-                        <input 
-                          type="color" 
-                          className="w-10 h-10 rounded-lg border-none cursor-pointer" 
-                          value={qrColor} 
-                          onChange={(e) => setQrColor(e.target.value)}
-                        />
-                        <span className="text-[13px] font-mono font-bold text-slate-400 uppercase">{qrColor}</span>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[12px] font-bold text-slate-500 uppercase tracking-tight">Background Color</Label>
-                      <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200">
-                        <input 
-                          type="color" 
-                          className="w-10 h-10 rounded-lg border-none cursor-pointer" 
-                          value={qrBgColor} 
-                          onChange={(e) => setQrBgColor(e.target.value)}
-                        />
-                        <span className="text-[13px] font-mono font-bold text-slate-400 uppercase">{qrBgColor}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 rounded-[28px] border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center space-y-4">
-                    <div className="w-32 h-32 bg-white rounded-2xl p-4 shadow-xl flex items-center justify-center">
-                      <img 
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PREVIEW&color=${qrColor.substring(1)}&bgcolor=${qrBgColor.substring(1)}`} 
-                        alt="Preview" 
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <span className="text-[11px] font-black text-[#0CB5A8] uppercase tracking-[0.1em]">Instant Design Preview</span>
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-
-            <div className="p-8 bg-white border-t border-slate-100 flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                className="flex-1 h-12 rounded-2xl border-slate-200 text-slate-500 font-bold"
-                onClick={() => setIsDrawerOpen(false)}
-              >
-                Discard Changes
-              </Button>
-              <Button 
-                className="flex-[2] h-12 rounded-2xl bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-black text-[15px] shadow-lg shadow-[#0CB5A8]/20 disabled:opacity-50"
-                disabled={!selectedTableInDrawer}
-                onClick={() => {
-                  if (selectedTableInDrawer) {
-                    performGeneration([selectedTableInDrawer.id]);
-                    setIsDrawerOpen(false);
-                    setSelectedTableInDrawer(null);
-                  }
-                }}
-              >
-                Generate QR Code
-              </Button>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      {/* Preview Dialog */}
-      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-[400px] p-0 overflow-hidden border-none rounded-[32px] shadow-2xl">
-          <VisuallyHidden>
-            <DialogTitle>QR Code Preview</DialogTitle>
-          </VisuallyHidden>
-          {previewTableId && (
-            <div className="bg-white p-10 flex flex-col items-center space-y-8">
-              <div className="w-full flex justify-between items-center">
-                <div className="space-y-0.5">
-                  <h4 className="text-xl font-black text-slate-900 tracking-tight">Table {previewTableId}</h4>
-                  <p className="text-[11px] text-slate-400 font-medium uppercase tracking-widest">{getFloorName(items.find(i => i.id === previewTableId)?.floor || 'floor1')}</p>
-                </div>
-                <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full" onClick={() => setIsPreviewOpen(false)}>
-                  <X className="w-4 h-4 text-slate-400" />
-                </Button>
-              </div>
-              
-              <div className="w-64 h-64 p-8 bg-slate-50 rounded-[40px] flex items-center justify-center border border-slate-100">
-                <div className="w-full h-full bg-white rounded-2xl p-4 shadow-xl flex items-center justify-center">
-                  <img src={items.find(i => i.id === previewTableId)?.qr || ''} alt="QR" className="w-full h-full object-contain" />
-                </div>
-              </div>
-
-              <div className="w-full grid grid-cols-2 gap-3 pt-4">
-                <Button 
-                  variant="outline" 
-                  className="h-12 rounded-2xl border-slate-200 text-slate-600 font-bold text-[13px] gap-2"
-                  onClick={() => handleDownload(previewTableId)}
-                >
-                  <FileImage className="w-4 h-4 text-slate-400" /> JPEG
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="h-12 rounded-2xl border-slate-200 text-slate-600 font-bold text-[13px] gap-2"
-                  onClick={() => handleDownload(previewTableId)}
-                >
-                  <FileDown className="w-4 h-4 text-slate-400" /> PDF
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2.5 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                <Sparkles className="w-3.5 h-3.5" /> High Resolution QR Generated
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Regenerate Confirmation */}
-      <AlertDialog open={isRegenerateConfirmOpen} onOpenChange={setIsRegenerateConfirmOpen}>
-        <AlertDialogContent className="rounded-[32px] p-8 border-none shadow-2xl">
-          <AlertDialogHeader className="space-y-4">
-            <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center">
-              <RefreshCcw className="w-7 h-7 text-orange-400" />
-            </div>
-            <AlertDialogTitle className="text-2xl font-black text-slate-900 tracking-tight">Overwrite existing QR Codes?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[15px] font-medium text-slate-500 leading-relaxed">
-              One or more of the selected tables already have active QR codes. Generating new ones will replace the current images. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="mt-8 gap-3">
-            <AlertDialogCancel className="h-12 flex-1 rounded-2xl border-slate-200 text-slate-500 font-bold">Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              className="h-12 flex-1 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-black"
-              onClick={() => performGeneration(idsToGenerate)}
-            >
-              Yes, Regenerate
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-    </main>
-
-    <MenuBuilder open={isMenuBuilderOpen} onOpenChange={setIsMenuBuilderOpen} />
-  </div>
-);
+      <MenuBuilder open={isMenuBuilderOpen} onOpenChange={setIsMenuBuilderOpen} />
+    </div>
+  );
 }

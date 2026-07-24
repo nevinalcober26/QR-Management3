@@ -249,7 +249,6 @@ export default function ManageOutletsPage() {
           <SidebarItem icon={Plug} label="Integration" />
         </div>
 
-        {/* Sidebar Footer */}
         <div className="bg-[#111827] p-4 rounded-t-[28px] mt-auto">
           <div className="bg-[#1E293B] rounded-[20px] p-2.5 flex items-center justify-between group cursor-pointer transition-colors hover:bg-[#2D3748] shadow-lg">
             <div className="flex items-center gap-2.5">
@@ -275,48 +274,19 @@ export default function ManageOutletsPage() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
-        {/* Topbar */}
         <header className="fixed top-0 right-0 left-[280px] h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
           <div className="flex items-center gap-4 flex-1">
-             <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
+            <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
-                  placeholder="Order #, table, customer name, email, phone..." 
+                  placeholder="Search restaurant name..." 
                   className="border-none shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-transparent"
                   value={headerSearchQuery}
                   onChange={(e) => setHeaderSearchQuery(e.target.value)}
                   onFocus={() => setIsHeaderSearchFocused(true)}
                   onBlur={() => setTimeout(() => setIsHeaderSearchFocused(false), 200)}
                 />
-                
-                {/* Smart Search Results Dropdown */}
-                {isHeaderSearchFocused && headerSearchQuery && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-none shadow-2xl z-50 overflow-hidden">
-                    <div className="p-2 max-h-[300px] overflow-y-auto no-scrollbar">
-                      <div className="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Search Results</div>
-                      {smartSearchResults.length > 0 ? (
-                        smartSearchResults.map((result, idx) => (
-                          <div key={idx} className="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors cursor-default rounded-none group">
-                            <div className="w-8 h-8 rounded-none bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all">
-                              {result.type === 'Order' && <ClipboardList className="w-4 h-4 text-slate-400" />}
-                              {result.type === 'Table' && <Armchair className="w-4 h-4 text-slate-400" />}
-                              {result.type === 'Customer' && <Users className="w-4 h-4 text-slate-400" />}
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="text-[13px] font-bold text-slate-900 leading-tight">{result.value}</span>
-                              <span className="text-[11px] text-slate-400 font-medium">{result.sub}</span>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="p-8 text-center">
-                          <p className="text-[13px] text-slate-400 font-medium italic">No matches found for "{headerSearchQuery}"</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
               <div className="w-[1px] h-6 bg-slate-200 shrink-0" />
               <Popover>
@@ -328,7 +298,7 @@ export default function ManageOutletsPage() {
                   </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-[180px] p-2.5 rounded-none border-slate-100 shadow-xl" align="end">
-                   <div className="space-y-2">
+                  <div className="space-y-2">
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">LOOKBACK WINDOW</span>
                     <div className="grid grid-cols-3 gap-1">
                       {['1 W', '1 M', '3 M', '6 M', '1 Y', '3 Y'].map((option) => (
@@ -356,25 +326,16 @@ export default function ManageOutletsPage() {
             <div className="flex items-center gap-2.5 text-[10px] font-bold bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-200 text-slate-400 hover:bg-[#0CB5A8]/10 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-all cursor-default group/pos">
               <RefreshCcw className="w-3 h-3 text-slate-400 group-hover/pos:text-[#0CB5A8] transition-colors" />
               <span className="uppercase tracking-tight">POS SYNCED</span>
-              <Separator orientation="vertical" className="h-2.5 bg-slate-200 group-hover/pos:bg-[#0CB5A8]/20 mx-1" />
-              <span className="text-slate-400 group-hover/pos:text-[#0CB5A8]/60 uppercase tracking-tight font-bold">JULY 02, 2:42 PM</span>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="w-9 h-9 flex items-center justify-center bg-slate-50 text-slate-400 rounded-lg border border-slate-200 cursor-pointer hover:bg-[#0CB5A8]/10 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-all">
-                <LayoutGrid className="w-[18px] h-[18px]" />
-              </div>
-              <Avatar className="w-9 h-9 border-2 border-slate-100 shadow-sm">
-                <AvatarImage src="https://picsum.photos/seed/restaurant/100/100" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-            </div>
+            <Avatar className="w-9 h-9 border-2 border-slate-100 shadow-sm">
+              <AvatarImage src="https://picsum.photos/seed/restaurant/100/100" />
+              <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
           </div>
         </header>
 
-        {/* Scrollable Manage Outlets Content */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
           <div className="p-8 max-w-[1400px] mx-auto space-y-8">
-            {/* Page Header */}
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <h1 className="text-4xl font-black text-slate-900 tracking-tight">Manage Outlets</h1>
@@ -386,7 +347,6 @@ export default function ManageOutletsPage() {
               </Button>
             </div>
 
-            {/* Search Bar */}
             <div className="bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
               <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-slate-200 w-full transition-colors focus-within:border-[#0CB5A8]/50">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
@@ -399,7 +359,6 @@ export default function ManageOutletsPage() {
               </div>
             </div>
 
-            {/* Outlet Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 pb-20">
               {filteredOutlets.length > 0 ? (
                 filteredOutlets.map((outlet) => (
