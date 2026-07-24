@@ -75,11 +75,17 @@ const SidebarDivider = () => (
   </div>
 );
 
-const FilterBadge = ({ label, count, colorClass }: { label: string, count: number, colorClass: string }) => (
-  <div className="flex items-center gap-2.5 px-3 py-1.5 cursor-pointer hover:bg-slate-50 rounded-full transition-colors group">
+const FilterBadge = ({ label, count, colorClass, active = false }: { label: string, count: number, colorClass: string, active?: boolean }) => (
+  <div className={cn(
+    "flex items-center gap-2.5 px-4 py-2 cursor-pointer transition-all rounded-full",
+    active ? "bg-[#F0FDFB] border border-[#0CB5A8]/20" : "hover:bg-slate-50"
+  )}>
     <div className={cn("w-2 h-2 rounded-full", colorClass)} />
-    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">{label}</span>
-    <span className="text-[10px] font-black text-slate-900">{count}</span>
+    <span className={cn(
+      "text-[10px] font-black uppercase tracking-[0.05em]",
+      active ? "text-[#0CB5A8]" : "text-slate-400"
+    )}>{label}</span>
+    <span className="text-[10px] font-black text-slate-900 ml-1">{count}</span>
   </div>
 );
 
@@ -324,37 +330,15 @@ export default function LiveOrderHubPage() {
               </div>
             </div>
 
-            {/* Filter Bar */}
-            <div className="p-8 pb-4 flex items-center justify-between">
-              <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-full max-w-4xl">
-                <div className="flex items-center gap-2 px-2">
-                  <FilterBadge label="LIVE" count={0} colorClass="bg-[#0CB5A8]" />
-                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
-                  <FilterBadge label="PENDING" count={0} colorClass="bg-[#FBBF24]" />
-                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
-                  <FilterBadge label="READY" count={0} colorClass="bg-[#3B82F6]" />
-                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
-                  <FilterBadge label="IN PROGRESS" count={0} colorClass="bg-[#EF4444]" />
-                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
-                  <FilterBadge label="PREPARED" count={0} colorClass="bg-[#8B5CF6]" />
-                </div>
-              </div>
-
-              <div className="flex items-center bg-white border border-slate-100 rounded-[14px] p-1.5 shadow-sm">
+            {/* Filter Bar (Matches Uploaded Pill Image) */}
+            <div className="p-8 pb-4">
+              <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit">
                 <div className="flex items-center">
-                  <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
-                    <Search className="w-4 h-4" />
-                  </Button>
-                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-1" />
-                  <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
-                      <ZoomOut className="w-3.5 h-3.5" />
-                    </Button>
-                    <Separator orientation="vertical" className="h-4 bg-slate-100 mx-1" />
-                    <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
-                      <ZoomIn className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
+                  <FilterBadge label="LIVE" count={0} colorClass="bg-[#0CB5A8]" active />
+                  <FilterBadge label="PENDING" count={0} colorClass="bg-[#FBBF24]" />
+                  <FilterBadge label="READY" count={0} colorClass="bg-[#3B82F6]" />
+                  <FilterBadge label="IN PROGRESS" count={0} colorClass="bg-[#EF4444]" />
+                  <FilterBadge label="PREPARED" count={0} colorClass="bg-[#8B5CF6]" />
                 </div>
               </div>
             </div>
