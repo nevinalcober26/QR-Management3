@@ -27,7 +27,9 @@ import {
   Layers,
   Utensils,
   ArrowDown,
-  Armchair
+  Armchair,
+  Grid2X2,
+  ClipboardCheck
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -160,30 +162,37 @@ const SidebarDivider = () => (
   </div>
 );
 
-const StatCard = ({ title, value, change, changeType, icon: Icon, iconColor, borderClass }: { title: string, value: string, change?: string, changeType?: 'up' | 'down' | 'neutral', icon: any, iconColor: string, borderClass: string }) => (
-  <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[24px] overflow-hidden relative">
-    <div className={cn("absolute top-0 left-0 w-1 h-full", borderClass)} />
-    <CardContent className="p-6">
-      <div className="flex justify-between items-start mb-4">
-        <div className="space-y-1">
-          <p className="text-[13px] font-bold text-slate-400 uppercase tracking-tight">{title}</p>
-          <h3 className="text-3xl font-extrabold text-slate-900">{value}</h3>
-        </div>
-        <div className={cn("p-2.5 rounded-xl flex items-center justify-center", iconColor)}>
-          <Icon className="w-5 h-5 text-white" />
+const StatCard = ({ 
+  title, 
+  value, 
+  description, 
+  icon: Icon, 
+  iconBgColor, 
+  iconTextColor, 
+  rightBarColor 
+}: { 
+  title: string, 
+  value: string, 
+  description: string, 
+  icon: any, 
+  iconBgColor: string, 
+  iconTextColor: string, 
+  rightBarColor: string 
+}) => (
+  <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[20px] overflow-hidden relative bg-white">
+    <div className={cn("absolute top-0 right-0 w-1 h-full", rightBarColor)} />
+    <CardContent className="p-6 flex flex-col h-full justify-between">
+      <div className="flex justify-between items-start">
+        <p className="text-[14px] font-bold text-slate-400">{title}</p>
+        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", iconBgColor)}>
+          <Icon className={cn("w-5 h-5", iconTextColor)} />
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        {change && (
-          <div className={cn(
-            "flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg text-[11px] font-bold",
-            changeType === 'up' ? "text-[#0CB5A8] bg-[#0CB5A8]/5" : "text-[#EF4444] bg-[#EF4444]/5"
-          )}>
-            <TrendingUp className={cn("w-3 h-3", changeType === 'down' && "rotate-180")} />
-            {change}
-          </div>
-        )}
-        <span className="text-[11px] text-slate-400 font-medium">vs last month</span>
+      <div className="mt-4">
+        <h3 className="text-3xl font-extrabold text-slate-900">{value}</h3>
+      </div>
+      <div className="mt-1">
+        <p className="text-[12px] text-slate-400 font-medium">{description}</p>
       </div>
     </CardContent>
   </Card>
@@ -384,41 +393,43 @@ export default function DashboardPage() {
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
           <div className="p-8 max-w-7xl mx-auto space-y-8">
             
-            {/* Top Stat Cards */}
+            {/* Top Stat Cards - Redesigned to match image 1000% */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatCard 
                 title="Total Categories" 
-                value="26" 
-                change="+4.5%" 
-                changeType="up" 
-                icon={Layers} 
-                iconColor="bg-orange-400" 
-                borderClass="bg-orange-400" 
+                value="4" 
+                description="Total number of product categories."
+                icon={Grid2X2} 
+                iconBgColor="bg-yellow-50" 
+                iconTextColor="text-yellow-600" 
+                rightBarColor="bg-yellow-400" 
               />
               <StatCard 
                 title="Active Products" 
-                value="120" 
-                change="+12%" 
-                changeType="up" 
+                value="85" 
+                description="Active Product for ordering."
                 icon={Utensils} 
-                iconColor="bg-pink-500" 
-                borderClass="bg-pink-500" 
+                iconBgColor="bg-green-50" 
+                iconTextColor="text-green-600" 
+                rightBarColor="bg-green-500" 
               />
               <StatCard 
-                title="Published Pages" 
-                value="8" 
-                icon={FileText} 
-                iconColor="bg-green-500" 
-                borderClass="bg-green-500" 
+                title="Published Menus" 
+                value="1" 
+                description="Currently published Menus."
+                icon={ClipboardList} 
+                iconBgColor="bg-red-50" 
+                iconTextColor="text-red-600" 
+                rightBarColor="bg-red-500" 
               />
               <StatCard 
                 title="Today's Orders" 
-                value="45" 
-                change="+8.2%" 
-                changeType="up" 
-                icon={ShoppingBag} 
-                iconColor="bg-cyan-400" 
-                borderClass="bg-cyan-400" 
+                value="0" 
+                description="Total orders for today"
+                icon={ClipboardCheck} 
+                iconBgColor="bg-cyan-50" 
+                iconTextColor="text-cyan-600" 
+                rightBarColor="bg-cyan-500" 
               />
             </div>
 
