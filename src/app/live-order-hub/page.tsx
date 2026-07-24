@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
   Popover,
   PopoverContent,
@@ -122,7 +123,7 @@ const SidebarItem = ({
               )}
               <span className={cn(
                 "text-[13px] transition-colors",
-                sub.active ? "font-bold text-[#065F46]" : "font-medium text-slate-500 hover:text-slate-900"
+                sub.active ? "font-bold text-[#0CB5A8]" : "font-medium text-slate-500 hover:text-slate-900"
               )}>
                 {sub.label}
               </span>
@@ -267,7 +268,7 @@ export default function LiveOrderHubPage() {
           <SidebarSectionLabel label="CONFIGURATION" />
           <SidebarItem icon={Settings} label="Settings" subItems={[
             { label: 'Manage Outlets', href: '/manage-outlets' },
-            { label: 'Manage Users', href: '#' },
+            { label: 'Manage Users', href: '/manage-users' },
           ]} />
 
           <SidebarDivider />

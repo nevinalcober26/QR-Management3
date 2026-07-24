@@ -153,6 +153,17 @@ export default function ManageUsersPage() {
     setMounted(true);
   }, []);
 
+  const smartSearchResults = useMemo(() => {
+    if (!headerSearchQuery) return [];
+    const query = headerSearchQuery.toLowerCase();
+    const mockData = [
+      { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
+      { type: 'Table', value: 'Table 24', sub: 'Dining area' },
+      { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
+    ];
+    return mockData.filter(item => item.value.toLowerCase().includes(query));
+  }, [headerSearchQuery]);
+
   if (!mounted) return null;
 
   return (

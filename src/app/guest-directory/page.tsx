@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
   Popover,
   PopoverContent,
@@ -207,7 +208,7 @@ export default function GuestDirectoryPage() {
           <SidebarSectionLabel label="CONFIGURATION" />
           <SidebarItem icon={Settings} label="Settings" subItems={[
             { label: 'Manage Outlets', href: '/manage-outlets' },
-            { label: 'Manage Users', href: '#' },
+            { label: 'Manage Users', href: '/manage-users' },
           ]} />
 
           <SidebarDivider />

@@ -269,7 +269,7 @@ export default function QRCodesPage() {
           <SidebarSectionLabel label="CONFIGURATION" />
           <SidebarItem icon={Settings} label="Settings" subItems={[
             { label: 'Manage Outlets', href: '/manage-outlets' },
-            { label: 'Manage Users', href: '#' },
+            { label: 'Manage Users', href: '/manage-users' },
           ]} />
 
           <SidebarDivider />
