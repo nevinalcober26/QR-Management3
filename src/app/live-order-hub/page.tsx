@@ -20,11 +20,12 @@ import {
   History,
   ZoomIn,
   ZoomOut,
-  Armchair
+  Armchair,
+  Clock,
+  Layers
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -41,6 +42,31 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+
+// --- Types & Mock Data ---
+
+type OrderStatus = 'LIVE' | 'PENDING' | 'READY' | 'IN_PROGRESS' | 'PREPARED';
+
+interface Order {
+  id: string;
+  orderNum: string;
+  table: string;
+  itemsCount: number;
+  timeElapsed: string;
+  status: OrderStatus;
+  area: string;
+}
+
+const MOCK_ORDERS: Order[] = [
+  { id: '1', orderNum: '#10293', table: 'T-24', itemsCount: 3, timeElapsed: '05:22', status: 'LIVE', area: 'Dining area' },
+  { id: '2', orderNum: '#10294', table: 'T-08', itemsCount: 5, timeElapsed: '12:45', status: 'PENDING', area: 'Outdoor Terrace' },
+  { id: '3', orderNum: '#10295', table: 'T-15', itemsCount: 2, timeElapsed: '08:10', status: 'IN_PROGRESS', area: 'Dining area' },
+  { id: '4', orderNum: '#10296', table: 'F-02', itemsCount: 1, timeElapsed: '02:30', status: 'LIVE', area: 'First Floor' },
+  { id: '5', orderNum: '#10297', table: 'T-31', itemsCount: 4, timeElapsed: '15:20', status: 'READY', area: 'Dining area' },
+  { id: '6', orderNum: '#10298', table: 'T-05', itemsCount: 6, timeElapsed: '22:15', status: 'PREPARED', area: 'Outdoor Terrace' },
+  { id: '7', orderNum: '#10299', table: 'F-12', itemsCount: 2, timeElapsed: '01:55', status: 'LIVE', area: 'First Floor' },
+  { id: '8', orderNum: '#10300', table: 'T-20', itemsCount: 3, timeElapsed: '10:00', status: 'IN_PROGRESS', area: 'Dining area' },
+];
 
 // --- Components ---
 
@@ -88,6 +114,54 @@ const FilterBadge = ({ label, count, colorClass, active = false }: { label: stri
     <span className="text-[10px] font-black text-slate-900 ml-1">{count}</span>
   </div>
 );
+
+const OrderCard = ({ order }: { order: Order }) => {
+  const statusColors = {
+    LIVE: 'bg-[#0CB5A8]',
+    PENDING: 'bg-[#FBBF24]',
+    READY: 'bg-[#3B82F6]',
+    IN_PROGRESS: 'bg-[#EF4444]',
+    PREPARED: 'bg-[#8B5CF6]'
+  };
+
+  const statusBg = {
+    LIVE: 'bg-[#F0FDFB]',
+    PENDING: 'bg-[#FFFBEB]',
+    READY: 'bg-[#EFF6FF]',
+    IN_PROGRESS: 'bg-[#FEF2F2]',
+    PREPARED: 'bg-[#F5F3FF]'
+  };
+
+  return (
+    <div className="aspect-[4/3] rounded-[18px] border border-slate-100 bg-white shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col overflow-hidden group">
+      {/* Card Header with Status */}
+      <div className={cn("h-7 flex items-center px-3 justify-between", statusBg[order.status])}>
+        <span className={cn("text-[9px] font-black tracking-widest", order.status === 'LIVE' ? 'text-[#0CB5A8]' : 'text-slate-500')}>
+          {order.status}
+        </span>
+        <div className={cn("w-1.5 h-1.5 rounded-full", statusColors[order.status])} />
+      </div>
+
+      {/* Card Body */}
+      <div className="flex-1 flex flex-col items-center justify-center p-2 text-center">
+        <span className="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">{order.table}</span>
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{order.orderNum}</span>
+      </div>
+
+      {/* Card Footer */}
+      <div className="border-t border-slate-50 p-2.5 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <Clock className="w-3 h-3 text-slate-300" />
+          <span className="text-[11px] font-bold text-slate-600 tabular-nums">{order.timeElapsed}</span>
+        </div>
+        <div className="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded-lg border border-slate-100">
+          <Layers className="w-3 h-3 text-slate-400" />
+          <span className="text-[10px] font-black text-slate-900">{order.itemsCount}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function LiveOrderHubPage() {
   const [mounted, setMounted] = useState(false);
@@ -295,7 +369,7 @@ export default function LiveOrderHubPage() {
                   </div>
 
                   <div className="flex items-center gap-2 mr-6">
-                    <span className="text-3xl font-black text-slate-900 leading-none">0</span>
+                    <span className="text-3xl font-black text-slate-900 leading-none">{MOCK_ORDERS.length}</span>
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight leading-[1.1]">ACTIVE<br/>ORDERS</span>
                   </div>
 
@@ -335,11 +409,11 @@ export default function LiveOrderHubPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit">
                   <div className="flex items-center">
-                    <FilterBadge label="LIVE" count={0} colorClass="bg-[#0CB5A8]" active />
-                    <FilterBadge label="PENDING" count={0} colorClass="bg-[#FBBF24]" />
-                    <FilterBadge label="READY" count={0} colorClass="bg-[#3B82F6]" />
-                    <FilterBadge label="IN PROGRESS" count={0} colorClass="bg-[#EF4444]" />
-                    <FilterBadge label="PREPARED" count={0} colorClass="bg-[#8B5CF6]" />
+                    <FilterBadge label="LIVE" count={MOCK_ORDERS.filter(o => o.status === 'LIVE').length} colorClass="bg-[#0CB5A8]" active />
+                    <FilterBadge label="PENDING" count={MOCK_ORDERS.filter(o => o.status === 'PENDING').length} colorClass="bg-[#FBBF24]" />
+                    <FilterBadge label="READY" count={MOCK_ORDERS.filter(o => o.status === 'READY').length} colorClass="bg-[#3B82F6]" />
+                    <FilterBadge label="IN PROGRESS" count={MOCK_ORDERS.filter(o => o.status === 'IN_PROGRESS').length} colorClass="bg-[#EF4444]" />
+                    <FilterBadge label="PREPARED" count={MOCK_ORDERS.filter(o => o.status === 'PREPARED').length} colorClass="bg-[#8B5CF6]" />
                   </div>
                 </div>
 
@@ -359,9 +433,15 @@ export default function LiveOrderHubPage() {
             <div className="px-8 pb-10">
               <div className="bg-white border border-slate-100 rounded-[32px] p-8 min-h-[800px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-9 gap-4">
-                  {Array.from({ length: 72 }).map((_, i) => (
+                  {/* Render Mock Orders */}
+                  {MOCK_ORDERS.map((order) => (
+                    <OrderCard key={order.id} order={order} />
+                  ))}
+                  
+                  {/* Render Remaining Placeholders to maintain 100% structural fidelity */}
+                  {Array.from({ length: 72 - MOCK_ORDERS.length }).map((_, i) => (
                     <div 
-                      key={i} 
+                      key={`placeholder-${i}`} 
                       className="aspect-[4/3] rounded-[18px] border-2 border-dashed border-slate-100 bg-slate-50/20 hover:bg-slate-50/40 transition-colors cursor-default" 
                     />
                   ))}
