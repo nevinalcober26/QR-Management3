@@ -178,7 +178,7 @@ export default function LiveOrderHubPage() {
         {/* Topbar */}
         <header className="fixed top-0 right-0 left-[280px] h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
           <div className="flex items-center gap-4 flex-1">
-             <div className="flex items-center bg-white border border-white rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
+             <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
@@ -273,97 +273,103 @@ export default function LiveOrderHubPage() {
 
         {/* Scrollable Hub Content Container */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
-          <div className="p-10 max-w-[1600px] mx-auto space-y-10">
+          <div className="max-w-[1600px] mx-auto">
             
-            {/* STICKY HEADER SECTION (Matches Uploaded Design) */}
-            <div className="sticky top-0 bg-[#F8FAFC]/90 backdrop-blur-sm pt-4 pb-6 z-10 space-y-10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-10">
-                  <h1 className="text-3xl font-black text-slate-900 tracking-tighter">ORDER HUB</h1>
+            {/* STICKY HEADER SECTION (Matches Uploaded Design Exactly) */}
+            <div className="sticky top-0 bg-white border-b border-slate-100 px-8 py-5 z-10">
+              <div className="flex items-center">
+                <div className="flex items-center">
+                  <h1 className="text-2xl font-black text-slate-900 tracking-tight mr-6">ORDER HUB</h1>
                   
-                  <div className="flex items-center gap-3 bg-white border border-[#0CB5A8]/10 px-5 py-2 rounded-full shadow-sm group">
+                  <Separator orientation="vertical" className="h-8 bg-slate-100 mr-6" />
+
+                  <div className="flex items-center gap-2 bg-[#E2F5F3] border border-[#0CB5A8]/30 px-3.5 py-1.5 rounded-full mr-6">
                     <div className="w-1.5 h-1.5 rounded-full bg-[#0CB5A8] animate-pulse" />
-                    <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-[0.1em]">REAL TIME SYNC</span>
+                    <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-[0.05em]">REAL TIME SYNC</span>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 mr-6">
                     <span className="text-3xl font-black text-slate-900 leading-none">0</span>
-                    <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.05em] leading-tight">ACTIVE<br/>ORDERS</span>
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight leading-[1.1]">ACTIVE<br/>ORDERS</span>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-4 bg-[#E2F5F3] border border-[#0CB5A8]/20 px-6 py-2 rounded-[18px]">
-                  <span className="text-[11px] font-black text-[#0CB5A8] uppercase tracking-widest">FILTER BY</span>
-                  <Separator orientation="vertical" className="h-4 bg-[#0CB5A8]/20" />
-                  <div className="flex items-center gap-4">
-                    <Select defaultValue="days">
-                      <SelectTrigger className="w-[100px] h-8 border-none bg-transparent shadow-none text-[12px] font-bold text-slate-600 focus:ring-0 px-0">
-                        <SelectValue placeholder="Days" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="days">Days</SelectItem>
-                        <SelectItem value="hours">Hours</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select defaultValue="2">
-                      <SelectTrigger className="w-[100px] h-8 border-none bg-transparent shadow-none text-[12px] font-bold text-slate-600 focus:ring-0 px-0">
-                        <SelectValue placeholder="2 Days" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1 Day</SelectItem>
-                        <SelectItem value="2">2 Days</SelectItem>
-                        <SelectItem value="7">7 Days</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
+                  <Separator orientation="vertical" className="h-8 bg-slate-100 mr-6" />
 
-              {/* Filter Bar */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-full max-w-4xl">
-                  <div className="flex items-center gap-2 px-2">
-                    <FilterBadge label="LIVE" count={0} colorClass="bg-[#0CB5A8]" />
-                    <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
-                    <FilterBadge label="PENDING" count={0} colorClass="bg-[#FBBF24]" />
-                    <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
-                    <FilterBadge label="READY" count={0} colorClass="bg-[#3B82F6]" />
-                    <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
-                    <FilterBadge label="IN PROGRESS" count={0} colorClass="bg-[#EF4444]" />
-                    <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
-                    <FilterBadge label="PREPARED" count={0} colorClass="bg-[#8B5CF6]" />
-                  </div>
-                </div>
-
-                <div className="flex items-center bg-white border border-slate-100 rounded-[14px] p-1.5 shadow-sm">
-                  <div className="flex items-center">
-                    <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
-                      <Search className="w-4 h-4" />
-                    </Button>
-                    <Separator orientation="vertical" className="h-4 bg-slate-100 mx-1" />
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
-                        <ZoomOut className="w-3.5 h-3.5" />
-                      </Button>
-                      <Separator orientation="vertical" className="h-4 bg-slate-100 mx-1" />
-                      <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
-                        <ZoomIn className="w-3.5 h-3.5" />
-                      </Button>
+                  <div className="flex items-center gap-3 bg-[#F0FDFB] border border-[#0CB5A8]/10 px-4 py-2 rounded-2xl">
+                    <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-widest">FILTER BY</span>
+                    <Separator orientation="vertical" className="h-4 bg-[#0CB5A8]/20 mx-1" />
+                    <div className="flex items-center gap-3">
+                      <Select defaultValue="days">
+                        <SelectTrigger className="w-[90px] h-9 bg-white border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-sm focus:ring-0">
+                          <SelectValue placeholder="Days" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="days">Days</SelectItem>
+                          <SelectItem value="hours">Hours</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select defaultValue="2">
+                        <SelectTrigger className="w-[100px] h-9 bg-white border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-sm focus:ring-0">
+                          <SelectValue placeholder="2 Days" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 Day</SelectItem>
+                          <SelectItem value="2">2 Days</SelectItem>
+                          <SelectItem value="7">7 Days</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Filter Bar */}
+            <div className="p-8 pb-4 flex items-center justify-between">
+              <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-full max-w-4xl">
+                <div className="flex items-center gap-2 px-2">
+                  <FilterBadge label="LIVE" count={0} colorClass="bg-[#0CB5A8]" />
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
+                  <FilterBadge label="PENDING" count={0} colorClass="bg-[#FBBF24]" />
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
+                  <FilterBadge label="READY" count={0} colorClass="bg-[#3B82F6]" />
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
+                  <FilterBadge label="IN PROGRESS" count={0} colorClass="bg-[#EF4444]" />
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
+                  <FilterBadge label="PREPARED" count={0} colorClass="bg-[#8B5CF6]" />
+                </div>
+              </div>
+
+              <div className="flex items-center bg-white border border-slate-100 rounded-[14px] p-1.5 shadow-sm">
+                <div className="flex items-center">
+                  <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
+                    <Search className="w-4 h-4" />
+                  </Button>
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-1" />
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
+                      <ZoomOut className="w-3.5 h-3.5" />
+                    </Button>
+                    <Separator orientation="vertical" className="h-4 bg-slate-100 mx-1" />
+                    <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
+                      <ZoomIn className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Main Order Grid Container */}
-            <div className="bg-white border border-slate-100 rounded-[32px] p-8 min-h-[800px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-9 gap-4">
-                {Array.from({ length: 72 }).map((_, i) => (
-                  <div 
-                    key={i} 
-                    className="aspect-[4/3] rounded-[18px] border-2 border-dashed border-slate-100 bg-slate-50/20 hover:bg-slate-50/40 transition-colors cursor-default" 
-                  />
-                ))}
+            <div className="px-8 pb-10">
+              <div className="bg-white border border-slate-100 rounded-[32px] p-8 min-h-[800px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-9 gap-4">
+                  {Array.from({ length: 72 }).map((_, i) => (
+                    <div 
+                      key={i} 
+                      className="aspect-[4/3] rounded-[18px] border-2 border-dashed border-slate-100 bg-slate-50/20 hover:bg-slate-50/40 transition-colors cursor-default" 
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
