@@ -94,17 +94,17 @@ const OrderCard = ({ order }: { order: Order }) => {
 
   return (
     <div className={cn(
-      "aspect-square rounded-[12px] p-3 flex flex-col items-center justify-center shadow-sm hover:brightness-95 transition-all cursor-pointer overflow-hidden",
+      "aspect-square rounded-[10px] p-2 flex flex-col items-center justify-center shadow-sm hover:brightness-95 transition-all cursor-pointer overflow-hidden",
       statusColors[order.status]
     )}>
       <div className="flex flex-col items-center text-center">
-        <span className="text-3xl font-extrabold text-white leading-none tracking-tight">
+        <span className="text-[18px] font-black text-white leading-none tracking-tight">
           {order.orderId}
         </span>
-        <span className="text-[10px] font-medium text-white/80 uppercase tracking-widest mt-1.5">
+        <span className="text-[8px] font-bold text-white/80 uppercase tracking-widest mt-1">
           #NDAGPJC
         </span>
-        <span className="text-[10px] font-medium text-white/50 truncate w-full mt-0.5">
+        <span className="text-[8px] font-medium text-white/60 truncate w-full mt-0">
           {order.orderId}...
         </span>
       </div>
@@ -280,7 +280,7 @@ export default function LiveOrderHubPage() {
             {/* Main Order Grid Container */}
             <div className="px-8 pb-10">
               <div className="bg-white border border-slate-100 rounded-[32px] p-8 min-h-[800px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
                   {/* Render Mock Orders */}
                   {MOCK_ORDERS.map((order) => (
                     <OrderCard key={order.id} order={order} />
@@ -290,7 +290,7 @@ export default function LiveOrderHubPage() {
                   {Array.from({ length: 80 - MOCK_ORDERS.length }).map((_, i) => (
                     <div 
                       key={`placeholder-${i}`} 
-                      className="aspect-square rounded-[12px] bg-[#F8FAFC] border border-slate-50" 
+                      className="aspect-square rounded-[10px] bg-[#F8FAFC] border border-slate-50" 
                     />
                   ))}
                 </div>
