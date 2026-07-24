@@ -27,7 +27,10 @@ import {
   Clock,
   XCircle,
   Smartphone,
-  Store
+  Store,
+  Grid3X3,
+  Users,
+  Settings
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -445,22 +448,22 @@ export default function OrdersReportPage() {
                     {filteredTransactions.length > 0 ? (
                       filteredTransactions.map((tx) => (
                         <tr key={tx.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-2">
                             <span className="text-[13px] font-black text-slate-900">{tx.orderId}</span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-2">
                             <span className="text-[11px] font-medium text-slate-400 whitespace-nowrap">{tx.dateTime}</span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-2">
                             <span className="text-[13px] font-black text-slate-900 whitespace-nowrap">฿ {tx.totalAmount.toLocaleString()}</span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-2">
                             <span className="text-[13px] font-black text-slate-900 whitespace-nowrap">฿ {tx.paidAmount.toLocaleString()}</span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-2">
                             <span className="text-[13px] font-black text-red-500 whitespace-nowrap">฿ {tx.outstanding.toLocaleString()}</span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-2">
                             <div className={cn(
                               "flex items-center gap-2 px-2.5 py-0.5 rounded-full w-fit",
                               tx.status === 'Paid' ? "bg-emerald-50 text-emerald-600" : 
@@ -472,10 +475,10 @@ export default function OrdersReportPage() {
                               <span className="text-[9px] font-black uppercase tracking-tight">{tx.status}</span>
                             </div>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-2">
                             <span className="text-[12px] font-medium text-slate-500 whitespace-nowrap">{tx.method}</span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-2">
                             <div className="flex items-center gap-2">
                               {tx.source === 'App to App' ? (
                                 <Smartphone className="w-4 h-4 text-emerald-500" />
@@ -485,7 +488,7 @@ export default function OrdersReportPage() {
                               <span className="text-[13px] font-bold text-slate-900 whitespace-nowrap">{tx.source}</span>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-4 py-2 text-center">
                             <span className="text-[13px] font-black text-slate-900">{tx.payers}</span>
                           </td>
                         </tr>
