@@ -49,23 +49,31 @@ type OrderStatus = 'LIVE' | 'PENDING' | 'READY' | 'IN_PROGRESS' | 'PREPARED';
 
 interface Order {
   id: string;
-  orderNum: string;
-  table: string;
-  itemsCount: number;
-  timeElapsed: string;
+  orderId: string;
+  refId: string;
   status: OrderStatus;
-  area: string;
 }
 
 const MOCK_ORDERS: Order[] = [
-  { id: '1', orderNum: '#10293', table: 'T-24', itemsCount: 3, timeElapsed: '05:22', status: 'LIVE', area: 'Dining area' },
-  { id: '2', orderNum: '#10294', table: 'T-08', itemsCount: 5, timeElapsed: '12:45', status: 'PENDING', area: 'Outdoor Terrace' },
-  { id: '3', orderNum: '#10295', table: 'T-15', itemsCount: 2, timeElapsed: '08:10', status: 'IN_PROGRESS', area: 'Dining area' },
-  { id: '4', orderNum: '#10296', table: 'F-02', itemsCount: 1, timeElapsed: '02:30', status: 'LIVE', area: 'First Floor' },
-  { id: '5', orderNum: '#10297', table: 'T-31', itemsCount: 4, timeElapsed: '15:20', status: 'READY', area: 'Dining area' },
-  { id: '6', orderNum: '#10298', table: 'T-05', itemsCount: 6, timeElapsed: '22:15', status: 'PREPARED', area: 'Outdoor Terrace' },
-  { id: '7', orderNum: '#10299', table: 'F-12', itemsCount: 2, timeElapsed: '01:55', status: 'LIVE', area: 'First Floor' },
-  { id: '8', orderNum: '#10300', table: 'T-20', itemsCount: 3, timeElapsed: '10:00', status: 'IN_PROGRESS', area: 'Dining area' },
+  { id: '1', orderId: '4825', refId: '#NDAGPJC4825...', status: 'LIVE' },
+  { id: '2', orderId: '4823', refId: '#NDAGPJC4823...', status: 'READY' },
+  { id: '3', orderId: '4822', refId: '#NDAGPJC4822...', status: 'LIVE' },
+  { id: '4', orderId: '4827', refId: '#NDAGPJC4827...', status: 'READY' },
+  { id: '5', orderId: '4838', refId: '#NDAGPJC4838...', status: 'PENDING' },
+  { id: '6', orderId: '4833', refId: '#NDAGPJC4833...', status: 'READY' },
+  { id: '7', orderId: '4820', refId: '#NDAGPJC4820...', status: 'LIVE' },
+  { id: '8', orderId: '4829', refId: '#NDAGPJC4829...', status: 'PENDING' },
+  { id: '9', orderId: '4831', refId: '#NDAGPJC4831...', status: 'LIVE' },
+  { id: '10', orderId: '4837', refId: '#NDAGPJC4837...', status: 'LIVE' },
+  { id: '11', orderId: '4826', refId: '#NDAGPJC4826...', status: 'PENDING' },
+  { id: '12', orderId: '4832', refId: '#NDAGPJC4832...', status: 'PENDING' },
+  { id: '13', orderId: '4821', refId: '#NDAGPJC4821...', status: 'READY' },
+  { id: '14', orderId: '4830', refId: '#NDAGPJC4830...', status: 'READY' },
+  { id: '15', orderId: '4839', refId: '#NDAGPJC4839...', status: 'READY' },
+  { id: '16', orderId: '4834', refId: '#NDAGPJC4834...', status: 'LIVE' },
+  { id: '17', orderId: '4835', refId: '#NDAGPJC4835...', status: 'PENDING' },
+  { id: '18', orderId: '4824', refId: '#NDAGPJC4824...', status: 'READY' },
+  { id: '19', orderId: '6300', refId: '#NDAGPJC6300...', status: 'READY' },
 ];
 
 // --- Components ---
@@ -117,48 +125,22 @@ const FilterBadge = ({ label, count, colorClass, active = false }: { label: stri
 
 const OrderCard = ({ order }: { order: Order }) => {
   const statusColors = {
-    LIVE: 'bg-[#0CB5A8]',
-    PENDING: 'bg-[#FBBF24]',
-    READY: 'bg-[#3B82F6]',
-    IN_PROGRESS: 'bg-[#EF4444]',
-    PREPARED: 'bg-[#8B5CF6]'
-  };
-
-  const statusBg = {
-    LIVE: 'bg-[#F0FDFB]',
-    PENDING: 'bg-[#FFFBEB]',
-    READY: 'bg-[#EFF6FF]',
-    IN_PROGRESS: 'bg-[#FEF2F2]',
-    PREPARED: 'bg-[#F5F3FF]'
+    LIVE: 'bg-[#0CB5A8]', // Teal
+    PENDING: 'bg-[#FBBF24]', // Yellow/Amber
+    READY: 'bg-[#6366f1]', // Purple/Indigo
+    IN_PROGRESS: 'bg-[#FBBF24]',
+    PREPARED: 'bg-[#6366f1]'
   };
 
   return (
-    <div className="aspect-[4/3] rounded-[18px] border border-slate-100 bg-white shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col overflow-hidden group">
-      {/* Card Header with Status */}
-      <div className={cn("h-7 flex items-center px-3 justify-between", statusBg[order.status])}>
-        <span className={cn("text-[9px] font-black tracking-widest", order.status === 'LIVE' ? 'text-[#0CB5A8]' : 'text-slate-500')}>
-          {order.status}
-        </span>
-        <div className={cn("w-1.5 h-1.5 rounded-full", statusColors[order.status])} />
-      </div>
-
-      {/* Card Body */}
-      <div className="flex-1 flex flex-col items-center justify-center p-2 text-center">
-        <span className="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">{order.table}</span>
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{order.orderNum}</span>
-      </div>
-
-      {/* Card Footer */}
-      <div className="border-t border-slate-50 p-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <Clock className="w-3 h-3 text-slate-300" />
-          <span className="text-[11px] font-bold text-slate-600 tabular-nums">{order.timeElapsed}</span>
-        </div>
-        <div className="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded-lg border border-slate-100">
-          <Layers className="w-3 h-3 text-slate-400" />
-          <span className="text-[10px] font-black text-slate-900">{order.itemsCount}</span>
-        </div>
-      </div>
+    <div className={cn(
+      "aspect-[2/1] rounded-[10px] p-3 flex flex-col justify-between shadow-sm hover:brightness-95 transition-all cursor-pointer",
+      statusColors[order.status]
+    )}>
+      <span className="text-xl font-black text-white leading-none">{order.orderId}</span>
+      <span className="text-[9px] font-bold text-white/80 uppercase tracking-tighter truncate">
+        {order.refId}
+      </span>
     </div>
   );
 };
@@ -411,9 +393,9 @@ export default function LiveOrderHubPage() {
                   <div className="flex items-center">
                     <FilterBadge label="LIVE" count={MOCK_ORDERS.filter(o => o.status === 'LIVE').length} colorClass="bg-[#0CB5A8]" active />
                     <FilterBadge label="PENDING" count={MOCK_ORDERS.filter(o => o.status === 'PENDING').length} colorClass="bg-[#FBBF24]" />
-                    <FilterBadge label="READY" count={MOCK_ORDERS.filter(o => o.status === 'READY').length} colorClass="bg-[#3B82F6]" />
-                    <FilterBadge label="IN PROGRESS" count={MOCK_ORDERS.filter(o => o.status === 'IN_PROGRESS').length} colorClass="bg-[#EF4444]" />
-                    <FilterBadge label="PREPARED" count={MOCK_ORDERS.filter(o => o.status === 'PREPARED').length} colorClass="bg-[#8B5CF6]" />
+                    <FilterBadge label="READY" count={MOCK_ORDERS.filter(o => o.status === 'READY').length} colorClass="bg-[#6366f1]" />
+                    <FilterBadge label="IN PROGRESS" count={MOCK_ORDERS.filter(o => o.status === 'IN_PROGRESS').length} colorClass="bg-[#FBBF24]" />
+                    <FilterBadge label="PREPARED" count={MOCK_ORDERS.filter(o => o.status === 'PREPARED').length} colorClass="bg-[#6366f1]" />
                   </div>
                 </div>
 
@@ -432,17 +414,17 @@ export default function LiveOrderHubPage() {
             {/* Main Order Grid Container */}
             <div className="px-8 pb-10">
               <div className="bg-white border border-slate-100 rounded-[32px] p-8 min-h-[800px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-9 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
                   {/* Render Mock Orders */}
                   {MOCK_ORDERS.map((order) => (
                     <OrderCard key={order.id} order={order} />
                   ))}
                   
                   {/* Render Remaining Placeholders to maintain 100% structural fidelity */}
-                  {Array.from({ length: 72 - MOCK_ORDERS.length }).map((_, i) => (
+                  {Array.from({ length: 80 - MOCK_ORDERS.length }).map((_, i) => (
                     <div 
                       key={`placeholder-${i}`} 
-                      className="aspect-[4/3] rounded-[18px] border-2 border-dashed border-slate-100 bg-slate-50/20 hover:bg-slate-50/40 transition-colors cursor-default" 
+                      className="aspect-[2/1] rounded-[10px] bg-[#F8FAFC] border border-slate-50" 
                     />
                   ))}
                 </div>
