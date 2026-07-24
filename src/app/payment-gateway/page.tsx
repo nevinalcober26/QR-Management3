@@ -4,10 +4,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { 
   LayoutGrid, 
   BarChart3, 
-  Plus, 
-  Grid3X3, 
-  Users, 
-  Settings, 
   Search, 
   Calendar, 
   RefreshCcw, 
@@ -17,17 +13,17 @@ import {
   Plug,
   BookOpen,
   History,
-  MapPin,
-  MoreHorizontal,
-  Edit3,
-  MinusSquare,
-  Armchair
+  Grid3X3,
+  Users,
+  Settings,
+  Plus,
+  CreditCard,
+  MinusSquare
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import {
   Popover,
   PopoverContent,
@@ -43,26 +39,6 @@ import {
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import MenuBuilder from "@/components/menu-builder";
-
-// --- Types & Mock Data ---
-
-interface Outlet {
-  id: string;
-  name: string;
-  cuisine: string;
-  city: string;
-  locationDetail: string;
-  image: string;
-}
-
-const MOCK_OUTLETS: Outlet[] = [
-  { id: '1', name: "Bloomsbury's", cuisine: 'Bakery', city: 'Ras Al Khaimah', locationDetail: 'Ras Al Khaimah', image: 'https://picsum.photos/seed/bloom/400/250' },
-  { id: '2', name: 'The Cheesecake Factory', cuisine: 'International', city: 'Dubai', locationDetail: 'Dubai Mall', image: 'https://picsum.photos/seed/cheesecake/400/250' },
-  { id: '3', name: "P.F. Chang's", cuisine: 'Asian', city: 'Abu Dhabi', locationDetail: 'Abu Dhabi', image: 'https://picsum.photos/seed/pfchangs/400/250' },
-  { id: '4', name: 'Zuma', cuisine: 'Japanese', city: 'Dubai', locationDetail: 'Dubai', image: 'https://picsum.photos/seed/zuma/400/250' },
-  { id: '5', name: 'Al Fanar Seafood Market', cuisine: 'Seafood', city: 'Dubai', locationDetail: 'Dubai', image: 'https://picsum.photos/seed/seafood/400/250' },
-  { id: '6', name: 'Vapiano', cuisine: 'Italian', city: 'Dubai', locationDetail: 'Dubai', image: 'https://picsum.photos/seed/vapiano/400/250' },
-];
 
 // --- Sub-components ---
 
@@ -141,62 +117,16 @@ const SidebarDivider = () => (
   </div>
 );
 
-const OutletCard = ({ outlet }: { outlet: Outlet }) => (
-  <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col group transition-all hover:shadow-md">
-    <div className="aspect-[16/10] bg-slate-50 relative overflow-hidden">
-      <img src={outlet.image} alt={outlet.name} className="w-full h-full object-cover" />
-      <button className="absolute top-4 left-4 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 transition-colors">
-        <MoreHorizontal className="w-4 h-4" />
-      </button>
-    </div>
-    <div className="p-5 flex-1 flex flex-col justify-between">
-      <div className="space-y-4 mb-6">
-        <div className="space-y-1">
-          <h3 className="text-[15px] font-black text-slate-900 tracking-tight leading-tight">{outlet.name}</h3>
-          <p className="text-[12px] text-slate-400 font-medium">{outlet.cuisine} • {outlet.city}</p>
-        </div>
-        <div className="flex items-center gap-2 text-slate-400">
-          <MapPin className="w-3.5 h-3.5" />
-          <span className="text-[12px] font-medium">{outlet.locationDetail}</span>
-        </div>
-      </div>
-      <Button className="w-full bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold rounded-xl h-11 flex items-center justify-center gap-2 shadow-sm shadow-[#0CB5A8]/20">
-        <Edit3 className="w-4 h-4" />
-        Edit Outlet
-      </Button>
-    </div>
-  </div>
-);
-
-export default function ManageOutletsPage() {
+export default function PaymentGatewayPage() {
   const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
   const [lookbackWindow, setLookbackWindow] = useState('3 M');
   const [isMenuBuilderOpen, setIsMenuBuilderOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const filteredOutlets = useMemo(() => {
-    return MOCK_OUTLETS.filter(outlet => 
-      outlet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      outlet.city.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
-
-  const smartSearchResults = useMemo(() => {
-    if (!headerSearchQuery) return [];
-    const query = headerSearchQuery.toLowerCase();
-    const mockData = [
-      { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
-      { type: 'Table', value: 'Table 24', sub: 'Dining area' },
-      { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
-    ];
-    return mockData.filter(item => item.value.toLowerCase().includes(query));
-  }, [headerSearchQuery]);
 
   if (!mounted) return null;
 
@@ -240,16 +170,16 @@ export default function ManageOutletsPage() {
 
           <SidebarSectionLabel label="CONFIGURATION" />
           <SidebarItem icon={Settings} label="Settings" subItems={[
-            { label: 'Manage Outlets', href: '/manage-outlets', active: true },
+            { label: 'Manage Outlets', href: '/manage-outlets' },
             { label: 'Manage Users', href: '/manage-users' },
           ]} />
 
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={Plug} label="Integration" subItems={[
+          <SidebarItem icon={Plug} label="Integration" active subItems={[
             { label: 'POS', href: '/pos' },
-            { label: 'Payment Gateway', href: '/payment-gateway' },
+            { label: 'Payment Gateway', href: '/payment-gateway', active: true },
           ]} />
         </div>
 
@@ -280,11 +210,11 @@ export default function ManageOutletsPage() {
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
         <header className="fixed top-0 right-0 left-[280px] h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
           <div className="flex items-center gap-4 flex-1">
-            <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
+             <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
-                  placeholder="Search restaurant name..." 
+                  placeholder="Order #, table, customer name, email, phone..." 
                   className="border-none shadow-none text-[13px] h-full placeholder:text-slate-400 focus-visible:ring-0 focus-visible:bg-transparent"
                   value={headerSearchQuery}
                   onChange={(e) => setHeaderSearchQuery(e.target.value)}
@@ -302,7 +232,7 @@ export default function ManageOutletsPage() {
                   </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-[180px] p-2.5 rounded-none border-slate-100 shadow-xl" align="end">
-                  <div className="space-y-2">
+                   <div className="space-y-2">
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">LOOKBACK WINDOW</span>
                     <div className="grid grid-cols-3 gap-1">
                       {['1 W', '1 M', '3 M', '6 M', '1 Y', '3 Y'].map((option) => (
@@ -338,45 +268,37 @@ export default function ManageOutletsPage() {
           </div>
         </header>
 
+        {/* Scrollable Payment Gateway Content */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
-          <div className="p-8 max-w-[1400px] mx-auto space-y-8">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Manage Outlets</h1>
-                <p className="text-[15px] text-slate-400 font-medium">Manage all your outlets in one place.</p>
-              </div>
-              <Button className="bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-bold rounded-xl h-10 px-6 shadow-lg shadow-[#0CB5A8]/20 flex items-center gap-2 text-xs">
-                <Plus className="w-4 h-4" />
-                New Outlet
-              </Button>
+          <div className="p-8 max-w-7xl mx-auto space-y-12">
+            
+            {/* Page Header */}
+            <div className="space-y-1">
+              <h1 className="text-4xl font-black text-slate-900 tracking-tight">Payment Gateway</h1>
+              <p className="text-[15px] text-slate-400 font-medium">Configure your payment integration for secure digital transactions.</p>
             </div>
 
-            <div className="bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-              <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-slate-200 w-full transition-colors focus-within:border-[#0CB5A8]/50">
-                <Search className="w-4 h-4 text-slate-400 shrink-0" />
-                <Input 
-                  placeholder="Search restaurant name" 
-                  className="border-none shadow-none bg-transparent h-7 text-[14px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 pb-20">
-              {filteredOutlets.length > 0 ? (
-                filteredOutlets.map((outlet) => (
-                  <OutletCard key={outlet.id} outlet={outlet} />
-                ))
-              ) : (
-                <div className="col-span-full py-32 flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center">
-                    <Search className="w-8 h-8 text-slate-200" />
-                  </div>
-                  <p className="text-[15px] text-slate-900 font-bold">No outlets found matching "{searchTerm}"</p>
+            {/* Empty State / Connect Workspace */}
+            <div className="w-full flex items-center justify-center pt-8">
+              <div className="w-full max-w-4xl aspect-[2.5/1] rounded-[32px] border-2 border-dashed border-slate-200 bg-white shadow-sm flex flex-col items-center justify-center p-8 space-y-6">
+                <div className="w-16 h-16 rounded-2xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center justify-center">
+                  <CreditCard className="w-8 h-8 text-slate-900" />
                 </div>
-              )}
+                
+                <div className="text-center space-y-2">
+                  <h2 className="text-xl font-bold text-slate-900">No Gateway Connected</h2>
+                  <p className="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+                    Connect a payment gateway to start accepting digital payments from your guests securely.
+                  </p>
+                </div>
+
+                <Button className="bg-[#0CB5A8] hover:bg-[#0CB5A8]/90 text-white font-black text-sm px-8 h-12 rounded-xl flex items-center gap-2 shadow-lg shadow-[#0CB5A8]/20 transition-all active:scale-95">
+                  <Plus className="w-5 h-5" />
+                  Connect Gateway
+                </Button>
+              </div>
             </div>
+
           </div>
         </div>
       </main>
