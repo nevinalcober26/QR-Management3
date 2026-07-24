@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   LayoutGrid, 
   BarChart3, 
@@ -18,11 +18,8 @@ import {
   Plug,
   BookOpen,
   History,
-  Activity,
-  Maximize2,
   ZoomIn,
   ZoomOut,
-  X,
   Armchair
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -35,40 +32,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
-
-// --- Mock Data ---
-
-const tickets = [
-  { id: '4821', hash: '#NDAGPJC4821...', color: 'bg-[#0CB5A8]' },
-  { id: '4834', hash: '#NDAGPJC4834...', color: 'bg-[#0CB5A8]' },
-  { id: '4827', hash: '#NDAGPJC4827...', color: 'bg-[#6366F1]' },
-  { id: '4825', hash: '#NDAGPJC4825...', color: 'bg-[#0CB5A8]' },
-  { id: '4826', hash: '#NDAGPJC4826...', color: 'bg-[#FBBF24]' },
-  { id: '4836', hash: '#NDAGPJC4836...', color: 'bg-[#6366F1]' },
-  { id: '4820', hash: '#NDAGPJC4820...', color: 'bg-[#FBBF24]' },
-  { id: '4835', hash: '#NDAGPJC4835...', color: 'bg-[#FBBF24]' },
-  { id: '4822', hash: '#NDAGPJC4822...', color: 'bg-[#0CB5A8]' },
-  { id: '4837', hash: '#NDAGPJC4837...', color: 'bg-[#0CB5A8]' },
-  { id: '4830', hash: '#NDAGPJC4830...', color: 'bg-[#A855F7]' },
-  { id: '4833', hash: '#NDAGPJC4833...', color: 'bg-[#A855F7]' },
-  { id: '4829', hash: '#NDAGPJC4829...', color: 'bg-[#FBBF24]' },
-  { id: '4824', hash: '#NDAGPJC4824...', color: 'bg-[#0CB5A8]' },
-  { id: '4838', hash: '#NDAGPJC4838...', color: 'bg-[#FBBF24]' },
-  { id: '5141', hash: '#NDAGPJC5141...', color: 'bg-[#0CB5A8]' },
-  { id: '7249', hash: '#NDAGPJC7249...', color: 'bg-[#6366F1]' },
-  { id: '7176', hash: '#NDAGPJC7176...', color: 'bg-[#0CB5A8]' },
-  { id: '8228', hash: '#NDAGPJC8228...', color: 'bg-[#FBBF24]' },
-];
-
-const activityLog = [
-  { id: '4823', status: 'FAILED', color: 'bg-slate-500', staff: 'James' },
-  { id: '4839', status: 'REJECTED', color: 'bg-orange-500', staff: 'Emma' },
-  { id: '4831', status: 'CANCELLED', color: 'bg-red-500', staff: 'Emma' },
-  { id: '4828', status: 'REJECTED', color: 'bg-orange-500', staff: 'James' },
-  { id: '7554', status: 'REJECTED', color: 'bg-orange-500', staff: 'Sophie' },
-];
 
 // --- Components ---
 
@@ -100,6 +72,14 @@ const SidebarSectionLabel = ({ label }: { label: string }) => (
 const SidebarDivider = () => (
   <div className="px-8 py-2">
     <div className="border-t border-dotted border-slate-200 w-full" />
+  </div>
+);
+
+const FilterBadge = ({ label, count, colorClass }: { label: string, count: number, colorClass: string }) => (
+  <div className="flex items-center gap-2.5 px-3 py-1.5 cursor-pointer hover:bg-slate-50 rounded-full transition-colors group">
+    <div className={cn("w-2 h-2 rounded-full", colorClass)} />
+    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">{label}</span>
+    <span className="text-[10px] font-black text-slate-900">{count}</span>
   </div>
 );
 
@@ -141,25 +121,25 @@ export default function LiveOrderHubPage() {
           <SidebarSectionLabel label="OVERVIEW" />
           <SidebarItem icon={LayoutGrid} label="Dashboard" href="/dashboard" />
           <SidebarItem icon={BarChart3} label="Live Order Hub" active href="/live-order-hub" />
-          <SidebarItem icon={History} label="Reports" hasAdd />
+          <SidebarItem icon={History} label="Reports" hasAdd href="#" />
 
           <SidebarDivider />
 
           <SidebarSectionLabel label="MANAGEMENT" />
-          <SidebarItem icon={ClipboardList} label="Order List" />
-          <SidebarItem icon={BookOpen} label="Menu Builder" />
+          <SidebarItem icon={ClipboardList} label="Order List" href="#" />
+          <SidebarItem icon={BookOpen} label="Menu Builder" href="#" />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
-          <SidebarItem icon={Users} label="Guest Directory" />
+          <SidebarItem icon={Users} label="Guest Directory" href="#" />
 
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONFIGURATION" />
-          <SidebarItem icon={Settings} label="Settings" hasAdd />
+          <SidebarItem icon={Settings} label="Settings" hasAdd href="#" />
 
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={Plug} label="Integration" hasAdd />
+          <SidebarItem icon={Plug} label="Integration" hasAdd href="#" />
         </div>
 
         {/* Sidebar Footer */}
@@ -191,7 +171,7 @@ export default function LiveOrderHubPage() {
         {/* Topbar */}
         <header className="fixed top-0 right-0 left-[280px] h-16 bg-white border-b border-slate-100 flex items-center px-8 justify-between gap-4 z-20">
           <div className="flex items-center gap-4 flex-1">
-            <div className="flex items-center bg-white border border-slate-200 rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
+             <div className="flex items-center bg-white border border-white rounded-[15px] overflow-hidden h-10 w-full max-w-2xl transition-all">
               <div className="flex items-center flex-1 px-3.5 relative">
                 <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <Input 
@@ -202,6 +182,8 @@ export default function LiveOrderHubPage() {
                   onFocus={() => setIsHeaderSearchFocused(true)}
                   onBlur={() => setTimeout(() => setIsHeaderSearchFocused(false), 200)}
                 />
+                
+                {/* Smart Search Results Dropdown */}
                 {isHeaderSearchFocused && headerSearchQuery && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-none shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                     <div className="p-2 max-h-[300px] overflow-y-auto no-scrollbar">
@@ -239,7 +221,7 @@ export default function LiveOrderHubPage() {
                   </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-[180px] p-2.5 rounded-none border-slate-100 shadow-xl" align="end">
-                  <div className="space-y-2">
+                   <div className="space-y-2">
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block px-1">LOOKBACK WINDOW</span>
                     <div className="grid grid-cols-3 gap-1">
                       {['1 W', '1 M', '3 M', '6 M', '1 Y', '3 Y'].map((option) => (
@@ -284,128 +266,85 @@ export default function LiveOrderHubPage() {
 
         {/* Scrollable Order Hub Content */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
-          <div className="p-8 max-w-[1600px] mx-auto space-y-8">
-            {/* Order Hub Sub-Header */}
+          <div className="p-10 max-w-[1600px] mx-auto space-y-10">
+            {/* Header Area */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-8">
-                <h1 className="text-2xl font-black text-slate-900 tracking-tighter">ORDER HUB</h1>
-                <div className="flex items-center gap-2.5 bg-[#0CB5A8]/5 px-4 py-2 rounded-full border border-[#0CB5A8]/10 group">
+              <div className="flex items-center gap-10">
+                <h1 className="text-3xl font-black text-slate-900 tracking-tighter">ORDER HUB</h1>
+                
+                <div className="flex items-center gap-3 bg-white border border-[#0CB5A8]/10 px-5 py-2 rounded-full shadow-sm group">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#0CB5A8] animate-pulse" />
-                  <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-[0.1em]">REAL-TIME SYNC</span>
+                  <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-[0.1em]">REAL TIME SYNC</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-black text-slate-900">19</span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] leading-none">ACTIVE<br/>TICKETS</span>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl font-black text-slate-900 leading-none">0</span>
+                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.05em] leading-tight">ACTIVE<br/>ORDERS</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" className="h-10 px-6 gap-2 border-slate-200 rounded-xl text-[13px] font-bold text-slate-600 bg-white">
-                  <Calendar className="w-4 h-4 text-slate-400" />
-                  Today
-                </Button>
-                <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-                  <Button variant="ghost" className="h-8 px-4 gap-2 rounded-lg text-[11px] font-black uppercase tracking-tight bg-white shadow-sm text-slate-900">
-                    <LayoutGrid className="w-3.5 h-3.5" />
-                    Grid
+
+              <div className="flex items-center gap-4 bg-[#E2F5F3] border border-[#0CB5A8]/20 px-6 py-2 rounded-[18px]">
+                <span className="text-[11px] font-black text-[#0CB5A8] uppercase tracking-widest">FILTER BY</span>
+                <Separator orientation="vertical" className="h-4 bg-[#0CB5A8]/20" />
+                <div className="flex items-center gap-4">
+                  <Select defaultValue="days">
+                    <SelectTrigger className="w-[100px] h-8 border-none bg-transparent shadow-none text-[12px] font-bold text-slate-600 focus:ring-0 px-0">
+                      <SelectValue placeholder="Days" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="days">Days</SelectItem>
+                      <SelectItem value="hours">Hours</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select defaultValue="2">
+                    <SelectTrigger className="w-[100px] h-8 border-none bg-transparent shadow-none text-[12px] font-bold text-slate-600 focus:ring-0 px-0">
+                      <SelectValue placeholder="2 Days" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 Day</SelectItem>
+                      <SelectItem value="2">2 Days</SelectItem>
+                      <SelectItem value="7">7 Days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Filter Bar */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-full max-w-4xl">
+                <div className="flex items-center gap-2 px-2">
+                  <FilterBadge label="LIVE" count={0} colorClass="bg-[#0CB5A8]" />
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
+                  <FilterBadge label="PENDING" count={0} colorClass="bg-[#FBBF24]" />
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
+                  <FilterBadge label="READY" count={0} colorClass="bg-[#3B82F6]" />
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
+                  <FilterBadge label="IN PROGRESS" count={0} colorClass="bg-[#EF4444]" />
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-2" />
+                  <FilterBadge label="PREPARED" count={0} colorClass="bg-[#8B5CF6]" />
+                </div>
+              </div>
+
+              <div className="flex items-center bg-white border border-slate-100 rounded-[14px] p-1.5 shadow-sm">
+                <div className="flex items-center">
+                  <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
+                    <Search className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" className="h-8 px-4 gap-2 rounded-lg text-[11px] font-black uppercase tracking-tight text-slate-400 hover:text-slate-600">
-                    <ClipboardList className="w-3.5 h-3.5" />
-                    Board
+                  <Separator orientation="vertical" className="h-4 bg-slate-100 mx-1" />
+                  <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600">
+                    <ZoomIn className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-8 items-start">
-              {/* Main Ticket Area */}
-              <div className="flex-1 space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-[#0CB5A8] hover:bg-[#0CB5A8] text-white px-4 py-1.5 rounded-full text-[10px] font-black gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                      LIVE <span className="opacity-60 ml-1">19</span>
-                    </Badge>
-                    <Badge variant="outline" className="border-slate-200 bg-white text-slate-400 px-4 py-1.5 rounded-full text-[10px] font-black gap-2 hover:bg-slate-50 transition-colors">
-                      <div className="w-1.5 h-1.5 rounded-full bg-orange-400" />
-                      PENDING <span className="opacity-60 ml-1">6</span>
-                    </Badge>
-                    <Badge variant="outline" className="border-slate-200 bg-white text-slate-400 px-4 py-1.5 rounded-full text-[10px] font-black gap-2 hover:bg-slate-50 transition-colors">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                      ACCEPTED <span className="opacity-60 ml-1">5</span>
-                    </Badge>
-                    <Badge variant="outline" className="border-slate-200 bg-white text-slate-400 px-4 py-1.5 rounded-full text-[10px] font-black gap-2 hover:bg-slate-50 transition-colors">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      PREPARING <span className="opacity-60 ml-1">8</span>
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-full text-slate-400 cursor-pointer hover:bg-slate-50">
-                      <Search className="w-4 h-4" />
-                    </div>
-                    <div className="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-full text-slate-400 cursor-pointer hover:bg-slate-50">
-                      <ZoomIn className="w-4 h-4" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Ticket Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-                  {tickets.map((ticket) => (
-                    <div key={ticket.id} className={cn("aspect-square rounded-[18px] p-4 flex flex-col justify-between shadow-lg transition-transform hover:scale-[1.02] cursor-pointer", ticket.color)}>
-                      <h4 className="text-xl font-black text-white">{ticket.id}</h4>
-                      <p className="text-[9px] font-bold text-white/60 tracking-tight truncate uppercase">{ticket.hash}</p>
-                    </div>
-                  ))}
-                  {/* Grid Placeholders */}
-                  {Array.from({ length: 13 }).map((_, i) => (
-                    <div key={`p-${i}`} className="aspect-square rounded-[18px] border-2 border-slate-100 bg-slate-50/30" />
-                  ))}
-                </div>
-              </div>
-
-              {/* Sidebar Right */}
-              <div className="w-[340px] space-y-6">
-                <div className="bg-[#0CB5A8]/5 border border-[#0CB5A8]/10 rounded-[28px] p-6 flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white border border-[#0CB5A8]/20 flex items-center justify-center shrink-0">
-                    <HelpCircle className="w-5 h-5 text-[#0CB5A8]" />
-                  </div>
-                  <div className="space-y-1">
-                    <h5 className="text-[13px] font-black text-slate-900 tracking-tight">Live Order Tracking</h5>
-                    <p className="text-[11px] text-slate-400 font-medium leading-relaxed">Real-time feed of all finalized transactions across the outlet network.</p>
-                  </div>
-                </div>
-
-                <div className="bg-white border border-slate-100 rounded-[32px] overflow-hidden shadow-sm flex flex-col">
-                  <div className="bg-[#0CB5A8] p-6 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                        <Activity className="w-5 h-5 text-white" />
-                      </div>
-                      <h4 className="text-[15px] font-black text-white uppercase tracking-tight">Activity Log</h4>
-                    </div>
-                    <Badge className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold border-none px-3">20 ENTRIES</Badge>
-                  </div>
-                  <div className="p-2 pt-4">
-                    <p className="px-4 text-[10px] font-black text-[#0CB5A8] uppercase tracking-widest mb-6">Track your finalized orders</p>
-                    <div className="space-y-4 px-2 pb-6">
-                      {activityLog.map((log) => (
-                        <div key={log.id} className="group bg-white border border-slate-50 p-4 rounded-2xl flex items-center justify-between transition-shadow hover:shadow-md">
-                          <div className="flex items-center gap-4">
-                            <div className="w-2 h-2 rounded-full bg-slate-300" />
-                            <div className="space-y-1">
-                              <h5 className="text-[13px] font-black text-slate-900 leading-none">Order #{log.id}</h5>
-                              <div className="flex items-center gap-2">
-                                <Badge className={cn("h-4 px-2 text-[8px] font-black rounded-md border-none", log.color)}>{log.status}</Badge>
-                                <span className="text-[10px] text-slate-400 font-bold">Staff {log.staff}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">JUST NOW</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+            {/* Main Order Grid */}
+            <div className="bg-white border border-slate-100 rounded-[32px] p-8 min-h-[600px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-9 gap-4">
+                {Array.from({ length: 72 }).map((_, i) => (
+                  <div key={i} className="aspect-[4/3] rounded-[18px] border-2 border-dashed border-slate-100 bg-slate-50/20" />
+                ))}
               </div>
             </div>
           </div>
