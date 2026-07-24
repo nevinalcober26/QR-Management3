@@ -203,7 +203,7 @@ export default function SplitBillReportPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="MANAGEMENT" />
-          <SidebarItem icon={ClipboardList} label="Order List" href="#" />
+          <SidebarItem icon={ClipboardList} label="Order List" href="/orders" />
           <SidebarItem icon={BookOpen} label="Menu Builder" href="#" />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
           <SidebarItem icon={Users} label="Guest Directory" href="#" />

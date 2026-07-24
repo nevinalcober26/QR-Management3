@@ -4,10 +4,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { 
   LayoutGrid, 
   BarChart3, 
-  Plus, 
-  Grid3X3, 
-  Users, 
-  Settings, 
   Search, 
   Calendar, 
   RefreshCcw, 
@@ -17,11 +13,14 @@ import {
   Plug,
   BookOpen,
   History,
-  ZoomIn,
-  ZoomOut,
-  Armchair,
-  Clock,
-  Layers
+  Grid3X3,
+  Users,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  MinusCircle,
+  HelpCircleIcon
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,32 +41,7 @@ import {
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 
-// --- Types & Mock Data ---
-
-type OrderStatus = 'LIVE' | 'PENDING' | 'READY' | 'IN_PROGRESS' | 'PREPARED';
-
-interface Order {
-  id: string;
-  orderId: string;
-  refId: string;
-  status: OrderStatus;
-  tableId: string;
-  items: number;
-  time: string;
-}
-
-const MOCK_ORDERS: Order[] = [
-  { id: '1', orderId: '4825', refId: '#NDAGPJC4825...', status: 'LIVE', tableId: 'T-24', items: 3, time: '12:04' },
-  { id: '2', orderId: '4823', refId: '#NDAGPJC4823...', status: 'READY', tableId: 'T-18', items: 2, time: '08:15' },
-  { id: '3', orderId: '4822', refId: '#NDAGPJC4822...', status: 'LIVE', tableId: 'T-05', items: 5, time: '15:30' },
-  { id: '4', orderId: '4827', refId: '#NDAGPJC4827...', status: 'READY', tableId: 'F-12', items: 1, time: '05:45' },
-  { id: '5', orderId: '4838', refId: '#NDAGPJC4838...', status: 'PENDING', tableId: 'T-31', items: 4, time: '02:10' },
-  { id: '6', orderId: '4833', refId: '#NDAGPJC4833...', status: 'READY', tableId: 'T-22', items: 3, time: '06:20' },
-  { id: '7', orderId: '4820', refId: '#NDAGPJC4820...', status: 'LIVE', tableId: 'T-01', items: 2, time: '18:50' },
-  { id: '8', orderId: '6300', refId: '#NDAGPJC6300...', status: 'READY', tableId: 'F-03', items: 6, time: '10:00' },
-];
-
-// --- Components ---
+// --- Sub-components ---
 
 const SidebarItem = ({ 
   icon: Icon, 
@@ -131,63 +105,24 @@ const SidebarDivider = () => (
   </div>
 );
 
-const FilterBadge = ({ label, count, colorClass, active = false }: { label: string, count: number, colorClass: string, active?: boolean }) => (
-  <div className={cn(
-    "flex items-center gap-2.5 px-4 py-2 cursor-pointer transition-all rounded-full",
-    active ? "bg-[#F0FDFB] border border-[#0CB5A8]/20" : "hover:bg-slate-50"
-  )}>
-    <div className={cn("w-2 h-2 rounded-full", colorClass)} />
-    <span className={cn(
-      "text-[10px] font-black uppercase tracking-[0.05em]",
-      active ? "text-[#0CB5A8]" : "text-slate-400"
-    )}>{label}</span>
-    <span className="text-[10px] font-black text-slate-900 ml-1">{count}</span>
+const OrderStatCard = ({ title, value, icon: Icon, iconColorClass, barColorClass }: { title: string, value: string, icon: any, iconColorClass: string, barColorClass: string }) => (
+  <div className={cn("bg-white p-6 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-r-4 relative flex flex-col justify-between h-[160px]", barColorClass)}>
+    <div className="flex justify-between items-start">
+      <div className="flex items-center gap-1.5">
+        <span className="text-[13px] font-semibold text-slate-400 tracking-tight">{title}</span>
+        <HelpCircle className="w-3.5 h-3.5 text-slate-300 cursor-pointer" />
+      </div>
+      <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", iconColorClass)}>
+        <Icon className="w-4 h-4" />
+      </div>
+    </div>
+    <div className="mt-auto">
+      <h3 className="text-4xl font-black text-slate-900">{value}</h3>
+    </div>
   </div>
 );
 
-const OrderCard = ({ order }: { order: Order }) => {
-  const statusColors = {
-    LIVE: 'bg-[#0CB5A8]',
-    PENDING: 'bg-[#FBBF24]',
-    READY: 'bg-[#6366f1]',
-    IN_PROGRESS: 'bg-[#FBBF24]',
-    PREPARED: 'bg-[#6366f1]'
-  };
-
-  return (
-    <div className={cn(
-      "aspect-[2/1] rounded-[10px] p-4 flex flex-col justify-between shadow-sm hover:brightness-95 transition-all cursor-pointer relative overflow-hidden",
-      statusColors[order.status]
-    )}>
-      <div className="flex justify-between items-start z-10">
-        <div className="flex flex-col">
-          <span className="text-2xl font-black text-white leading-none tracking-tight">{order.tableId}</span>
-          <span className="text-[11px] font-bold text-white/70 mt-1">Order {order.orderId}</span>
-        </div>
-        <div className="flex items-center gap-1.5 bg-white/20 px-2 py-1 rounded-lg">
-          <Clock className="w-3 h-3 text-white" />
-          <span className="text-[11px] font-black text-white">{order.time}</span>
-        </div>
-      </div>
-      
-      <div className="flex justify-between items-end z-10">
-        <span className="text-[10px] font-black text-white/50 uppercase tracking-tighter truncate max-w-[100px]">
-          {order.refId}
-        </span>
-        <div className="flex items-center gap-1">
-          <span className="text-[10px] font-black text-white uppercase">{order.items} ITEMS</span>
-        </div>
-      </div>
-
-      {/* Background Decorative ID */}
-      <span className="absolute -bottom-2 -right-2 text-6xl font-black text-white/5 select-none pointer-events-none">
-        {order.orderId.slice(-2)}
-      </span>
-    </div>
-  );
-};
-
-export default function LiveOrderHubPage() {
+export default function OrderListPage() {
   const [mounted, setMounted] = useState(false);
   const [headerSearchQuery, setHeaderSearchQuery] = useState('');
   const [isHeaderSearchFocused, setIsHeaderSearchFocused] = useState(false);
@@ -196,17 +131,6 @@ export default function LiveOrderHubPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const smartSearchResults = useMemo(() => {
-    if (!headerSearchQuery) return [];
-    const query = headerSearchQuery.toLowerCase();
-    const mockData = [
-      { type: 'Order', value: '#10293', sub: 'Jul 15, 2024' },
-      { type: 'Table', value: 'Table 24', sub: 'Dining area' },
-      { type: 'Customer', value: 'John Smith', sub: 'john.smith@example.com' },
-    ];
-    return mockData.filter(item => item.value.toLowerCase().includes(query));
-  }, [headerSearchQuery]);
 
   if (!mounted) return null;
 
@@ -231,7 +155,7 @@ export default function LiveOrderHubPage() {
         <div className="flex-1 overflow-y-auto pt-4 pb-8 no-scrollbar">
           <SidebarSectionLabel label="OVERVIEW" />
           <SidebarItem icon={LayoutGrid} label="Dashboard" href="/dashboard" />
-          <SidebarItem icon={BarChart3} label="Live Order Hub" active href="/live-order-hub" />
+          <SidebarItem icon={BarChart3} label="Live Order Hub" href="/live-order-hub" />
           <SidebarItem icon={History} label="Reports" subItems={[
             { label: 'Order Report', href: '/orders-report' },
             { label: 'Split Bill Report', href: '/split-bill-report' },
@@ -241,7 +165,7 @@ export default function LiveOrderHubPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="MANAGEMENT" />
-          <SidebarItem icon={ClipboardList} label="Order List" href="/orders" />
+          <SidebarItem icon={ClipboardList} label="Order List" active href="/orders" />
           <SidebarItem icon={BookOpen} label="Menu Builder" />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
           <SidebarItem icon={Users} label="Guest Directory" />
@@ -351,103 +275,108 @@ export default function LiveOrderHubPage() {
           </div>
         </header>
 
-        {/* Scrollable Hub Content Container */}
+        {/* Scrollable Order List Content */}
         <div className="flex-1 overflow-y-auto bg-[#F8FAFC] pt-16">
-          <div className="max-w-[1600px] mx-auto">
+          <div className="p-8 max-w-[1600px] mx-auto space-y-8">
             
-            {/* STICKY HEADER SECTION */}
-            <div className="sticky top-0 bg-white border-b border-slate-100 px-8 py-5 z-10">
-              <div className="flex items-center">
-                <div className="flex items-center">
-                  <h1 className="text-2xl font-black text-slate-900 tracking-tight mr-6">ORDER HUB</h1>
-                  
-                  <Separator orientation="vertical" className="h-8 bg-slate-100 mr-6" />
+            {/* Header Title & Date Picker Row */}
+            <div className="space-y-6">
+              <div className="space-y-1">
+                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Daily Orders</h1>
+                <p className="text-[15px] text-slate-400 font-medium">View and manage all recent orders from this outlet.</p>
+              </div>
 
-                  <div className="flex items-center gap-2 bg-[#E2F5F3] border border-[#0CB5A8]/30 px-3.5 py-1.5 rounded-full mr-6">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#0CB5A8] animate-pulse" />
-                    <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-[0.05em]">REAL TIME SYNC</span>
-                  </div>
+              {/* Date Navigation Bar */}
+              <div className="bg-white p-4 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-100 flex items-center gap-3">
+                <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 text-slate-400 hover:bg-slate-50">
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 text-[14px] font-medium text-slate-600 min-w-[280px] justify-between group cursor-pointer hover:border-[#0CB5A8]/50 transition-colors">
+                  <span>24/07/2026</span>
+                  <Calendar className="w-4 h-4 text-slate-400 group-hover:text-[#0CB5A8]" />
+                </div>
+                <Button variant="outline" size="icon" className="w-9 h-9 rounded-lg border-slate-200 text-slate-400 hover:bg-slate-50">
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
 
-                  <div className="flex items-center gap-2 mr-6">
-                    <span className="text-3xl font-black text-slate-900 leading-none">{MOCK_ORDERS.length}</span>
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tight leading-[1.1]">ACTIVE<br/>ORDERS</span>
-                  </div>
+            {/* KPI Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <OrderStatCard 
+                title="Total Orders" 
+                value="0" 
+                icon={Calendar} 
+                iconColorClass="bg-emerald-100 text-emerald-600" 
+                barColorClass="border-r-emerald-500"
+              />
+              <OrderStatCard 
+                title="Paid Orders" 
+                value="0" 
+                icon={CheckCircle2} 
+                iconColorClass="bg-emerald-100 text-emerald-600" 
+                barColorClass="border-r-emerald-500"
+              />
+              <OrderStatCard 
+                title="Unpaid Orders" 
+                value="0" 
+                icon={MinusCircle} 
+                iconColorClass="bg-yellow-50 text-yellow-500" 
+                barColorClass="border-r-yellow-400"
+              />
+            </div>
 
-                  <Separator orientation="vertical" className="h-8 bg-slate-100 mr-6" />
+            {/* Filter Bar */}
+            <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
+              <div className="p-6 border-b border-slate-50 flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-3 bg-[#F8FAFC] px-4 py-2.5 rounded-xl border border-slate-100 w-full max-w-sm">
+                  <Search className="w-4 h-4 text-slate-400" />
+                  <Input 
+                    placeholder="Search order number, customer name" 
+                    className="border-none shadow-none bg-transparent h-6 text-[13px] p-0 focus-visible:ring-0 placeholder:text-slate-400 font-medium"
+                  />
+                </div>
+                <Select>
+                  <SelectTrigger className="w-[200px] h-11 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
+                    <SelectValue placeholder="Select Order Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="preparing">Preparing</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select>
+                  <SelectTrigger className="w-[180px] h-11 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
+                    <SelectValue placeholder="Select Employee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Employees</SelectItem>
+                    <SelectItem value="sarah">Sarah Chen</SelectItem>
+                    <SelectItem value="sam">Sam Taylor</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select>
+                  <SelectTrigger className="w-[180px] h-11 border-slate-100 rounded-xl text-[13px] font-medium text-slate-400 shadow-none bg-white">
+                    <SelectValue placeholder="Payment Source" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Sources</SelectItem>
+                    <SelectItem value="app">App to App</SelectItem>
+                    <SelectItem value="pos">POS</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  <div className="flex items-center gap-3 bg-[#F0FDFB] border border-[#0CB5A8]/10 px-4 py-2 rounded-2xl">
-                    <span className="text-[10px] font-black text-[#0CB5A8] uppercase tracking-widest">FILTER BY</span>
-                    <Separator orientation="vertical" className="h-4 bg-[#0CB5A8]/20 mx-1" />
-                    <div className="flex items-center gap-3">
-                      <Select defaultValue="days">
-                        <SelectTrigger className="w-[90px] h-9 bg-white border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-sm focus:ring-0">
-                          <SelectValue placeholder="Days" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="days">Days</SelectItem>
-                          <SelectItem value="hours">Hours</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Select defaultValue="2">
-                        <SelectTrigger className="w-[100px] h-9 bg-white border-slate-200 rounded-xl text-[12px] font-bold text-slate-600 shadow-sm focus:ring-0">
-                          <SelectValue placeholder="2 Days" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">1 Day</SelectItem>
-                          <SelectItem value="2">2 Days</SelectItem>
-                          <SelectItem value="7">7 Days</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+              {/* Main Table Content - Empty State Fidelity */}
+              <div className="p-32 flex flex-col items-center justify-center text-center space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">No orders found</h3>
+                  <p className="text-sm text-slate-400 font-medium">Try adjusting your search, date, or status filters.</p>
                 </div>
               </div>
             </div>
 
-            {/* Filter Bar and Zoom Controls */}
-            <div className="p-8 pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit">
-                  <div className="flex items-center">
-                    <FilterBadge label="LIVE" count={MOCK_ORDERS.filter(o => o.status === 'LIVE').length} colorClass="bg-[#0CB5A8]" active />
-                    <FilterBadge label="PENDING" count={MOCK_ORDERS.filter(o => o.status === 'PENDING').length} colorClass="bg-[#FBBF24]" />
-                    <FilterBadge label="READY" count={MOCK_ORDERS.filter(o => o.status === 'READY').length} colorClass="bg-[#6366f1]" />
-                    <FilterBadge label="IN PROGRESS" count={MOCK_ORDERS.filter(o => o.status === 'IN_PROGRESS').length} colorClass="bg-[#FBBF24]" />
-                    <FilterBadge label="PREPARED" count={MOCK_ORDERS.filter(o => o.status === 'PREPARED').length} colorClass="bg-[#6366f1]" />
-                  </div>
-                </div>
-
-                <div className="flex items-center bg-white border border-slate-100 p-1.5 rounded-full shadow-sm w-fit gap-2 px-4">
-                  <button className="p-1 hover:bg-slate-50 rounded-full transition-colors">
-                    <ZoomOut className="w-4 h-4 text-slate-400" />
-                  </button>
-                  <Separator orientation="vertical" className="h-4 bg-slate-200" />
-                  <button className="p-1 hover:bg-slate-50 rounded-full transition-colors">
-                    <ZoomIn className="w-4 h-4 text-slate-400" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Order Grid Container */}
-            <div className="px-8 pb-10">
-              <div className="bg-white border border-slate-100 rounded-[32px] p-8 min-h-[800px] shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
-                  {/* Render Mock Orders */}
-                  {MOCK_ORDERS.map((order) => (
-                    <OrderCard key={order.id} order={order} />
-                  ))}
-                  
-                  {/* Render Remaining Placeholders to maintain 100% structural fidelity */}
-                  {Array.from({ length: 80 - MOCK_ORDERS.length }).map((_, i) => (
-                    <div 
-                      key={`placeholder-${i}`} 
-                      className="aspect-[2/1] rounded-[10px] bg-[#F8FAFC] border border-slate-50" 
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>

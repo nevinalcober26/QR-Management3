@@ -252,7 +252,7 @@ export default function DashboardPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="MANAGEMENT" />
-          <SidebarItem icon={ClipboardList} label="Order List" />
+          <SidebarItem icon={ClipboardList} label="Order List" href="/orders" />
           <SidebarItem icon={BookOpen} label="Menu Builder" />
           <SidebarItem icon={Grid3X3} label="Table Operations" href="/qr-codes" />
           <SidebarItem icon={Users} label="Guest Directory" />
