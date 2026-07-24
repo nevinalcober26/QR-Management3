@@ -46,14 +46,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -125,33 +117,55 @@ const chartConfig = {
 
 // --- Sub-components ---
 
-const SidebarItem = ({ icon: Icon, label, active = false, hasAdd = false, href = "#" }: { icon: any, label: string, active?: boolean, hasAdd?: boolean, href?: string }) => (
-  <div className="px-4 py-0.5 block">
-    <div className={cn(
-      "group flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all rounded-xl",
-      active ? "bg-[#0CB5A8]/10 text-[#0CB5A8]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-    )}>
-      <Link href={href} className="flex items-center gap-3 flex-1">
-        <Icon className={cn("w-[18px] h-[18px]", active ? "text-[#0CB5A8]" : "text-slate-400 group-hover:text-slate-600")} />
-        <span className={cn("text-[13px] font-semibold tracking-tight")}>{label}</span>
-      </Link>
-      {hasAdd && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="border border-slate-200 rounded w-4.5 h-4.5 flex items-center justify-center bg-white shadow-sm hover:border-[#0CB5A8] hover:bg-[#0CB5A8]/5 transition-all">
-              <Plus className="w-2.5 h-2.5 text-slate-400" />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 rounded-xl border-slate-100 shadow-xl">
-            <DropdownMenuItem asChild className="cursor-pointer font-bold text-slate-600 text-[12px]">
-              <Link href="/orders-report">Orders Report</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+const SidebarItem = ({ 
+  icon: Icon, 
+  label, 
+  active = false, 
+  href = "#",
+  subItems 
+}: { 
+  icon: any, 
+  label: string, 
+  active?: boolean, 
+  href?: string,
+  subItems?: { label: string, href: string, active?: boolean }[]
+}) => {
+  const [isOpen, setIsOpen] = useState(active || subItems?.some(s => s.active));
+
+  return (
+    <div className="px-4 py-0.5 block">
+      <div className={cn(
+        "group flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all rounded-xl",
+        active ? "bg-[#0CB5A8]/10 text-[#0CB5A8]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+      )}>
+        <Link href={href} className="flex items-center gap-3 flex-1" onClick={() => subItems && setIsOpen(!isOpen)}>
+          <Icon className={cn("w-[18px] h-[18px]", active ? "text-[#0CB5A8]" : "text-slate-400 group-hover:text-slate-600")} />
+          <span className={cn("text-[13px] font-semibold tracking-tight")}>{label}</span>
+        </Link>
+        {subItems && (
+          <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isOpen ? "rotate-180" : "")} />
+        )}
+      </div>
+      {isOpen && subItems && (
+        <div className="ml-8 mt-1 border-l border-slate-100 pb-2">
+          {subItems.map((sub, idx) => (
+            <Link key={idx} href={sub.href} className="relative flex items-center py-2 pl-6 group/sub">
+              {sub.active && (
+                <div className="absolute left-[-4.5px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-white bg-[#0CB5A8]" />
+              )}
+              <span className={cn(
+                "text-[13px] transition-colors",
+                sub.active ? "font-bold text-[#065F46]" : "font-medium text-slate-500 hover:text-slate-900"
+              )}>
+                {sub.label}
+              </span>
+            </Link>
+          ))}
+        </div>
       )}
     </div>
-  </div>
-);
+  );
+};
 
 const SidebarSectionLabel = ({ label }: { label: string }) => (
   <div className="px-8 py-3.5 mt-2 first:mt-0 text-[11px] font-bold text-slate-400/80 uppercase tracking-[0.15em]">
@@ -239,7 +253,11 @@ export default function DashboardPage() {
           <SidebarSectionLabel label="OVERVIEW" />
           <SidebarItem icon={LayoutGrid} label="Dashboard" active href="/dashboard" />
           <SidebarItem icon={BarChart3} label="Live Order Hub" href="/live-order-hub" />
-          <SidebarItem icon={History} label="Reports" hasAdd />
+          <SidebarItem icon={History} label="Reports" subItems={[
+            { label: 'Order Report', href: '/orders-report' },
+            { label: 'Split Bill Report', href: '#' },
+            { label: 'Tips Report', href: '#' },
+          ]} />
 
           <SidebarDivider />
 
@@ -252,12 +270,12 @@ export default function DashboardPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONFIGURATION" />
-          <SidebarItem icon={Settings} label="Settings" hasAdd />
+          <SidebarItem icon={Settings} label="Settings" />
 
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={Plug} label="Integration" hasAdd />
+          <SidebarItem icon={Plug} label="Integration" />
         </div>
 
         <div className="bg-[#111827] p-4 rounded-t-[28px] mt-auto">
