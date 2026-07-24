@@ -213,7 +213,10 @@ export default function ManageUsersPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={Plug} label="Integration" />
+          <SidebarItem icon={Plug} label="Integration" subItems={[
+            { label: 'POS', href: '/pos' },
+            { label: 'Payment Gateway', href: '/payment-gateway' },
+          ]} />
         </div>
 
         <div className="bg-[#111827] p-4 rounded-t-[28px] mt-auto">
@@ -354,7 +357,7 @@ export default function ManageUsersPage() {
             </div>
 
             {/* Table Container */}
-            <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
+            <div className="bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col">
               {/* Filter Bar */}
               <div className="p-6 border-b border-slate-50 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 w-full max-w-2xl transition-colors focus-within:border-[#0CB5A8]/50">

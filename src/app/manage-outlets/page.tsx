@@ -247,7 +247,10 @@ export default function ManageOutletsPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={Plug} label="Integration" />
+          <SidebarItem icon={Plug} label="Integration" subItems={[
+            { label: 'POS', href: '/pos' },
+            { label: 'Payment Gateway', href: '/payment-gateway' },
+          ]} />
         </div>
 
         <div className="bg-[#111827] p-4 rounded-t-[28px] mt-auto">
@@ -259,7 +262,7 @@ export default function ManageOutletsPage() {
               </Avatar>
               <div className="flex flex-col min-w-0">
                 <span className="text-[9px] text-[#0CB5A8] font-bold uppercase tracking-wider leading-none mb-0.5">BLOOMSBURY'S</span>
-                <span className="text-[12px] font-bold text-white tracking-tight truncate max-w-[120px]">Ras Al Khaimah</span>
+                <span className="text-[12px] font-bold text-white tracking-tight truncate max-w spill-w-[120px]">Ras Al Khaimah</span>
               </div>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-colors" />

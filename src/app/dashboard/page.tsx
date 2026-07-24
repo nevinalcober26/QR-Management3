@@ -284,7 +284,10 @@ export default function DashboardPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={Plug} label="Integration" />
+          <SidebarItem icon={Plug} label="Integration" subItems={[
+            { label: 'POS', href: '/pos' },
+            { label: 'Payment Gateway', href: '/payment-gateway' },
+          ]} />
         </div>
 
         <div className="bg-[#111827] p-4 rounded-t-[28px] mt-auto">

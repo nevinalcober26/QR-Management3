@@ -278,7 +278,10 @@ export default function OrdersReportPage() {
           <SidebarDivider />
 
           <SidebarSectionLabel label="CONNECTIONS" />
-          <SidebarItem icon={Plug} label="Integration" />
+          <SidebarItem icon={Plug} label="Integration" subItems={[
+            { label: 'POS', href: '/pos' },
+            { label: 'Payment Gateway', href: '/payment-gateway' },
+          ]} />
         </div>
 
         {/* Sidebar Footer */}
