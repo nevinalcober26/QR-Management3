@@ -14,7 +14,8 @@ import {
   Clock,
   Percent,
   Split,
-  FolderOpen
+  FolderOpen,
+  Users
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -163,6 +164,9 @@ export default function SplitBillReportPage() {
               <span className="text-slate-400 group-hover/pos:text-[#0CB5A8]/60 uppercase tracking-tight font-bold">JULY 02, 2:42 PM</span>
             </div>
             <div className="flex items-center gap-4">
+              <div className="w-9 h-9 flex items-center justify-center bg-slate-50 text-slate-400 rounded-lg border border-slate-200 cursor-pointer hover:bg-[#0CB5A8]/10 hover:text-[#0CB5A8] hover:border-[#0CB5A8]/20 transition-all">
+                <LayoutGrid className="w-[18px] h-[18px]" />
+              </div>
               <Avatar className="w-9 h-9 border-2 border-slate-100 shadow-sm">
                 <AvatarImage src="https://picsum.photos/seed/restaurant/100/100" />
                 <AvatarFallback>JD</AvatarFallback>
